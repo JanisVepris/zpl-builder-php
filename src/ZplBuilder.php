@@ -126,7 +126,14 @@ class ZplBuilder
             ),
         );
 
-        return $this->addCommand(new Commands\FieldData($data));
+        return $this->fieldData($data);
+    }
+
+    public function fieldData(string $data): self
+    {
+        $this->addCommand(new Commands\FieldData($data));
+
+        return $this->addCommand(new Commands\FieldSeparator());
     }
 
     public function changeInternationalEncoding(Encoding $encoding, CharacterRemap ...$characterRemaps): self
@@ -153,13 +160,6 @@ class ZplBuilder
                 $this->fontSettings[$font]->width(),
             ),
         );
-    }
-
-    public function fieldData(string $data): self
-    {
-        $this->addCommand(new Commands\FieldData($data));
-
-        return $this->addCommand(new Commands\FieldSeparator());
     }
 
     public function fieldHexIndicator(string $indicator = '_'): self
