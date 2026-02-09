@@ -24,6 +24,8 @@ class ZplBuilder
     /** @var FontSettings[] */
     private array $fontSettings = [];
 
+    private bool $printNewlines = false;
+
     private BarcodeDefaultSettings $barcodeDefaultSettings;
 
     public function __construct()
@@ -32,11 +34,46 @@ class ZplBuilder
         $this->initFontSettings();
     }
 
+    private function initFontSettings(): void
+    {
+        $settings = [];
+
+        foreach (range('A', 'Z') as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        foreach (range(0, 9) as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        $this->fontSettings = $settings;
+    }
+
     public static function start(): self
     {
         $builder = new self();
 
         return $builder->addCommand(new Commands\StartFormat());
+    }
+
+    /** @throws CommandAfterEndException */
+    private function addCommand(Commands $command): self
+    {
+        if ($this->formatEnded) {
+            throw new CommandAfterEndException();
+        }
+
+        $this->commands[] = $command;
+
+        return $this;
+    }
+
+    /** Print newlines after each ZPL command in the resulting output */
+    public function printNewlines(bool $toggle = true): self
+    {
+        $this->printNewlines = $toggle;
+
+        return $this;
     }
 
     public function printOrientation(PrintOrientation $orientation): self
@@ -178,6 +215,10 @@ class ZplBuilder
 
         foreach ($this->commands as $command) {
             $string .= $command->__toString();
+
+            if ($this->printNewlines) {
+                $string .= PHP_EOL;
+            }
         }
 
         return $string;
@@ -205,33 +246,6 @@ class ZplBuilder
         $this->printQuantity = 1;
         $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
-
-        return $this;
-    }
-
-    private function initFontSettings(): void
-    {
-        $settings = [];
-
-        foreach (range('A', 'Z') as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        foreach (range(0, 9) as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        $this->fontSettings = $settings;
-    }
-
-    /** @throws CommandAfterEndException */
-    private function addCommand(Commands $command): self
-    {
-        if ($this->formatEnded) {
-            throw new CommandAfterEndException();
-        }
-
-        $this->commands[] = $command;
 
         return $this;
     }
