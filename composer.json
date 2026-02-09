@@ -1,5 +1,6 @@
 {
     "name": "janisvepris/zpl-builder-php",
+    "description": "A simple PHP library for building ZPL (Zebra Programming Language) label payloads.",
     "type": "library",
     "license": "MIT",
     "minimum-stability": "stable",
