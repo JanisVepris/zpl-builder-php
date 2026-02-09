@@ -1,0 +1,15 @@
+parameters:
+    level: 9
+    phpVersion: 80300 #8.3
+    reportUnmatchedIgnoredErrors: false
+    editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
+    editorUrlTitle: '%%file%%:%%line%%'
+    tmpDir: .cache/phpstan
+    checkExplicitMixedMissingReturn: true
+    reportAlwaysTrueInLastCondition: true
+    paths:
+        - src/
+        - test/
+    excludePaths:
+        - vendor/
+        - .cache/ (?)

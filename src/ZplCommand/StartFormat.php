@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Janisvepris\ZplBuilder\ZplCommand;
+
+use Janisvepris\ZplBuilder\ZplCommand;
+
+class StartFormat implements ZplCommand
+{
+    private const string COMMAND = '^XA';
+
+    public function __toString()
+    {
+        return self::COMMAND;
+    }
+}

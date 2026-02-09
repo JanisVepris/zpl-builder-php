@@ -1,0 +1,47 @@
+{
+    "name": "janisvepris/zpl-builder-php",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Janisvepris\\ZplBuilder\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Janisvepris\\ZplBuilder\\Test\\": "test/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Janis Vepris",
+            "email": "janisvepris@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.1",
+        "friendsofphp/php-cs-fixer": "^3.55",
+        "phpstan/phpstan": "^2.1",
+        "jetbrains/phpstorm-attributes": "^1.2"
+    },
+    "scripts": {
+        "test": "@php ./vendor/bin/phpunit",
+        "cs": "@php ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --verbose",
+        "cs-fix": "@php ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --verbose",
+        "stan": "@php ./vendor/bin/phpstan analyse --configuration=phpstan.neon",
+        "check-all": [
+            "@cs",
+            "@stan",
+            "@test"
+        ],
+        "build": [
+            "@cs-fix",
+            "@stan",
+            "@test"
+        ]
+    }
+}
