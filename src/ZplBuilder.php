@@ -136,7 +136,7 @@ class ZplBuilder
         );
     }
 
-    public function changeFont(int|string $font, ?int $height, ?int $width): self
+    public function changeFont(int|string $font, ?int $height = null, ?int $width = null): self
     {
         if ($height !== null) {
             $this->fontSettings[$font]->setHeight($height);
