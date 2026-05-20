@@ -11,8 +11,9 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintOrientation;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
+use Stringable;
 
-class ZplBuilder
+class ZplBuilder implements Stringable
 {
     /** @var Commands[] */
     private array $commands = [];
@@ -236,6 +237,11 @@ class ZplBuilder
         $this->formatEnded = true;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->render();
     }
 
     public function reset(): self
