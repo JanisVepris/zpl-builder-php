@@ -35,19 +35,9 @@ class ZplBuilder implements Stringable
         $this->initFontSettings();
     }
 
-    private function initFontSettings(): void
+    public function __toString(): string
     {
-        $settings = [];
-
-        foreach (range('A', 'Z') as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        foreach (range(0, 9) as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        $this->fontSettings = $settings;
+        return $this->render();
     }
 
     public static function start(): self
@@ -55,18 +45,6 @@ class ZplBuilder implements Stringable
         $builder = new self();
 
         return $builder->addCommand(new Commands\StartFormat());
-    }
-
-    /** @throws CommandAfterEndException */
-    private function addCommand(Commands $command): self
-    {
-        if ($this->formatEnded) {
-            throw new CommandAfterEndException();
-        }
-
-        $this->commands[] = $command;
-
-        return $this;
     }
 
     /** Print newlines after each ZPL command in the resulting output */
@@ -206,6 +184,11 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
     }
 
+    public function printWidth(int $width): self
+    {
+        return $this->addCommand(new Commands\PrintWidth($width));
+    }
+
     public function render(): string
     {
         if (!$this->formatEnded) {
@@ -239,11 +222,6 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    public function __toString(): string
-    {
-        return $this->render();
-    }
-
     public function reset(): self
     {
         $this->commands = [];
@@ -252,6 +230,33 @@ class ZplBuilder implements Stringable
         $this->printQuantity = 1;
         $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
+
+        return $this;
+    }
+
+    private function initFontSettings(): void
+    {
+        $settings = [];
+
+        foreach (range('A', 'Z') as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        foreach (range(0, 9) as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        $this->fontSettings = $settings;
+    }
+
+    /** @throws CommandAfterEndException */
+    private function addCommand(Commands $command): self
+    {
+        if ($this->formatEnded) {
+            throw new CommandAfterEndException();
+        }
+
+        $this->commands[] = $command;
 
         return $this;
     }
