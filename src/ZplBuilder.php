@@ -220,6 +220,11 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
+    public function comment(string $text): self
+    {
+        return $this->addCommand(new Commands\FieldComment($text));
+    }
+
     public function render(): string
     {
         if (!$this->formatEnded) {
