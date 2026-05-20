@@ -7,12 +7,15 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Justify;
+use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintOrientation;
+use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
+use Stringable;
 
-class ZplBuilder
+class ZplBuilder implements Stringable
 {
     /** @var Commands[] */
     private array $commands = [];
@@ -34,19 +37,9 @@ class ZplBuilder
         $this->initFontSettings();
     }
 
-    private function initFontSettings(): void
+    public function __toString(): string
     {
-        $settings = [];
-
-        foreach (range('A', 'Z') as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        foreach (range(0, 9) as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        $this->fontSettings = $settings;
+        return $this->render();
     }
 
     public static function start(): self
@@ -54,18 +47,6 @@ class ZplBuilder
         $builder = new self();
 
         return $builder->addCommand(new Commands\StartFormat());
-    }
-
-    /** @throws CommandAfterEndException */
-    private function addCommand(Commands $command): self
-    {
-        if ($this->formatEnded) {
-            throw new CommandAfterEndException();
-        }
-
-        $this->commands[] = $command;
-
-        return $this;
     }
 
     /** Print newlines after each ZPL command in the resulting output */
@@ -205,6 +186,60 @@ class ZplBuilder
         return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
     }
 
+    public function printWidth(int $width): self
+    {
+        return $this->addCommand(new Commands\PrintWidth($width));
+    }
+
+    public function labelLength(int $length): self
+    {
+        return $this->addCommand(new Commands\LabelLength($length));
+    }
+
+    public function labelHome(int $x = 0, int $y = 0): self
+    {
+        return $this->addCommand(new Commands\LabelHome($x, $y));
+    }
+
+    public function graphicBox(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+        int $rounding = 0,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicBox(
+                width: $width,
+                height: $height,
+                thickness: $thickness,
+                color: $color,
+                rounding: $rounding,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function comment(string $text): self
+    {
+        return $this->addCommand(new Commands\FieldComment($text));
+    }
+
+    public function recallFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self {
+        return $this->addCommand(
+            new Commands\RecallFormat(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
     public function render(): string
     {
         if (!$this->formatEnded) {
@@ -246,6 +281,33 @@ class ZplBuilder
         $this->printQuantity = 1;
         $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
+
+        return $this;
+    }
+
+    private function initFontSettings(): void
+    {
+        $settings = [];
+
+        foreach (range('A', 'Z') as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        foreach (range(0, 9) as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        $this->fontSettings = $settings;
+    }
+
+    /** @throws CommandAfterEndException */
+    private function addCommand(Commands $command): self
+    {
+        if ($this->formatEnded) {
+            throw new CommandAfterEndException();
+        }
+
+        $this->commands[] = $command;
 
         return $this;
     }

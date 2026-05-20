@@ -10,7 +10,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 class ChangeInternationalEncoding implements ZplCommand
 {
-    private const string FORMAT = '^CI%s,%s';
+    private const string FORMAT = '^CI%s';
+    private const string FORMAT_WITH_REMAPS = '^CI%s,%s';
 
     /** @var CharacterRemap[] */
     private array $characterRemaps = [];
@@ -24,8 +25,12 @@ class ChangeInternationalEncoding implements ZplCommand
 
     public function __toString()
     {
+        if ($this->characterRemaps === []) {
+            return sprintf(self::FORMAT, $this->encoding->value);
+        }
+
         return sprintf(
-            self::FORMAT,
+            self::FORMAT_WITH_REMAPS,
             $this->encoding->value,
             implode(',', $this->characterRemaps),
         );
