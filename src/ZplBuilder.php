@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Justify;
+use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintOrientation;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
@@ -197,6 +198,26 @@ class ZplBuilder implements Stringable
     public function labelHome(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\LabelHome($x, $y));
+    }
+
+    public function graphicBox(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+        int $rounding = 0,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicBox(
+                width: $width,
+                height: $height,
+                thickness: $thickness,
+                color: $color,
+                rounding: $rounding,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
     }
 
     public function render(): string
