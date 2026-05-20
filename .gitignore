@@ -2,6 +2,7 @@
 /phpstan/
 /.idea/
 /.cache/
+.claude/
 tmp/
 
 composer.phar
