@@ -10,6 +10,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintOrientation;
+use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
 use Stringable;
@@ -223,6 +224,20 @@ class ZplBuilder implements Stringable
     public function comment(string $text): self
     {
         return $this->addCommand(new Commands\FieldComment($text));
+    }
+
+    public function recallFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self {
+        return $this->addCommand(
+            new Commands\RecallFormat(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
     }
 
     public function render(): string
