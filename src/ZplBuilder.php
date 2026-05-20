@@ -12,6 +12,8 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintOrientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
+use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
+use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
 use Stringable;
 
@@ -27,6 +29,9 @@ class ZplBuilder implements Stringable
     /** @var FontSettings[] */
     private array $fontSettings = [];
 
+    /** @var array<string, FontPreset> */
+    private array $fontPresets = [];
+
     private bool $printNewlines = false;
 
     private BarcodeDefaultSettings $barcodeDefaultSettings;
@@ -37,9 +42,19 @@ class ZplBuilder implements Stringable
         $this->initFontSettings();
     }
 
-    public function __toString(): string
+    private function initFontSettings(): void
     {
-        return $this->render();
+        $settings = [];
+
+        foreach (range('A', 'Z') as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        foreach (range(0, 9) as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        $this->fontSettings = $settings;
     }
 
     public static function start(): self
@@ -47,6 +62,105 @@ class ZplBuilder implements Stringable
         $builder = new self();
 
         return $builder->addCommand(new Commands\StartFormat());
+    }
+
+    /** @throws CommandAfterEndException */
+    private function addCommand(Commands $command): self
+    {
+        if ($this->formatEnded) {
+            throw new CommandAfterEndException();
+        }
+
+        $this->commands[] = $command;
+
+        return $this;
+    }
+
+    public function addFontPreset(
+        string $name,
+        int|string $font,
+        ?int $height = null,
+        ?int $width = null,
+    ): self {
+        $this->fontPresets[$name] = new FontPreset(
+            font: $font,
+            height: $height ?? $this->fontSettings[$font]->height(),
+            width: $width ?? $this->fontSettings[$font]->width(),
+        );
+
+        return $this;
+    }
+
+    public function applyFontPreset(string $name): self
+    {
+        if (!isset($this->fontPresets[$name])) {
+            throw new FontPresetDoesNotExistException($name);
+        }
+
+        $preset = $this->fontPresets[$name];
+
+        $this->changeFont(
+            font: $preset->font,
+            height: $preset->height,
+            width: $preset->width,
+        );
+    }
+
+    public function changeFont(int|string $font, ?int $height = null, ?int $width = null): self
+    {
+        if ($height !== null) {
+            $this->fontSettings[$font]->setHeight($height);
+        }
+
+        if ($width !== null) {
+            $this->fontSettings[$font]->setWidth($width);
+        }
+
+        return $this->addCommand(
+            new Commands\ChangeFont(
+                $font,
+                $this->fontSettings[$font]->height(),
+                $this->fontSettings[$font]->width(),
+            ),
+        );
+    }
+
+    public function __toString(): string
+    {
+        return $this->render();
+    }
+
+    public function render(): string
+    {
+        if (!$this->formatEnded) {
+            $this->end();
+        }
+
+        $string = '';
+
+        foreach ($this->commands as $command) {
+            $string .= $command->__toString();
+
+            if ($this->printNewlines) {
+                $string .= PHP_EOL;
+            }
+        }
+
+        return $string;
+    }
+
+    public function end(): self
+    {
+        if ($this->formatEnded) {
+            return $this;
+        }
+
+        $this->addCommand(new Commands\PrintQuantity($this->printQuantity));
+        $this->addCommand(new Commands\EndFormat());
+
+        $this->formatEnded = true;
+
+        return $this;
     }
 
     /** Print newlines after each ZPL command in the resulting output */
@@ -121,25 +235,6 @@ class ZplBuilder implements Stringable
     {
         return $this->addCommand(
             new Commands\ChangeInternationalEncoding($encoding, ...$characterRemaps),
-        );
-    }
-
-    public function changeFont(int|string $font, ?int $height = null, ?int $width = null): self
-    {
-        if ($height !== null) {
-            $this->fontSettings[$font]->setHeight($height);
-        }
-
-        if ($width !== null) {
-            $this->fontSettings[$font]->setWidth($width);
-        }
-
-        return $this->addCommand(
-            new Commands\ChangeFont(
-                $font,
-                $this->fontSettings[$font]->height(),
-                $this->fontSettings[$font]->width(),
-            ),
         );
     }
 
@@ -240,39 +335,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    public function render(): string
-    {
-        if (!$this->formatEnded) {
-            $this->end();
-        }
-
-        $string = '';
-
-        foreach ($this->commands as $command) {
-            $string .= $command->__toString();
-
-            if ($this->printNewlines) {
-                $string .= PHP_EOL;
-            }
-        }
-
-        return $string;
-    }
-
-    public function end(): self
-    {
-        if ($this->formatEnded) {
-            return $this;
-        }
-
-        $this->addCommand(new Commands\PrintQuantity($this->printQuantity));
-        $this->addCommand(new Commands\EndFormat());
-
-        $this->formatEnded = true;
-
-        return $this;
-    }
-
     public function reset(): self
     {
         $this->commands = [];
@@ -281,33 +343,6 @@ class ZplBuilder implements Stringable
         $this->printQuantity = 1;
         $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
-
-        return $this;
-    }
-
-    private function initFontSettings(): void
-    {
-        $settings = [];
-
-        foreach (range('A', 'Z') as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        foreach (range(0, 9) as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        $this->fontSettings = $settings;
-    }
-
-    /** @throws CommandAfterEndException */
-    private function addCommand(Commands $command): self
-    {
-        if ($this->formatEnded) {
-            throw new CommandAfterEndException();
-        }
-
-        $this->commands[] = $command;
 
         return $this;
     }
