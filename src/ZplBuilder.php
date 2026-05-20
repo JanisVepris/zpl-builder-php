@@ -189,6 +189,11 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\PrintWidth($width));
     }
 
+    public function labelLength(int $length): self
+    {
+        return $this->addCommand(new Commands\LabelLength($length));
+    }
+
     public function render(): string
     {
         if (!$this->formatEnded) {
