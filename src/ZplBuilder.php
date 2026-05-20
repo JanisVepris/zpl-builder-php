@@ -42,19 +42,9 @@ class ZplBuilder implements Stringable
         $this->initFontSettings();
     }
 
-    private function initFontSettings(): void
+    public function __toString(): string
     {
-        $settings = [];
-
-        foreach (range('A', 'Z') as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        foreach (range(0, 9) as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        $this->fontSettings = $settings;
+        return $this->render();
     }
 
     public static function start(): self
@@ -62,18 +52,6 @@ class ZplBuilder implements Stringable
         $builder = new self();
 
         return $builder->addCommand(new Commands\StartFormat());
-    }
-
-    /** @throws CommandAfterEndException */
-    private function addCommand(Commands $command): self
-    {
-        if ($this->formatEnded) {
-            throw new CommandAfterEndException();
-        }
-
-        $this->commands[] = $command;
-
-        return $this;
     }
 
     public function addFontPreset(
@@ -104,6 +82,8 @@ class ZplBuilder implements Stringable
             height: $preset->height,
             width: $preset->width,
         );
+
+        return $this;
     }
 
     public function changeFont(int|string $font, ?int $height = null, ?int $width = null): self
@@ -123,11 +103,6 @@ class ZplBuilder implements Stringable
                 $this->fontSettings[$font]->width(),
             ),
         );
-    }
-
-    public function __toString(): string
-    {
-        return $this->render();
     }
 
     public function render(): string
@@ -343,6 +318,33 @@ class ZplBuilder implements Stringable
         $this->printQuantity = 1;
         $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
+
+        return $this;
+    }
+
+    private function initFontSettings(): void
+    {
+        $settings = [];
+
+        foreach (range('A', 'Z') as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        foreach (range(0, 9) as $key) {
+            $settings[$key] = new FontSettings();
+        }
+
+        $this->fontSettings = $settings;
+    }
+
+    /** @throws CommandAfterEndException */
+    private function addCommand(Commands $command): self
+    {
+        if ($this->formatEnded) {
+            throw new CommandAfterEndException();
+        }
+
+        $this->commands[] = $command;
 
         return $this;
     }
