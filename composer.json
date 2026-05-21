@@ -17,6 +17,9 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {
+        "platform": {
+            "php": "8.3"
+        },
         "sort-packages": true
     },
     "autoload": {
