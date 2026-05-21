@@ -7,13 +7,13 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class BarcodeDefaults implements ZplCommand
+final readonly class BarcodeDefaults implements ZplCommand
 {
     private const string FORMAT = '^BY%d,%0.1f,%d';
+    private int $height;
 
-    private readonly int $moduleWidth;
-    private readonly float $wideToNarrowRatio;
-    private readonly int $height;
+    private int $moduleWidth;
+    private float $wideToNarrowRatio;
 
     public function __construct(
         int $moduleWidth,

@@ -7,10 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class PrintWidth implements ZplCommand
+final readonly class PrintWidth implements ZplCommand
 {
     private const string FORMAT = '^PW%d';
-    private readonly int $width;
+    private int $width;
 
     public function __construct(
         int $width,

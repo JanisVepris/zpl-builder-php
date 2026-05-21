@@ -8,14 +8,14 @@ use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class GraphicBox implements ZplCommand
+final readonly class GraphicBox implements ZplCommand
 {
     private const string FORMAT = '^GB%d,%d,%d,%s,%d';
-    private readonly int $width;
-    private readonly int $height;
-    private readonly int $thickness;
-    private readonly LineColor $color;
-    private readonly int $rounding;
+    private LineColor $color;
+    private int $height;
+    private int $rounding;
+    private int $thickness;
+    private int $width;
 
     public function __construct(
         int $width,

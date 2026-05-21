@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class FieldSeparator implements ZplCommand
+final class FieldSeparator implements ZplCommand
 {
     private const string FORMAT = '^FS';
 

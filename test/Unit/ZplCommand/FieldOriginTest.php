@@ -12,9 +12,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldOrigin::class)]
 class FieldOriginTest extends UnitTestCase
 {
-    public function testRendersWithCoordinates(): void
+    public function testNegativeXThrows(): void
     {
-        self::assertSame('^FO50,100', (string) new FieldOrigin(50, 100));
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new FieldOrigin(-1, 0);
     }
 
     public function testRendersAtOrigin(): void
@@ -22,11 +24,9 @@ class FieldOriginTest extends UnitTestCase
         self::assertSame('^FO0,0', (string) new FieldOrigin(0, 0));
     }
 
-    public function testNegativeXThrows(): void
+    public function testRendersWithCoordinates(): void
     {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        new FieldOrigin(-1, 0);
+        self::assertSame('^FO50,100', (string) new FieldOrigin(50, 100));
     }
 
     public function testYAboveMaxThrows(): void

@@ -8,20 +8,20 @@ use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class RecallFormat implements ZplCommand
+final readonly class RecallFormat implements ZplCommand
 {
     private const string FORMAT = '^XF%s:%s.%s';
-    private readonly StorageDevice $device;
-    private readonly string $name;
-    private readonly string $extension;
+    private StorageDevice $device;
+    private string $extension;
+    private string $name;
 
     public function __construct(
         StorageDevice $device,
         string $name,
         string $extension,
     ) {
-        ValueAssert::stringLength($name, 1, 16);
-        ValueAssert::stringLength($extension, 1, 3);
+        ValueAssert::stringLengthBytes($name, 1, 16);
+        ValueAssert::stringLengthBytes($extension, 1, 3);
 
         $this->device = $device;
         $this->name = $name;

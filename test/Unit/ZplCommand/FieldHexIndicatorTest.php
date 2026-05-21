@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplCommand\FieldHexIndicator;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,14 +13,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldHexIndicator::class)]
 class FieldHexIndicatorTest extends UnitTestCase
 {
-    public function testRendersWithIndicator(): void
+    public function testCaretIndicatorThrows(): void
     {
-        self::assertSame('^FH_', (string) new FieldHexIndicator('_'));
-    }
+        $this->expectException(StringValueContainsBannedValuesException::class);
 
-    public function testRendersCustomIndicator(): void
-    {
-        self::assertSame('^FH%', (string) new FieldHexIndicator('%'));
+        new FieldHexIndicator('^');
     }
 
     public function testEmptyIndicatorThrows(): void
@@ -34,5 +32,22 @@ class FieldHexIndicatorTest extends UnitTestCase
         $this->expectException(StringLengthOutOfRangeException::class);
 
         new FieldHexIndicator('__');
+    }
+
+    public function testRendersCustomIndicator(): void
+    {
+        self::assertSame('^FH%', (string) new FieldHexIndicator('%'));
+    }
+
+    public function testRendersWithIndicator(): void
+    {
+        self::assertSame('^FH_', (string) new FieldHexIndicator('_'));
+    }
+
+    public function testTildeIndicatorThrows(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        new FieldHexIndicator('~');
     }
 }

@@ -11,13 +11,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(LabelReversePrint::class)]
 class LabelReversePrintTest extends UnitTestCase
 {
-    public function testRendersEnabled(): void
-    {
-        self::assertSame('^LRY', (string) new LabelReversePrint(true));
-    }
-
     public function testRendersDisabled(): void
     {
         self::assertSame('^LRN', (string) new LabelReversePrint(false));
+    }
+
+    public function testRendersEnabled(): void
+    {
+        self::assertSame('^LRY', (string) new LabelReversePrint(true));
     }
 }

@@ -7,11 +7,11 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class LabelHome implements ZplCommand
+final readonly class LabelHome implements ZplCommand
 {
     private const string FORMAT = '^LH%d,%d';
-    private readonly int $x;
-    private readonly int $y;
+    private int $x;
+    private int $y;
 
     public function __construct(
         int $x,

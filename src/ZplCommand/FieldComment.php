@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\ZplCommand;
 
-use Janisvepris\ZplBuilder\Exception\InvalidFieldCommentException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class FieldComment implements ZplCommand
+final readonly class FieldComment implements ZplCommand
 {
     private const string FORMAT = '^FX%s';
 
-    private readonly string $text;
+    private string $text;
 
     public function __construct(
         string $text,
     ) {
-        ValueAssert::stringLength($text, 0, 3072);
-
-        if (str_contains($text, '^') || str_contains($text, '~')) {
-            throw new InvalidFieldCommentException($text);
-        }
+        ValueAssert::stringLengthBytes($text, 0, 3072);
+        ValueAssert::stringNotContains($text);
 
         $this->text = $text;
     }

@@ -8,14 +8,14 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class FieldBlock implements ZplCommand
+final readonly class FieldBlock implements ZplCommand
 {
     private const string FORMAT = '^FB%d,%d,%d,%s,%d';
-    private readonly int $width;
-    private readonly int $maxLines;
-    private readonly int $lineSpacing;
-    private Justify $justify;
     private int $hangingIndent;
+    private Justify $justify;
+    private int $lineSpacing;
+    private int $maxLines;
+    private int $width;
 
     public function __construct(
         int $width,

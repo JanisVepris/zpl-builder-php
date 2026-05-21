@@ -9,7 +9,7 @@ $finder = (new PhpCsFixer\Finder())
 
 return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
-    ->setCacheFile(__DIR__ . '/.cache/php-cs-fixer/.php-cs-fixer.cache')
+    ->setCacheFile(__DIR__.'/.cache/php-cs-fixer/.php-cs-fixer.cache')
     ->setRules([
         '@PSR1' => true,
         '@PSR2' => true,
@@ -18,7 +18,6 @@ return (new PhpCsFixer\Config())
 
         'array_push' => true,
 
-        'mb_str_functions' => true,
         'modernize_strpos' => true,
         'pow_to_exponentiation' => true,
         'random_api_migration' => true,
@@ -42,6 +41,10 @@ return (new PhpCsFixer\Config())
             'import_classes' => true,
             'import_constants' => false,
             'import_functions' => false,
+        ],
+
+        'ordered_class_elements' => [
+            'sort_algorithm' => 'alpha',
         ],
 
         'php_unit_test_class_requires_covers' => true,

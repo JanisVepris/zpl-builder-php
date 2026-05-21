@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class FieldHexIndicator implements ZplCommand
+final readonly class FieldHexIndicator implements ZplCommand
 {
     private const string FORMAT = '^FH%s';
     private string $indicator;
@@ -15,7 +15,8 @@ class FieldHexIndicator implements ZplCommand
     public function __construct(
         string $indicator,
     ) {
-        ValueAssert::stringLength($indicator, 1, 1);
+        ValueAssert::stringLengthBytes($indicator, 1, 1);
+        ValueAssert::stringNotContains($indicator);
 
         $this->indicator = $indicator;
     }

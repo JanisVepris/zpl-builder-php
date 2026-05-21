@@ -3,7 +3,25 @@
     "description": "A simple PHP library for building ZPL (Zebra Programming Language) label payloads.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "zpl",
+        "zebra",
+        "label",
+        "barcode",
+        "printer"
+    ],
+    "support": {
+        "issues": "https://github.com/JanisVepris/zpl-builder-php/issues",
+        "source": "https://github.com/JanisVepris/zpl-builder-php"
+    },
     "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "platform": {
+            "php": "8.3"
+        },
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
             "Janisvepris\\ZplBuilder\\": "src/"
@@ -24,10 +42,9 @@
         "php": "^8.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.1",
         "friendsofphp/php-cs-fixer": "^3.55",
         "phpstan/phpstan": "^2.1",
-        "jetbrains/phpstorm-attributes": "^1.2"
+        "phpunit/phpunit": "^11.1"
     },
     "scripts": {
         "test": "@php ./vendor/bin/phpunit",

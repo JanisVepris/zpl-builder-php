@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplCommand\FieldData;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,14 +13,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldData::class)]
 class FieldDataTest extends UnitTestCase
 {
-    public function testRendersWithData(): void
+    public function testCaretInDataThrows(): void
     {
-        self::assertSame('^FDHello World', (string) new FieldData('Hello World'));
-    }
+        $this->expectException(StringValueContainsBannedValuesException::class);
 
-    public function testRendersEmptyData(): void
-    {
-        self::assertSame('^FD', (string) new FieldData(''));
+        new FieldData('breakout^XA');
     }
 
     public function testDataTooLongThrows(): void
@@ -27,5 +25,22 @@ class FieldDataTest extends UnitTestCase
         $this->expectException(StringLengthOutOfRangeException::class);
 
         new FieldData(str_repeat('a', 3073));
+    }
+
+    public function testRendersEmptyData(): void
+    {
+        self::assertSame('^FD', (string) new FieldData(''));
+    }
+
+    public function testRendersWithData(): void
+    {
+        self::assertSame('^FDHello World', (string) new FieldData('Hello World'));
+    }
+
+    public function testTildeInDataThrows(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        new FieldData('breakout~JS');
     }
 }

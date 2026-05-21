@@ -6,69 +6,76 @@ namespace Janisvepris\ZplBuilder;
 
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
+use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\Justify;
+use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
-use Janisvepris\ZplBuilder\Enum\PrintOrientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
-use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
+use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
+use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
+use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
 use Stringable;
 
 class ZplBuilder implements Stringable
 {
+    private BarcodeDefaultSettings $barcodeDefaultSettings;
+
     /** @var Commands[] */
     private array $commands = [];
-
-    private int $printQuantity = 1;
-
-    private bool $formatEnded = false;
-
-    /** @var FontSettings[] */
-    private array $fontSettings = [];
 
     /** @var array<string, FontPreset> */
     private array $fontPresets = [];
 
+    /** @var FontSettings[] */
+    private array $fontSettings = [];
+
     private bool $printNewlines = false;
 
-    private BarcodeDefaultSettings $barcodeDefaultSettings;
-
+    /** Create a bare builder. Prefer the `start()` factory for the typical flow. */
     public function __construct()
     {
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
-        $this->initFontSettings();
     }
 
+    /** Render the accumulated commands as a ZPL string (alias for `render()`). */
     public function __toString(): string
     {
         return $this->render();
     }
 
-    public static function start(): self
-    {
-        $builder = new self();
-
-        return $builder->addCommand(new Commands\StartFormat());
-    }
-
+    /**
+     * Register a named font preset that can later be applied via `applyFontPreset()`.
+     * Unspecified dimensions inherit from the font's current settings.
+     */
     public function addFontPreset(
         string $name,
-        int|string $font,
+        Font $font,
         ?int $height = null,
         ?int $width = null,
     ): self {
+        $settings = $this->fontSettingsFor($font);
+
         $this->fontPresets[$name] = new FontPreset(
             font: $font,
-            height: $height ?? $this->fontSettings[$font]->height(),
-            width: $width ?? $this->fontSettings[$font]->width(),
+            height: $height ?? $settings->height(),
+            width: $width ?? $settings->width(),
         );
 
         return $this;
     }
 
+    /**
+     * Apply a previously registered font preset, emitting `^CF` with its stored dimensions.
+     *
+     * @throws FontPresetDoesNotExistException
+     * @throws IntegerValueOutOfRangeException
+     */
     public function applyFontPreset(string $name): self
     {
         if (!isset($this->fontPresets[$name])) {
@@ -86,78 +93,43 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    public function changeFont(int|string $font, ?int $height = null, ?int $width = null): self
-    {
-        if ($height !== null) {
-            $this->fontSettings[$font]->setHeight($height);
-        }
-
-        if ($width !== null) {
-            $this->fontSettings[$font]->setWidth($width);
-        }
-
-        return $this->addCommand(
-            new Commands\ChangeFont(
-                $font,
-                $this->fontSettings[$font]->height(),
-                $this->fontSettings[$font]->width(),
+    /**
+     * Draw a Code 128 barcode with the given data (`^BC` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeCode128(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $useUccCheckDigit = false,
+        Code128Mode $mode = Code128Mode::None,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode128(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                useUccCheckDigit: $useUccCheckDigit,
+                mode: $mode,
             ),
         );
+
+        return $this->fieldData($data);
     }
 
-    public function render(): string
-    {
-        if (!$this->formatEnded) {
-            $this->end();
-        }
-
-        $string = '';
-
-        foreach ($this->commands as $command) {
-            $string .= $command->__toString();
-
-            if ($this->printNewlines) {
-                $string .= PHP_EOL;
-            }
-        }
-
-        return $string;
-    }
-
-    public function end(): self
-    {
-        if ($this->formatEnded) {
-            return $this;
-        }
-
-        $this->addCommand(new Commands\PrintQuantity($this->printQuantity));
-        $this->addCommand(new Commands\EndFormat());
-
-        $this->formatEnded = true;
-
-        return $this;
-    }
-
-    /** Print newlines after each ZPL command in the resulting output */
-    public function printNewlines(bool $toggle = true): self
-    {
-        $this->printNewlines = $toggle;
-
-        return $this;
-    }
-
-    public function printOrientation(PrintOrientation $orientation): self
-    {
-        return $this->addCommand(new Commands\PrintOrientation($orientation));
-    }
-
-    public function printQuantity(int $quantity): self
-    {
-        $this->printQuantity = $quantity;
-
-        return $this;
-    }
-
+    /**
+     * Set defaults for subsequent barcodes — module width, wide-to-narrow ratio,
+     * and bar height (`^BY`).
+     *
+     * @throws FloatValueOutOfRangeException
+     * @throws IntegerValueOutOfRangeException
+     */
     public function barcodeDefaults(
         int $moduleWidth = 2,
         float $wideToNarrowRatio = 3.0,
@@ -176,36 +148,30 @@ class ZplBuilder implements Stringable
         );
     }
 
-    public function barcodeCode128(
-        string $data,
-        Orientation $orientation = Orientation::ROTATE_0,
-        ?int $height = null,
-        bool $printInterpretation = true,
-        bool $printInterpretationAboveCode = false,
-        bool $useUccCheckDigit = false,
-        Code128Mode $mode = Code128Mode::No_mode,
-    ): self {
-        $this->addCommand(
-            new Commands\BarcodeCode128(
-                orientation: $orientation,
-                height: $height ?? $this->barcodeDefaultSettings->height(),
-                printInterpretation: $printInterpretation,
-                interpretationAboveCode: $printInterpretationAboveCode,
-                useUccCheckDigit: $useUccCheckDigit,
-                mode: $mode,
-            ),
-        );
-
-        return $this->fieldData($data);
-    }
-
-    public function fieldData(string $data): self
+    /**
+     * Change the default font (`^CF`) and optionally its height and/or width.
+     * Unspecified dimensions keep the last value set for that font.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
-        $this->addCommand(new Commands\FieldData($data));
+        $settings = $this->fontSettingsFor($font);
 
-        return $this->addCommand(new Commands\FieldSeparator());
+        if ($height !== null) {
+            $settings->setHeight($height);
+        }
+
+        if ($width !== null) {
+            $settings->setWidth($width);
+        }
+
+        return $this->addCommand(
+            new Commands\ChangeFont($font, $settings->height(), $settings->width()),
+        );
     }
 
+    /** Set the printer's character encoding (`^CI`), with optional character remaps. */
     public function changeInternationalEncoding(Encoding $encoding, CharacterRemap ...$characterRemaps): self
     {
         return $this->addCommand(
@@ -213,26 +179,29 @@ class ZplBuilder implements Stringable
         );
     }
 
-    public function fieldHexIndicator(string $indicator = '_'): self
+    /**
+     * Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function comment(string $text): self
     {
-        return $this->addCommand(new Commands\FieldHexIndicator($indicator));
+        return $this->addCommand(new Commands\FieldComment($text));
     }
 
-    public function fieldNum(int $number): self
+    /** Finalise the format by appending `^XZ`. */
+    public function end(): self
     {
-        return $this->addCommand(new Commands\FieldNumber($number));
+        return $this->addCommand(new Commands\EndFormat());
     }
 
-    public function fieldOrientation(Orientation $rotation): self
-    {
-        return $this->addCommand(new Commands\FieldOrientation($rotation));
-    }
-
-    public function fieldOrigin(int $x = 0, int $y = 0): self
-    {
-        return $this->addCommand(new Commands\FieldOrigin($x, $y));
-    }
-
+    /**
+     * Format the next field as a multi-line text block with the given width,
+     * maximum line count, line spacing, justification, and hanging indent (`^FB`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function fieldBlock(
         int $width = 0,
         int $maxLines = 1,
@@ -251,26 +220,87 @@ class ZplBuilder implements Stringable
         );
     }
 
-    public function labelReversePrint(bool $reversePrint = true): self
+    /**
+     * Write text into the current field (`^FD ... ^FS`). Auto-escapes `^` and `~`
+     * via `^FH_` if present, since the printer would otherwise treat them as command starts.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function fieldData(string $data): self
     {
-        return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
+        if (str_contains($data, '^') || str_contains($data, '~')) {
+            $this->fieldHexIndicator();
+            $data = FieldDataEncoder::escape($data);
+        }
+
+        $this->addCommand(new Commands\FieldData($data));
+
+        return $this->addCommand(new Commands\FieldSeparator());
     }
 
-    public function printWidth(int $width): self
+    /**
+     * Declare the hex-escape character used by the next `^FD` (`^FH`).
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function fieldHexIndicator(string $indicator = '_'): self
     {
-        return $this->addCommand(new Commands\PrintWidth($width));
+        return $this->addCommand(new Commands\FieldHexIndicator($indicator));
     }
 
-    public function labelLength(int $length): self
+    /**
+     * Tag the next field with a number, for use with stored formats (`^FN`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function fieldNumber(int $number): self
     {
-        return $this->addCommand(new Commands\LabelLength($length));
+        return $this->addCommand(new Commands\FieldNumber($number));
     }
 
-    public function labelHome(int $x = 0, int $y = 0): self
+    /** Set the rotation applied to subsequent fields (`^FW`). */
+    public function fieldOrientation(Orientation $rotation): self
     {
-        return $this->addCommand(new Commands\LabelHome($x, $y));
+        return $this->addCommand(new Commands\FieldOrientation($rotation));
     }
 
+    /**
+     * Position the next field at the given (x, y) coordinate in dots (`^FO`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function fieldOrigin(int $x = 0, int $y = 0): self
+    {
+        return $this->addCommand(new Commands\FieldOrigin($x, $y));
+    }
+
+    /**
+     * Return the list of commands accumulated so far. Useful for testing and external rendering.
+     *
+     * @return Commands[]
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * Return all currently registered font presets, keyed by name.
+     *
+     * @return array<string, FontPreset>
+     */
+    public function getFontPresets(): array
+    {
+        return $this->fontPresets;
+    }
+
+    /**
+     * Draw a rectangle or line of the given width × height with the chosen thickness,
+     * color, and corner rounding (`^GB ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function graphicBox(
         int $width,
         int $height,
@@ -291,11 +321,86 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
-    public function comment(string $text): self
+    /** Whether a font preset with the given name has been registered. */
+    public function hasFontPreset(string $name): bool
     {
-        return $this->addCommand(new Commands\FieldComment($text));
+        return isset($this->fontPresets[$name]);
     }
 
+    /**
+     * Move the label's home origin to the given (x, y) coordinate (`^LH`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function labelHome(int $x = 0, int $y = 0): self
+    {
+        return $this->addCommand(new Commands\LabelHome($x, $y));
+    }
+
+    /**
+     * Set the label's length in dots (`^LL`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function labelLength(int $length): self
+    {
+        return $this->addCommand(new Commands\LabelLength($length));
+    }
+
+    /** Toggle reverse-print — fields render white-on-black instead of black-on-white (`^LR`). */
+    public function labelReversePrint(bool $reversePrint = true): self
+    {
+        return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
+    }
+
+    /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
+    public function printNewlines(bool $toggle = true): self
+    {
+        $this->printNewlines = $toggle;
+
+        return $this;
+    }
+
+    /** Flip the label between normal and inverted (`^PO`). */
+    public function printOrientation(LabelFlip $orientation): self
+    {
+        return $this->addCommand(new Commands\PrintOrientation($orientation));
+    }
+
+    /**
+     * Set how many labels to print (`^PQ`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function printQuantity(int $quantity): self
+    {
+        return $this->addCommand(new Commands\PrintQuantity($quantity));
+    }
+
+    /**
+     * Set the label's print width in dots (`^PW`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function printWidth(int $width): self
+    {
+        return $this->addCommand(new Commands\PrintWidth($width));
+    }
+
+    /**
+     * Append a literal ZPL fragment without validation. Use for commands the
+     * builder does not yet have a dedicated method for.
+     */
+    public function raw(string $zpl): self
+    {
+        return $this->addCommand(new Commands\RawCommand($zpl));
+    }
+
+    /**
+     * Invoke a stored format from the printer's memory (`^XF`).
+     *
+     * @throws StringLengthOutOfRangeException
+     */
     public function recallFormat(
         string $name,
         StorageDevice $device = StorageDevice::Ram,
@@ -310,42 +415,64 @@ class ZplBuilder implements Stringable
         );
     }
 
+    /** Drop a previously registered font preset. No-op if the name isn't registered. */
+    public function removeFontPreset(string $name): self
+    {
+        unset($this->fontPresets[$name]);
+
+        return $this;
+    }
+
+    /**
+     * Render the accumulated commands as a ZPL string.
+     * Pure — does not finalise the format. Call `end()` first if you want `^XZ`.
+     */
+    public function render(): string
+    {
+        if ($this->commands === []) {
+            return '';
+        }
+
+        $separator = $this->printNewlines ? PHP_EOL : '';
+
+        return implode($separator, array_map('strval', $this->commands)).$separator;
+    }
+
+    /**
+     * Discard all state and re-emit `^XA`. Clears the command list, font settings,
+     * presets, barcode defaults, and the newline preference.
+     */
     public function reset(): self
     {
         $this->commands = [];
-        $this->initFontSettings();
+        $this->fontSettings = [];
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
-        $this->printQuantity = 1;
-        $this->formatEnded = false;
+        $this->fontPresets = [];
+        $this->printNewlines = false;
         $this->addCommand(new Commands\StartFormat());
 
         return $this;
     }
 
-    private function initFontSettings(): void
+    /** Open a new ZPL format. Returns a builder with `^XA` already appended. */
+    public static function start(): self
     {
-        $settings = [];
+        $builder = new self();
 
-        foreach (range('A', 'Z') as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        foreach (range(0, 9) as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        $this->fontSettings = $settings;
+        return $builder->addCommand(new Commands\StartFormat());
     }
 
-    /** @throws CommandAfterEndException */
+    /** Append a command to the internal list. All public mutation methods route through this. */
     private function addCommand(Commands $command): self
     {
-        if ($this->formatEnded) {
-            throw new CommandAfterEndException();
-        }
-
         $this->commands[] = $command;
 
         return $this;
+    }
+
+    /** Lazy-allocate and return the `FontSettings` for the given font. */
+    private function fontSettingsFor(Font $font): FontSettings
+    {
+        return $this->fontSettings[$font->value] ??= new FontSettings();
     }
 }

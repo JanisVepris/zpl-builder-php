@@ -12,6 +12,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(PrintQuantity::class)]
 class PrintQuantityTest extends UnitTestCase
 {
+    public function testQuantityAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new PrintQuantity(100000000);
+    }
+
     public function testRendersWithQuantity(): void
     {
         self::assertSame('^PQ5', (string) new PrintQuantity(5));
@@ -22,12 +29,5 @@ class PrintQuantityTest extends UnitTestCase
         $this->expectException(IntegerValueOutOfRangeException::class);
 
         new PrintQuantity(0);
-    }
-
-    public function testQuantityAboveMaxThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        new PrintQuantity(100000000);
     }
 }

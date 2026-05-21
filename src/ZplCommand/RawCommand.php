@@ -6,12 +6,14 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final class StartFormat implements ZplCommand
+final readonly class RawCommand implements ZplCommand
 {
-    private const string COMMAND = '^XA';
+    public function __construct(
+        private string $zpl,
+    ) {}
 
     public function __toString()
     {
-        return self::COMMAND;
+        return $this->zpl;
     }
 }
