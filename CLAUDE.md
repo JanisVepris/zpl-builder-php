@@ -90,7 +90,7 @@ When adding a new ZPL command:
 When recording a change:
 
 - Put new work under `[Unreleased]` until a release is tagged. Don't backfill the historical version sections (`[0.30.2]` and earlier) — those tags predate this changelog and the per-tag context isn't reliably recoverable.
-- Every bullet ends with the relevant commit hash(es) as Markdown shortcut-reference links so they're clickable on GitHub (plain text hashes don't auto-link in `.md` files). Inline form: ``([`305e3f8`])``. For multiple commits, comma-separate inside one parenthesis: ``([`305e3f8`], [`6d857e6`])``. Add the matching URL definition once at the bottom of the file: `` [`305e3f8`]: https://github.com/JanisVepris/zpl-builder-php/commit/305e3f8 ``. Keep the bottom block alphabetised so additions slot in cleanly.
+- Every bullet ends with the relevant commit hash(es) as full Markdown links so they're clickable everywhere — GitHub file view, release notes, etc. Inline form: ``([`305e3f8`](https://github.com/JanisVepris/zpl-builder-php/commit/305e3f8))``. For multiple commits, comma-separate inside one parenthesis: ``([`305e3f8`](…), [`6d857e6`](…))``. Reference-style (bottom-of-file) links were tried and reverted: they don't survive being copied into a standalone release-notes draft on GitHub.
 - Pick the section by user-facing impact, not by implementation:
   - **Fixed** — bug fixes (incorrect output, broken behaviour, missing safety check that produced wrong ZPL).
   - **Added** — new public APIs, new value objects, new tooling/config files.
