@@ -14,11 +14,11 @@ class PrintOrientationTest extends UnitTestCase
 {
     public function testRendersNormal(): void
     {
-        self::assertSame('^PON', (string) new PrintOrientation(PrintOrientationEnum::NORMAL));
+        self::assertSame('^PON', (string) new PrintOrientation(PrintOrientationEnum::Normal));
     }
 
     public function testRendersInverted(): void
     {
-        self::assertSame('^POI', (string) new PrintOrientation(PrintOrientationEnum::INVERTED));
+        self::assertSame('^POI', (string) new PrintOrientation(PrintOrientationEnum::Inverted));
     }
 }

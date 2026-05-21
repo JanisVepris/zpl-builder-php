@@ -9,20 +9,20 @@ enum Orientation: string
     /**
      * Normal (0 degrees).
      */
-    case ROTATE_0 = 'N';
+    case Rotate0 = 'N';
 
     /**
      * Rotate 90 degrees clockwise (Top to bottom).
      */
-    case ROTATE_90 = 'R';
+    case Rotate90 = 'R';
 
     /**
      * Rotate 180 degrees (Invert).
      */
-    case ROTATE_180 = 'I';
+    case Rotate180 = 'I';
 
     /**
      * Rotate 270 degrees clockwise (Bottom to top).
      */
-    case ROTATE_270 = 'B';
+    case Rotate270 = 'B';
 }

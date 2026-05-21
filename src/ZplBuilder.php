@@ -186,12 +186,12 @@ class ZplBuilder implements Stringable
 
     public function barcodeCode128(
         string $data,
-        Orientation $orientation = Orientation::ROTATE_0,
+        Orientation $orientation = Orientation::Rotate0,
         ?int $height = null,
         bool $printInterpretation = true,
         bool $printInterpretationAboveCode = false,
         bool $useUccCheckDigit = false,
-        Code128Mode $mode = Code128Mode::No_mode,
+        Code128Mode $mode = Code128Mode::None,
     ): self {
         $this->addCommand(
             new Commands\BarcodeCode128(

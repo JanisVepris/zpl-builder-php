@@ -15,13 +15,13 @@ class ChangeInternationalEncodingTest extends UnitTestCase
 {
     public function testRendersWithoutRemaps(): void
     {
-        self::assertSame('^CI28', (string) new ChangeInternationalEncoding(Encoding::UTF8));
+        self::assertSame('^CI28', (string) new ChangeInternationalEncoding(Encoding::Utf8));
     }
 
     public function testRendersWithSingleRemap(): void
     {
         $command = new ChangeInternationalEncoding(
-            Encoding::UTF8,
+            Encoding::Utf8,
             new CharacterRemap(65, 66),
         );
 
@@ -31,7 +31,7 @@ class ChangeInternationalEncodingTest extends UnitTestCase
     public function testRendersWithMultipleRemaps(): void
     {
         $command = new ChangeInternationalEncoding(
-            Encoding::UTF8,
+            Encoding::Utf8,
             new CharacterRemap(65, 66),
             new CharacterRemap(67, 68),
         );

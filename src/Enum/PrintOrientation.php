@@ -6,6 +6,6 @@ namespace Janisvepris\ZplBuilder\Enum;
 
 enum PrintOrientation: string
 {
-    case NORMAL = 'N';
-    case INVERTED = 'I';
+    case Normal = 'N';
+    case Inverted = 'I';
 }

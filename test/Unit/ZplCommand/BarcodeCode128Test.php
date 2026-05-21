@@ -17,12 +17,12 @@ class BarcodeCode128Test extends UnitTestCase
     public function testRendersWithDefaults(): void
     {
         $command = new BarcodeCode128(
-            orientation: Orientation::ROTATE_0,
+            orientation: Orientation::Rotate0,
             height: 75,
             printInterpretation: false,
             interpretationAboveCode: false,
             useUccCheckDigit: false,
-            mode: Code128Mode::No_mode,
+            mode: Code128Mode::None,
         );
 
         self::assertSame('^BCN,75,N,N,N,N', (string) $command);
@@ -31,12 +31,12 @@ class BarcodeCode128Test extends UnitTestCase
     public function testRendersWithAllFlagsEnabled(): void
     {
         $command = new BarcodeCode128(
-            orientation: Orientation::ROTATE_90,
+            orientation: Orientation::Rotate90,
             height: 100,
             printInterpretation: true,
             interpretationAboveCode: true,
             useUccCheckDigit: true,
-            mode: Code128Mode::AUTO,
+            mode: Code128Mode::Auto,
         );
 
         self::assertSame('^BCR,100,Y,Y,Y,A', (string) $command);
@@ -47,12 +47,12 @@ class BarcodeCode128Test extends UnitTestCase
         $this->expectException(IntegerValueOutOfRangeException::class);
 
         new BarcodeCode128(
-            orientation: Orientation::ROTATE_0,
+            orientation: Orientation::Rotate0,
             height: 0,
             printInterpretation: false,
             interpretationAboveCode: false,
             useUccCheckDigit: false,
-            mode: Code128Mode::No_mode,
+            mode: Code128Mode::None,
         );
     }
 }
