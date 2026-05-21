@@ -18,7 +18,6 @@ return (new PhpCsFixer\Config())
 
         'array_push' => true,
 
-        'mb_str_functions' => true,
         'modernize_strpos' => true,
         'pow_to_exponentiation' => true,
         'random_api_migration' => true,

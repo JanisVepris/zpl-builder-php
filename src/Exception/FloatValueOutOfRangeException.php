@@ -13,7 +13,7 @@ final class FloatValueOutOfRangeException extends OutOfRangeException
     public function __construct(float $value, float $min, float $max)
     {
         parent::__construct(
-            sprintf('Float value %d is out of range. Expected between %d and %d.', $value, $min, $max),
+            sprintf('Float value %g is out of range. Expected between %g and %g.', $value, $min, $max),
         );
     }
 }

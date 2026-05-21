@@ -115,11 +115,30 @@ class ValueAssertTest extends UnitTestCase
         ValueAssert::stringLength('hello world', 1, 5);
     }
 
-    public function testStringLengthUsesMultiByteCount(): void
+    public function testStringLengthMeasuresBytesNotCharacters(): void
     {
-        ValueAssert::stringLength('héllo', 5, 5);
+        // 'héllo' is 6 bytes in UTF-8 (é is encoded as 0xC3 0xA9), not 5 characters.
+        ValueAssert::stringLength('héllo', 6, 6);
 
         $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringLengthRejectsMultiByteStringExceedingByteLimit(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        // 'héllo' is 6 bytes; a max of 5 bytes must reject it.
+        ValueAssert::stringLength('héllo', 0, 5);
+    }
+
+    public function testFloatExceptionMessageRendersFloatValueNotInteger(): void
+    {
+        try {
+            ValueAssert::float(-0.5);
+            self::fail('Expected exception was not thrown');
+        } catch (FloatValueOutOfRangeException $e) {
+            self::assertStringContainsString('-0.5', $e->getMessage());
+        }
     }
 
     public function testHexValueAcceptsDigits(): void

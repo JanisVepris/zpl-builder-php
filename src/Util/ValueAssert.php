@@ -39,7 +39,7 @@ class ValueAssert
     /** @throws StringLengthOutOfRangeException */
     public static function stringLength(string $string, int $minBytes, int $maxBytes): void
     {
-        $length = mb_strlen($string);
+        $length = strlen($string);
         if ($length < $minBytes || $length > $maxBytes) {
             throw new StringLengthOutOfRangeException(
                 length: $length,
