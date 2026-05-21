@@ -10,10 +10,10 @@ use Janisvepris\ZplBuilder\ZplCommand;
 final readonly class BarcodeDefaults implements ZplCommand
 {
     private const string FORMAT = '^BY%d,%0.1f,%d';
+    private int $height;
 
     private int $moduleWidth;
     private float $wideToNarrowRatio;
-    private int $height;
 
     public function __construct(
         int $moduleWidth,

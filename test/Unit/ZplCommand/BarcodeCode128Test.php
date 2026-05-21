@@ -14,18 +14,18 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(BarcodeCode128::class)]
 class BarcodeCode128Test extends UnitTestCase
 {
-    public function testRendersWithDefaults(): void
+    public function testHeightBelowMinThrows(): void
     {
-        $command = new BarcodeCode128(
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new BarcodeCode128(
             orientation: Orientation::Rotate0,
-            height: 75,
+            height: 0,
             printInterpretation: false,
             interpretationAboveCode: false,
             useUccCheckDigit: false,
             mode: Code128Mode::None,
         );
-
-        self::assertSame('^BCN,75,N,N,N,N', (string) $command);
     }
 
     public function testRendersWithAllFlagsEnabled(): void
@@ -42,17 +42,17 @@ class BarcodeCode128Test extends UnitTestCase
         self::assertSame('^BCR,100,Y,Y,Y,A', (string) $command);
     }
 
-    public function testHeightBelowMinThrows(): void
+    public function testRendersWithDefaults(): void
     {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        new BarcodeCode128(
+        $command = new BarcodeCode128(
             orientation: Orientation::Rotate0,
-            height: 0,
+            height: 75,
             printInterpretation: false,
             interpretationAboveCode: false,
             useUccCheckDigit: false,
             mode: Code128Mode::None,
         );
+
+        self::assertSame('^BCN,75,N,N,N,N', (string) $command);
     }
 }

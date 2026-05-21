@@ -12,13 +12,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(PrintOrientation::class)]
 class PrintOrientationTest extends UnitTestCase
 {
-    public function testRendersNormal(): void
-    {
-        self::assertSame('^PON', (string) new PrintOrientation(LabelFlip::Normal));
-    }
-
     public function testRendersInverted(): void
     {
         self::assertSame('^POI', (string) new PrintOrientation(LabelFlip::Inverted));
+    }
+
+    public function testRendersNormal(): void
+    {
+        self::assertSame('^PON', (string) new PrintOrientation(LabelFlip::Normal));
     }
 }

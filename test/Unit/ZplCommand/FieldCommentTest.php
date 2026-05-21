@@ -12,6 +12,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldComment::class)]
 class FieldCommentTest extends UnitTestCase
 {
+    public function testCaretInTextThrows(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        new FieldComment('contains ^XA');
+    }
+
     public function testRendersComment(): void
     {
         self::assertSame('^FX section header', (string) new FieldComment(' section header'));
@@ -20,13 +27,6 @@ class FieldCommentTest extends UnitTestCase
     public function testRendersEmptyComment(): void
     {
         self::assertSame('^FX', (string) new FieldComment(''));
-    }
-
-    public function testCaretInTextThrows(): void
-    {
-        $this->expectException(StringValueContainsBannedValuesException::class);
-
-        new FieldComment('contains ^XA');
     }
 
     public function testTildeInTextThrows(): void

@@ -6,8 +6,8 @@ namespace Janisvepris\ZplBuilder\Enum;
 
 enum StorageDevice: string
 {
-    case Ram = 'R';
     case Flash = 'E';
     case MemoryCardA = 'A';
     case MemoryCardB = 'B';
+    case Ram = 'R';
 }

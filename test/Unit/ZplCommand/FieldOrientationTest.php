@@ -17,11 +17,6 @@ class FieldOrientationTest extends UnitTestCase
         self::assertSame('^FWN', (string) new FieldOrientation(Orientation::Rotate0));
     }
 
-    public function testRendersRotated90(): void
-    {
-        self::assertSame('^FWR', (string) new FieldOrientation(Orientation::Rotate90));
-    }
-
     public function testRendersRotated180(): void
     {
         self::assertSame('^FWI', (string) new FieldOrientation(Orientation::Rotate180));
@@ -30,5 +25,10 @@ class FieldOrientationTest extends UnitTestCase
     public function testRendersRotated270(): void
     {
         self::assertSame('^FWB', (string) new FieldOrientation(Orientation::Rotate270));
+    }
+
+    public function testRendersRotated90(): void
+    {
+        self::assertSame('^FWR', (string) new FieldOrientation(Orientation::Rotate90));
     }
 }

@@ -12,11 +12,11 @@ use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 
 class ValueAssert
 {
-    /** @throws IntegerValueOutOfRangeException */
-    public static function int(int $value, int $min = 0, int $max = 32000): void
+    /** @throws FloatValueOutOfRangeException */
+    public static function float(float $value, float $min = 0.0, float $max = 32000.0): void
     {
         if ($value < $min || $value > $max) {
-            throw new IntegerValueOutOfRangeException(
+            throw new FloatValueOutOfRangeException(
                 value: $value,
                 min: $min,
                 max: $max,
@@ -24,11 +24,18 @@ class ValueAssert
         }
     }
 
-    /** @throws FloatValueOutOfRangeException */
-    public static function float(float $value, float $min = 0.0, float $max = 32000.0): void
+    public static function hexValue(string $value): void
+    {
+        if (!ctype_xdigit($value)) {
+            throw new InvalidHexValueException($value);
+        }
+    }
+
+    /** @throws IntegerValueOutOfRangeException */
+    public static function int(int $value, int $min = 0, int $max = 32000): void
     {
         if ($value < $min || $value > $max) {
-            throw new FloatValueOutOfRangeException(
+            throw new IntegerValueOutOfRangeException(
                 value: $value,
                 min: $min,
                 max: $max,
@@ -46,13 +53,6 @@ class ValueAssert
                 min: $minBytes,
                 max: $maxBytes,
             );
-        }
-    }
-
-    public static function hexValue(string $value): void
-    {
-        if (!ctype_xdigit($value)) {
-            throw new InvalidHexValueException($value);
         }
     }
 

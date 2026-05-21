@@ -13,21 +13,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(BarcodeDefaults::class)]
 class BarcodeDefaultsTest extends UnitTestCase
 {
-    public function testRendersAllParameters(): void
-    {
-        self::assertSame('^BY2,3.0,75', (string) new BarcodeDefaults(2, 3.0, 75));
-    }
-
-    public function testRendersFractionalRatio(): void
-    {
-        self::assertSame('^BY3,2.5,100', (string) new BarcodeDefaults(3, 2.5, 100));
-    }
-
-    public function testModuleWidthBelowMinThrows(): void
+    public function testHeightBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
-        new BarcodeDefaults(0, 3.0, 100);
+        new BarcodeDefaults(2, 3.0, 0);
     }
 
     public function testModuleWidthAboveMaxThrows(): void
@@ -37,11 +27,11 @@ class BarcodeDefaultsTest extends UnitTestCase
         new BarcodeDefaults(11, 3.0, 100);
     }
 
-    public function testRatioBelowMinThrows(): void
+    public function testModuleWidthBelowMinThrows(): void
     {
-        $this->expectException(FloatValueOutOfRangeException::class);
+        $this->expectException(IntegerValueOutOfRangeException::class);
 
-        new BarcodeDefaults(2, 1.9, 100);
+        new BarcodeDefaults(0, 3.0, 100);
     }
 
     public function testRatioAboveMaxThrows(): void
@@ -51,10 +41,20 @@ class BarcodeDefaultsTest extends UnitTestCase
         new BarcodeDefaults(2, 3.1, 100);
     }
 
-    public function testHeightBelowMinThrows(): void
+    public function testRatioBelowMinThrows(): void
     {
-        $this->expectException(IntegerValueOutOfRangeException::class);
+        $this->expectException(FloatValueOutOfRangeException::class);
 
-        new BarcodeDefaults(2, 3.0, 0);
+        new BarcodeDefaults(2, 1.9, 100);
+    }
+
+    public function testRendersAllParameters(): void
+    {
+        self::assertSame('^BY2,3.0,75', (string) new BarcodeDefaults(2, 3.0, 75));
+    }
+
+    public function testRendersFractionalRatio(): void
+    {
+        self::assertSame('^BY3,2.5,100', (string) new BarcodeDefaults(3, 2.5, 100));
     }
 }

@@ -34,17 +34,17 @@ class GraphicBoxTest extends UnitTestCase
         self::assertSame('^GB200,200,4,W,8', (string) $command);
     }
 
-    public function testThicknessBelowMinThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        new GraphicBox(100, 100, 0, LineColor::Black, 0);
-    }
-
     public function testRoundingAboveMaxThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
         new GraphicBox(100, 100, 1, LineColor::Black, 9);
+    }
+
+    public function testThicknessBelowMinThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new GraphicBox(100, 100, 0, LineColor::Black, 0);
     }
 }

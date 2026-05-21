@@ -13,6 +13,27 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(RecallFormat::class)]
 class RecallFormatTest extends UnitTestCase
 {
+    public function testEmptyNameThrows(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        new RecallFormat(StorageDevice::Ram, '', 'ZPL');
+    }
+
+    public function testExtensionTooLongThrows(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        new RecallFormat(StorageDevice::Ram, 'SAMPLE', 'ZPLX');
+    }
+
+    public function testNameTooLongThrows(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        new RecallFormat(StorageDevice::Ram, str_repeat('A', 17), 'ZPL');
+    }
+
     public function testRendersWithDramDefault(): void
     {
         self::assertSame(
@@ -35,26 +56,5 @@ class RecallFormatTest extends UnitTestCase
             '^XFB:LOGO.GRF',
             (string) new RecallFormat(StorageDevice::MemoryCardB, 'LOGO', 'GRF'),
         );
-    }
-
-    public function testEmptyNameThrows(): void
-    {
-        $this->expectException(StringLengthOutOfRangeException::class);
-
-        new RecallFormat(StorageDevice::Ram, '', 'ZPL');
-    }
-
-    public function testNameTooLongThrows(): void
-    {
-        $this->expectException(StringLengthOutOfRangeException::class);
-
-        new RecallFormat(StorageDevice::Ram, str_repeat('A', 17), 'ZPL');
-    }
-
-    public function testExtensionTooLongThrows(): void
-    {
-        $this->expectException(StringLengthOutOfRangeException::class);
-
-        new RecallFormat(StorageDevice::Ram, 'SAMPLE', 'ZPLX');
     }
 }

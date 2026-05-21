@@ -11,11 +11,11 @@ use Janisvepris\ZplBuilder\ZplCommand;
 final readonly class GraphicBox implements ZplCommand
 {
     private const string FORMAT = '^GB%d,%d,%d,%s,%d';
-    private int $width;
-    private int $height;
-    private int $thickness;
     private LineColor $color;
+    private int $height;
     private int $rounding;
+    private int $thickness;
+    private int $width;
 
     public function __construct(
         int $width,

@@ -14,9 +14,20 @@ final class BarcodeDefaultSettings
         private int $height = 10,
     ) {}
 
+    public function height(): int
+    {
+        return $this->height;
+    }
+
     public function moduleWidth(): int
     {
         return $this->moduleWidth;
+    }
+
+    public function setHeight(int $height): void
+    {
+        ValueAssert::int($height, 1);
+        $this->height = $height;
     }
 
     public function setModuleWidth(int $moduleWidth): void
@@ -25,25 +36,14 @@ final class BarcodeDefaultSettings
         $this->moduleWidth = $moduleWidth;
     }
 
-    public function wideToNarrowRatio(): float
-    {
-        return $this->wideToNarrowRatio;
-    }
-
     public function setWideToNarrowRatio(float $wideToNarrowRatio): void
     {
         ValueAssert::float($wideToNarrowRatio, 2.0, 3.0);
         $this->wideToNarrowRatio = $wideToNarrowRatio;
     }
 
-    public function height(): int
+    public function wideToNarrowRatio(): float
     {
-        return $this->height;
-    }
-
-    public function setHeight(int $height): void
-    {
-        ValueAssert::int($height, 1);
-        $this->height = $height;
+        return $this->wideToNarrowRatio;
     }
 }

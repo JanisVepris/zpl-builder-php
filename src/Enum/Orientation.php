@@ -12,11 +12,6 @@ enum Orientation: string
     case Rotate0 = 'N';
 
     /**
-     * Rotate 90 degrees clockwise (Top to bottom).
-     */
-    case Rotate90 = 'R';
-
-    /**
      * Rotate 180 degrees (Invert).
      */
     case Rotate180 = 'I';
@@ -25,4 +20,9 @@ enum Orientation: string
      * Rotate 270 degrees clockwise (Bottom to top).
      */
     case Rotate270 = 'B';
+
+    /**
+     * Rotate 90 degrees clockwise (Top to bottom).
+     */
+    case Rotate90 = 'R';
 }

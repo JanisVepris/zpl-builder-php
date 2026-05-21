@@ -12,8 +12,8 @@ final readonly class RecallFormat implements ZplCommand
 {
     private const string FORMAT = '^XF%s:%s.%s';
     private StorageDevice $device;
-    private string $name;
     private string $extension;
+    private string $name;
 
     public function __construct(
         StorageDevice $device,

@@ -6,8 +6,8 @@ namespace Janisvepris\ZplBuilder\Enum;
 
 enum Code128Mode: string
 {
+    case Auto = 'A';
     case None = 'N';
     case UccCase = 'U';
-    case Auto = 'A';
     case UccEan = 'D';
 }

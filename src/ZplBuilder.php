@@ -20,18 +20,18 @@ use Stringable;
 
 class ZplBuilder implements Stringable
 {
+    private BarcodeDefaultSettings $barcodeDefaultSettings;
+
     /** @var Commands[] */
     private array $commands = [];
-
-    /** @var FontSettings[] */
-    private array $fontSettings = [];
 
     /** @var array<string, FontPreset> */
     private array $fontPresets = [];
 
-    private bool $printNewlines = false;
+    /** @var FontSettings[] */
+    private array $fontSettings = [];
 
-    private BarcodeDefaultSettings $barcodeDefaultSettings;
+    private bool $printNewlines = false;
 
     /** Create a bare builder. Prefer the `start()` factory for the typical flow. */
     public function __construct()
@@ -43,14 +43,6 @@ class ZplBuilder implements Stringable
     public function __toString(): string
     {
         return $this->render();
-    }
-
-    /** Open a new ZPL format. Returns a builder with `^XA` already appended. */
-    public static function start(): self
-    {
-        $builder = new self();
-
-        return $builder->addCommand(new Commands\StartFormat());
     }
 
     /**
@@ -74,30 +66,6 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /** Drop a previously registered font preset. No-op if the name isn't registered. */
-    public function removeFontPreset(string $name): self
-    {
-        unset($this->fontPresets[$name]);
-
-        return $this;
-    }
-
-    /** Whether a font preset with the given name has been registered. */
-    public function hasFontPreset(string $name): bool
-    {
-        return isset($this->fontPresets[$name]);
-    }
-
-    /**
-     * Return all currently registered font presets, keyed by name.
-     *
-     * @return array<string, FontPreset>
-     */
-    public function getFontPresets(): array
-    {
-        return $this->fontPresets;
-    }
-
     /** Apply a previously registered font preset, emitting `^CF` with its stored dimensions. */
     public function applyFontPreset(string $name): self
     {
@@ -114,109 +82,6 @@ class ZplBuilder implements Stringable
         );
 
         return $this;
-    }
-
-    /**
-     * Change the default font (`^CF`) and optionally its height and/or width.
-     * Unspecified dimensions keep the last value set for that font.
-     */
-    public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
-    {
-        $settings = $this->fontSettingsFor($font);
-
-        if ($height !== null) {
-            $settings->setHeight($height);
-        }
-
-        if ($width !== null) {
-            $settings->setWidth($width);
-        }
-
-        return $this->addCommand(
-            new Commands\ChangeFont($font, $settings->height(), $settings->width()),
-        );
-    }
-
-    /**
-     * Render the accumulated commands as a ZPL string.
-     * Pure — does not finalise the format. Call `end()` first if you want `^XZ`.
-     */
-    public function render(): string
-    {
-        if ($this->commands === []) {
-            return '';
-        }
-
-        $separator = $this->printNewlines ? PHP_EOL : '';
-
-        return implode($separator, array_map('strval', $this->commands)).$separator;
-    }
-
-    /**
-     * Return the list of commands accumulated so far. Useful for testing and external rendering.
-     *
-     * @return Commands[]
-     */
-    public function getCommands(): array
-    {
-        return $this->commands;
-    }
-
-    /** Finalise the format by appending `^XZ`. */
-    public function end(): self
-    {
-        return $this->addCommand(new Commands\EndFormat());
-    }
-
-    /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
-    public function printNewlines(bool $toggle = true): self
-    {
-        $this->printNewlines = $toggle;
-
-        return $this;
-    }
-
-    /**
-     * Append a literal ZPL fragment without validation. Use for commands the
-     * builder does not yet have a dedicated method for.
-     */
-    public function raw(string $zpl): self
-    {
-        return $this->addCommand(new Commands\RawCommand($zpl));
-    }
-
-    /** Flip the label between normal and inverted (`^PO`). */
-    public function printOrientation(LabelFlip $orientation): self
-    {
-        return $this->addCommand(new Commands\PrintOrientation($orientation));
-    }
-
-    /** Set how many labels to print (`^PQ`). */
-    public function printQuantity(int $quantity): self
-    {
-        return $this->addCommand(new Commands\PrintQuantity($quantity));
-    }
-
-    /**
-     * Set defaults for subsequent barcodes — module width, wide-to-narrow ratio,
-     * and bar height (`^BY`).
-     */
-    public function barcodeDefaults(
-        int $moduleWidth = 2,
-        float $wideToNarrowRatio = 3.0,
-        int $height = 100,
-    ): self {
-        $this->barcodeDefaultSettings->setModuleWidth($moduleWidth);
-        $this->barcodeDefaultSettings->setWideToNarrowRatio($wideToNarrowRatio);
-        $this->barcodeDefaultSettings->setHeight($height);
-
-        return $this->addCommand(
-            new Commands\BarcodeDefaults(
-                moduleWidth: $this->barcodeDefaultSettings->moduleWidth(),
-                wideToNarrowRatio: $this->barcodeDefaultSettings->wideToNarrowRatio(),
-                height: $this->barcodeDefaultSettings->height(),
-            ),
-        );
     }
 
     /**
@@ -247,6 +112,91 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Set defaults for subsequent barcodes — module width, wide-to-narrow ratio,
+     * and bar height (`^BY`).
+     */
+    public function barcodeDefaults(
+        int $moduleWidth = 2,
+        float $wideToNarrowRatio = 3.0,
+        int $height = 100,
+    ): self {
+        $this->barcodeDefaultSettings->setModuleWidth($moduleWidth);
+        $this->barcodeDefaultSettings->setWideToNarrowRatio($wideToNarrowRatio);
+        $this->barcodeDefaultSettings->setHeight($height);
+
+        return $this->addCommand(
+            new Commands\BarcodeDefaults(
+                moduleWidth: $this->barcodeDefaultSettings->moduleWidth(),
+                wideToNarrowRatio: $this->barcodeDefaultSettings->wideToNarrowRatio(),
+                height: $this->barcodeDefaultSettings->height(),
+            ),
+        );
+    }
+
+    /**
+     * Change the default font (`^CF`) and optionally its height and/or width.
+     * Unspecified dimensions keep the last value set for that font.
+     */
+    public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
+    {
+        $settings = $this->fontSettingsFor($font);
+
+        if ($height !== null) {
+            $settings->setHeight($height);
+        }
+
+        if ($width !== null) {
+            $settings->setWidth($width);
+        }
+
+        return $this->addCommand(
+            new Commands\ChangeFont($font, $settings->height(), $settings->width()),
+        );
+    }
+
+    /** Set the printer's character encoding (`^CI`), with optional character remaps. */
+    public function changeInternationalEncoding(Encoding $encoding, CharacterRemap ...$characterRemaps): self
+    {
+        return $this->addCommand(
+            new Commands\ChangeInternationalEncoding($encoding, ...$characterRemaps),
+        );
+    }
+
+    /** Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging. */
+    public function comment(string $text): self
+    {
+        return $this->addCommand(new Commands\FieldComment($text));
+    }
+
+    /** Finalise the format by appending `^XZ`. */
+    public function end(): self
+    {
+        return $this->addCommand(new Commands\EndFormat());
+    }
+
+    /**
+     * Format the next field as a multi-line text block with the given width,
+     * maximum line count, line spacing, justification, and hanging indent (`^FB`).
+     */
+    public function fieldBlock(
+        int $width = 0,
+        int $maxLines = 1,
+        int $lineSpacing = 0,
+        Justify $justify = Justify::Left,
+        int $hangingIndent = 0,
+    ): self {
+        return $this->addCommand(
+            new Commands\FieldBlock(
+                width: $width,
+                maxLines: $maxLines,
+                lineSpacing: $lineSpacing,
+                justify: $justify,
+                hangingIndent: $hangingIndent,
+            ),
+        );
+    }
+
+    /**
      * Write text into the current field (`^FD ... ^FS`). Auto-escapes `^` and `~`
      * via `^FH_` if present, since the printer would otherwise treat them as command starts.
      */
@@ -260,14 +210,6 @@ class ZplBuilder implements Stringable
         $this->addCommand(new Commands\FieldData($data));
 
         return $this->addCommand(new Commands\FieldSeparator());
-    }
-
-    /** Set the printer's character encoding (`^CI`), with optional character remaps. */
-    public function changeInternationalEncoding(Encoding $encoding, CharacterRemap ...$characterRemaps): self
-    {
-        return $this->addCommand(
-            new Commands\ChangeInternationalEncoding($encoding, ...$characterRemaps),
-        );
     }
 
     /** Declare the hex-escape character used by the next `^FD` (`^FH`). */
@@ -295,49 +237,23 @@ class ZplBuilder implements Stringable
     }
 
     /**
-     * Format the next field as a multi-line text block with the given width,
-     * maximum line count, line spacing, justification, and hanging indent (`^FB`).
+     * Return the list of commands accumulated so far. Useful for testing and external rendering.
+     *
+     * @return Commands[]
      */
-    public function fieldBlock(
-        int $width = 0,
-        int $maxLines = 1,
-        int $lineSpacing = 0,
-        Justify $justify = Justify::Left,
-        int $hangingIndent = 0,
-    ): self {
-        return $this->addCommand(
-            new Commands\FieldBlock(
-                width: $width,
-                maxLines: $maxLines,
-                lineSpacing: $lineSpacing,
-                justify: $justify,
-                hangingIndent: $hangingIndent,
-            ),
-        );
+    public function getCommands(): array
+    {
+        return $this->commands;
     }
 
-    /** Toggle reverse-print — fields render white-on-black instead of black-on-white (`^LR`). */
-    public function labelReversePrint(bool $reversePrint = true): self
+    /**
+     * Return all currently registered font presets, keyed by name.
+     *
+     * @return array<string, FontPreset>
+     */
+    public function getFontPresets(): array
     {
-        return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
-    }
-
-    /** Set the label's print width in dots (`^PW`). */
-    public function printWidth(int $width): self
-    {
-        return $this->addCommand(new Commands\PrintWidth($width));
-    }
-
-    /** Set the label's length in dots (`^LL`). */
-    public function labelLength(int $length): self
-    {
-        return $this->addCommand(new Commands\LabelLength($length));
-    }
-
-    /** Move the label's home origin to the given (x, y) coordinate (`^LH`). */
-    public function labelHome(int $x = 0, int $y = 0): self
-    {
-        return $this->addCommand(new Commands\LabelHome($x, $y));
+        return $this->fontPresets;
     }
 
     /**
@@ -364,10 +280,63 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
-    /** Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging. */
-    public function comment(string $text): self
+    /** Whether a font preset with the given name has been registered. */
+    public function hasFontPreset(string $name): bool
     {
-        return $this->addCommand(new Commands\FieldComment($text));
+        return isset($this->fontPresets[$name]);
+    }
+
+    /** Move the label's home origin to the given (x, y) coordinate (`^LH`). */
+    public function labelHome(int $x = 0, int $y = 0): self
+    {
+        return $this->addCommand(new Commands\LabelHome($x, $y));
+    }
+
+    /** Set the label's length in dots (`^LL`). */
+    public function labelLength(int $length): self
+    {
+        return $this->addCommand(new Commands\LabelLength($length));
+    }
+
+    /** Toggle reverse-print — fields render white-on-black instead of black-on-white (`^LR`). */
+    public function labelReversePrint(bool $reversePrint = true): self
+    {
+        return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
+    }
+
+    /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
+    public function printNewlines(bool $toggle = true): self
+    {
+        $this->printNewlines = $toggle;
+
+        return $this;
+    }
+
+    /** Flip the label between normal and inverted (`^PO`). */
+    public function printOrientation(LabelFlip $orientation): self
+    {
+        return $this->addCommand(new Commands\PrintOrientation($orientation));
+    }
+
+    /** Set how many labels to print (`^PQ`). */
+    public function printQuantity(int $quantity): self
+    {
+        return $this->addCommand(new Commands\PrintQuantity($quantity));
+    }
+
+    /** Set the label's print width in dots (`^PW`). */
+    public function printWidth(int $width): self
+    {
+        return $this->addCommand(new Commands\PrintWidth($width));
+    }
+
+    /**
+     * Append a literal ZPL fragment without validation. Use for commands the
+     * builder does not yet have a dedicated method for.
+     */
+    public function raw(string $zpl): self
+    {
+        return $this->addCommand(new Commands\RawCommand($zpl));
     }
 
     /** Invoke a stored format from the printer's memory (`^XF`). */
@@ -383,6 +352,29 @@ class ZplBuilder implements Stringable
                 extension: $extension,
             ),
         );
+    }
+
+    /** Drop a previously registered font preset. No-op if the name isn't registered. */
+    public function removeFontPreset(string $name): self
+    {
+        unset($this->fontPresets[$name]);
+
+        return $this;
+    }
+
+    /**
+     * Render the accumulated commands as a ZPL string.
+     * Pure — does not finalise the format. Call `end()` first if you want `^XZ`.
+     */
+    public function render(): string
+    {
+        if ($this->commands === []) {
+            return '';
+        }
+
+        $separator = $this->printNewlines ? PHP_EOL : '';
+
+        return implode($separator, array_map('strval', $this->commands)).$separator;
     }
 
     /**
@@ -401,10 +393,12 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /** Lazy-allocate and return the `FontSettings` for the given font. */
-    private function fontSettingsFor(Font $font): FontSettings
+    /** Open a new ZPL format. Returns a builder with `^XA` already appended. */
+    public static function start(): self
     {
-        return $this->fontSettings[$font->value] ??= new FontSettings();
+        $builder = new self();
+
+        return $builder->addCommand(new Commands\StartFormat());
     }
 
     /** Append a command to the internal list. All public mutation methods route through this. */
@@ -413,5 +407,11 @@ class ZplBuilder implements Stringable
         $this->commands[] = $command;
 
         return $this;
+    }
+
+    /** Lazy-allocate and return the `FontSettings` for the given font. */
+    private function fontSettingsFor(Font $font): FontSettings
+    {
+        return $this->fontSettings[$font->value] ??= new FontSettings();
     }
 }

@@ -13,14 +13,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldHexIndicator::class)]
 class FieldHexIndicatorTest extends UnitTestCase
 {
-    public function testRendersWithIndicator(): void
+    public function testCaretIndicatorThrows(): void
     {
-        self::assertSame('^FH_', (string) new FieldHexIndicator('_'));
-    }
+        $this->expectException(StringValueContainsBannedValuesException::class);
 
-    public function testRendersCustomIndicator(): void
-    {
-        self::assertSame('^FH%', (string) new FieldHexIndicator('%'));
+        new FieldHexIndicator('^');
     }
 
     public function testEmptyIndicatorThrows(): void
@@ -37,11 +34,14 @@ class FieldHexIndicatorTest extends UnitTestCase
         new FieldHexIndicator('__');
     }
 
-    public function testCaretIndicatorThrows(): void
+    public function testRendersCustomIndicator(): void
     {
-        $this->expectException(StringValueContainsBannedValuesException::class);
+        self::assertSame('^FH%', (string) new FieldHexIndicator('%'));
+    }
 
-        new FieldHexIndicator('^');
+    public function testRendersWithIndicator(): void
+    {
+        self::assertSame('^FH_', (string) new FieldHexIndicator('_'));
     }
 
     public function testTildeIndicatorThrows(): void

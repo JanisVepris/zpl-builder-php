@@ -27,16 +27,16 @@ final class FontSettings
         $this->height = $height;
     }
 
-    public function width(): int
-    {
-        return $this->width;
-    }
-
     /** @throws IntegerValueOutOfRangeException */
     public function setWidth(int $width): void
     {
         ValueAssert::int($width);
 
         $this->width = $width;
+    }
+
+    public function width(): int
+    {
+        return $this->width;
     }
 }

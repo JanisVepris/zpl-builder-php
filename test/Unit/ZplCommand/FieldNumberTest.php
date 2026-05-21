@@ -12,11 +12,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldNumber::class)]
 class FieldNumberTest extends UnitTestCase
 {
-    public function testRendersWithNumber(): void
-    {
-        self::assertSame('^FN42', (string) new FieldNumber(42));
-    }
-
     public function testNegativeNumberThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
@@ -29,5 +24,10 @@ class FieldNumberTest extends UnitTestCase
         $this->expectException(IntegerValueOutOfRangeException::class);
 
         new FieldNumber(10000);
+    }
+
+    public function testRendersWithNumber(): void
+    {
+        self::assertSame('^FN42', (string) new FieldNumber(42));
     }
 }

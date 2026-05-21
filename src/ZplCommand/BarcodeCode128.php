@@ -13,12 +13,12 @@ use Janisvepris\ZplBuilder\ZplCommand;
 final readonly class BarcodeCode128 implements ZplCommand
 {
     private const string COMMAND = '^BC%s,%d,%s,%s,%s,%s';
-    private Orientation $orientation;
     private int $height;
-    private bool $printInterpretation;
     private bool $interpretationAboveCode;
-    private bool $useUccCheckDigit;
     private Code128Mode $mode;
+    private Orientation $orientation;
+    private bool $printInterpretation;
+    private bool $useUccCheckDigit;
 
     public function __construct(
         Orientation $orientation,

@@ -12,15 +12,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(LabelLength::class)]
 class LabelLengthTest extends UnitTestCase
 {
-    public function testRendersWithLength(): void
-    {
-        self::assertSame('^LL1520', (string) new LabelLength(1520));
-    }
-
     public function testLengthBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
         new LabelLength(0);
+    }
+
+    public function testRendersWithLength(): void
+    {
+        self::assertSame('^LL1520', (string) new LabelLength(1520));
     }
 }

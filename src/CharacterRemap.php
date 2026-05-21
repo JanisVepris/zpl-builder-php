@@ -9,8 +9,8 @@ use Stringable;
 
 final readonly class CharacterRemap implements Stringable
 {
-    public int $source;
     public int $destination;
+    public int $source;
 
     public function __construct(
         int $source,

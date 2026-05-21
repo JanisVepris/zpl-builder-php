@@ -13,12 +13,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(ZplBuilder::class)]
 class ZplBuilderTest extends UnitTestCase
 {
-    public function testFieldDataPassesCleanInputThrough(): void
+    public function testEndAppendsEndFormatLikeAnyOtherCommand(): void
     {
-        $output = (string) ZplBuilder::start()->fieldData('Hello World');
+        $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
 
-        self::assertStringContainsString('^FDHello World^FS', $output);
-        self::assertStringNotContainsString('^FH', $output);
+        self::assertSame('^XA^FDHello^FS^XZ', $output);
     }
 
     public function testFieldDataAutoEscapesCaret(): void
@@ -35,6 +34,14 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^FH_^FDA_7EB^FS', $output);
     }
 
+    public function testFieldDataDoesNotEmitHexIndicatorWhenInputHasOnlyUnderscore(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldData('id_42');
+
+        self::assertStringContainsString('^FDid_42^FS', $output);
+        self::assertStringNotContainsString('^FH', $output);
+    }
+
     public function testFieldDataEscapesUnderscoreWhenHexIndicatorIsEmitted(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('id_42^X');
@@ -42,12 +49,65 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^FH_^FDid_5F42_5EX^FS', $output);
     }
 
-    public function testFieldDataDoesNotEmitHexIndicatorWhenInputHasOnlyUnderscore(): void
+    public function testFieldDataPassesCleanInputThrough(): void
     {
-        $output = (string) ZplBuilder::start()->fieldData('id_42');
+        $output = (string) ZplBuilder::start()->fieldData('Hello World');
 
-        self::assertStringContainsString('^FDid_42^FS', $output);
+        self::assertStringContainsString('^FDHello World^FS', $output);
         self::assertStringNotContainsString('^FH', $output);
+    }
+
+    public function testGetCommandsReturnsAppendedCommands(): void
+    {
+        $commands = ZplBuilder::start()
+            ->fieldData('Hello')
+            ->end()
+            ->getCommands();
+
+        // ^XA, ^FD, ^FS, ^XZ
+        self::assertCount(4, $commands);
+    }
+
+    public function testGetFontPresetsExposesRegistry(): void
+    {
+        $builder = ZplBuilder::start()
+            ->addFontPreset('big', Font::Zero, 80, 40)
+            ->addFontPreset('small', Font::A, 20, 10);
+
+        $presets = $builder->getFontPresets();
+
+        self::assertCount(2, $presets);
+        self::assertArrayHasKey('big', $presets);
+        self::assertArrayHasKey('small', $presets);
+    }
+
+    public function testHasFontPresetReturnsFalseForUnknown(): void
+    {
+        $builder = ZplBuilder::start();
+
+        self::assertFalse($builder->hasFontPreset('big'));
+    }
+
+    public function testHasFontPresetReturnsTrueAfterRegistration(): void
+    {
+        $builder = ZplBuilder::start()->addFontPreset('big', Font::Zero, 80, 40);
+
+        self::assertTrue($builder->hasFontPreset('big'));
+    }
+
+    public function testNoPrintQuantityEmittedByDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
+
+        self::assertStringNotContainsString('^PQ', $output);
+        self::assertSame('^XA^FDHello^FS^XZ', $output);
+    }
+
+    public function testPrintQuantityEmitsAtCallSite(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5)->end();
+
+        self::assertSame('^XA^FDHello^FS^PQ5^XZ', $output);
     }
 
     public function testRawAppendsLiteralZpl(): void
@@ -64,40 +124,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^FO5,5^GB100,100,2^FS', $output);
     }
 
-    public function testPrintQuantityEmitsAtCallSite(): void
-    {
-        $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5)->end();
-
-        self::assertSame('^XA^FDHello^FS^PQ5^XZ', $output);
-    }
-
-    public function testNoPrintQuantityEmittedByDefault(): void
-    {
-        $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
-
-        self::assertStringNotContainsString('^PQ', $output);
-        self::assertSame('^XA^FDHello^FS^XZ', $output);
-    }
-
-    public function testResetClearsFontPresets(): void
+    public function testRemoveFontPresetDropsRegistration(): void
     {
         $builder = ZplBuilder::start()
             ->addFontPreset('big', Font::Zero, 80, 40)
-            ->reset();
+            ->removeFontPreset('big');
 
-        $this->expectException(FontPresetDoesNotExistException::class);
-
-        $builder->applyFontPreset('big');
-    }
-
-    public function testResetClearsPrintNewlinesPreference(): void
-    {
-        $output = (string) ZplBuilder::start()
-            ->printNewlines()
-            ->reset()
-            ->fieldData('Hello');
-
-        self::assertStringNotContainsString(PHP_EOL, $output);
+        self::assertFalse($builder->hasFontPreset('big'));
     }
 
     public function testRenderDoesNotMutateState(): void
@@ -126,57 +159,24 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringNotContainsString('^XZ', $output);
     }
 
-    public function testEndAppendsEndFormatLikeAnyOtherCommand(): void
-    {
-        $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
-
-        self::assertSame('^XA^FDHello^FS^XZ', $output);
-    }
-
-    public function testHasFontPresetReturnsFalseForUnknown(): void
-    {
-        $builder = ZplBuilder::start();
-
-        self::assertFalse($builder->hasFontPreset('big'));
-    }
-
-    public function testHasFontPresetReturnsTrueAfterRegistration(): void
-    {
-        $builder = ZplBuilder::start()->addFontPreset('big', Font::Zero, 80, 40);
-
-        self::assertTrue($builder->hasFontPreset('big'));
-    }
-
-    public function testRemoveFontPresetDropsRegistration(): void
+    public function testResetClearsFontPresets(): void
     {
         $builder = ZplBuilder::start()
             ->addFontPreset('big', Font::Zero, 80, 40)
-            ->removeFontPreset('big');
+            ->reset();
 
-        self::assertFalse($builder->hasFontPreset('big'));
+        $this->expectException(FontPresetDoesNotExistException::class);
+
+        $builder->applyFontPreset('big');
     }
 
-    public function testGetFontPresetsExposesRegistry(): void
+    public function testResetClearsPrintNewlinesPreference(): void
     {
-        $builder = ZplBuilder::start()
-            ->addFontPreset('big', Font::Zero, 80, 40)
-            ->addFontPreset('small', Font::A, 20, 10);
+        $output = (string) ZplBuilder::start()
+            ->printNewlines()
+            ->reset()
+            ->fieldData('Hello');
 
-        $presets = $builder->getFontPresets();
-
-        self::assertCount(2, $presets);
-        self::assertArrayHasKey('big', $presets);
-        self::assertArrayHasKey('small', $presets);
-    }
-
-    public function testGetCommandsReturnsAppendedCommands(): void
-    {
-        $commands = ZplBuilder::start()
-            ->fieldData('Hello')
-            ->end()
-            ->getCommands();
-
-        // ^XA, ^FD, ^FS, ^XZ
-        self::assertCount(4, $commands);
+        self::assertStringNotContainsString(PHP_EOL, $output);
     }
 }

@@ -11,13 +11,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(BoolToStr::class)]
 class BoolToStrTest extends UnitTestCase
 {
-    public function testTrueConvertsToY(): void
-    {
-        self::assertSame('Y', BoolToStr::conv(true));
-    }
-
     public function testFalseConvertsToN(): void
     {
         self::assertSame('N', BoolToStr::conv(false));
+    }
+
+    public function testTrueConvertsToY(): void
+    {
+        self::assertSame('Y', BoolToStr::conv(true));
     }
 }

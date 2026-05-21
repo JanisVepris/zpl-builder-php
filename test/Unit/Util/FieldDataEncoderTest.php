@@ -16,31 +16,6 @@ class FieldDataEncoderTest extends UnitTestCase
         self::assertSame('Hello World', FieldDataEncoder::escape('Hello World'));
     }
 
-    public function testEmptyStringPassesThrough(): void
-    {
-        self::assertSame('', FieldDataEncoder::escape(''));
-    }
-
-    public function testEscapesCaret(): void
-    {
-        self::assertSame('A_5EB', FieldDataEncoder::escape('A^B'));
-    }
-
-    public function testEscapesTilde(): void
-    {
-        self::assertSame('A_7EB', FieldDataEncoder::escape('A~B'));
-    }
-
-    public function testEscapesDefaultIndicator(): void
-    {
-        self::assertSame('A_5FB', FieldDataEncoder::escape('A_B'));
-    }
-
-    public function testEscapesAllSpecialsInOnePass(): void
-    {
-        self::assertSame('_5E_7E_5F', FieldDataEncoder::escape('^~_'));
-    }
-
     public function testCustomIndicatorEscapesItself(): void
     {
         self::assertSame('A%25B%5EC%7ED', FieldDataEncoder::escape('A%B^C~D', '%'));
@@ -49,6 +24,31 @@ class FieldDataEncoderTest extends UnitTestCase
     public function testCustomIndicatorLeavesDefaultIndicatorAlone(): void
     {
         self::assertSame('A_B%5EC', FieldDataEncoder::escape('A_B^C', '%'));
+    }
+
+    public function testEmptyStringPassesThrough(): void
+    {
+        self::assertSame('', FieldDataEncoder::escape(''));
+    }
+
+    public function testEscapesAllSpecialsInOnePass(): void
+    {
+        self::assertSame('_5E_7E_5F', FieldDataEncoder::escape('^~_'));
+    }
+
+    public function testEscapesCaret(): void
+    {
+        self::assertSame('A_5EB', FieldDataEncoder::escape('A^B'));
+    }
+
+    public function testEscapesDefaultIndicator(): void
+    {
+        self::assertSame('A_5FB', FieldDataEncoder::escape('A_B'));
+    }
+
+    public function testEscapesTilde(): void
+    {
+        self::assertSame('A_7EB', FieldDataEncoder::escape('A~B'));
     }
 
     public function testMultiByteUtf8PassesThrough(): void

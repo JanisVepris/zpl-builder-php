@@ -11,11 +11,11 @@ use Janisvepris\ZplBuilder\ZplCommand;
 final readonly class FieldBlock implements ZplCommand
 {
     private const string FORMAT = '^FB%d,%d,%d,%s,%d';
-    private int $width;
-    private int $maxLines;
-    private int $lineSpacing;
-    private Justify $justify;
     private int $hangingIndent;
+    private Justify $justify;
+    private int $lineSpacing;
+    private int $maxLines;
+    private int $width;
 
     public function __construct(
         int $width,

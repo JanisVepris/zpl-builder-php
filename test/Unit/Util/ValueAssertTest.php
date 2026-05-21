@@ -16,61 +16,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(ValueAssert::class)]
 class ValueAssertTest extends UnitTestCase
 {
-    public function testIntWithinDefaultRangePasses(): void
+    public function testEmptyStringPassesWithZeroMin(): void
     {
-        ValueAssert::int(100);
+        ValueAssert::stringLengthBytes('', 0, 10);
 
         $this->expectNotToPerformAssertions();
-    }
-
-    public function testIntAtBoundariesPasses(): void
-    {
-        ValueAssert::int(0);
-        ValueAssert::int(32000);
-
-        $this->expectNotToPerformAssertions();
-    }
-
-    public function testIntBelowMinThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        ValueAssert::int(-1);
-    }
-
-    public function testIntAboveMaxThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        ValueAssert::int(32001);
-    }
-
-    public function testIntRespectsCustomRange(): void
-    {
-        ValueAssert::int(5, 1, 10);
-
-        $this->expectNotToPerformAssertions();
-    }
-
-    public function testIntOutsideCustomRangeThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        ValueAssert::int(11, 1, 10);
-    }
-
-    public function testFloatWithinDefaultRangePasses(): void
-    {
-        ValueAssert::float(123.45);
-
-        $this->expectNotToPerformAssertions();
-    }
-
-    public function testFloatBelowMinThrows(): void
-    {
-        $this->expectException(FloatValueOutOfRangeException::class);
-
-        ValueAssert::float(-0.1);
     }
 
     public function testFloatAboveMaxThrows(): void
@@ -80,55 +30,11 @@ class ValueAssertTest extends UnitTestCase
         ValueAssert::float(32000.1);
     }
 
-    public function testFloatRespectsCustomRange(): void
+    public function testFloatBelowMinThrows(): void
     {
-        ValueAssert::float(2.5, 2.0, 3.0);
+        $this->expectException(FloatValueOutOfRangeException::class);
 
-        $this->expectNotToPerformAssertions();
-    }
-
-    public function testStringLengthWithinRangePasses(): void
-    {
-        ValueAssert::stringLengthBytes('hello', 1, 10);
-
-        $this->expectNotToPerformAssertions();
-    }
-
-    public function testEmptyStringPassesWithZeroMin(): void
-    {
-        ValueAssert::stringLengthBytes('', 0, 10);
-
-        $this->expectNotToPerformAssertions();
-    }
-
-    public function testStringTooShortThrows(): void
-    {
-        $this->expectException(StringLengthOutOfRangeException::class);
-
-        ValueAssert::stringLengthBytes('hi', 3, 10);
-    }
-
-    public function testStringTooLongThrows(): void
-    {
-        $this->expectException(StringLengthOutOfRangeException::class);
-
-        ValueAssert::stringLengthBytes('hello world', 1, 5);
-    }
-
-    public function testStringLengthMeasuresBytesNotCharacters(): void
-    {
-        // 'héllo' is 6 bytes in UTF-8 (é is encoded as 0xC3 0xA9), not 5 characters.
-        ValueAssert::stringLengthBytes('héllo', 6, 6);
-
-        $this->expectNotToPerformAssertions();
-    }
-
-    public function testStringLengthRejectsMultiByteStringExceedingByteLimit(): void
-    {
-        $this->expectException(StringLengthOutOfRangeException::class);
-
-        // 'héllo' is 6 bytes; a max of 5 bytes must reject it.
-        ValueAssert::stringLengthBytes('héllo', 0, 5);
+        ValueAssert::float(-0.1);
     }
 
     public function testFloatExceptionMessageRendersFloatValueNotInteger(): void
@@ -139,6 +45,20 @@ class ValueAssertTest extends UnitTestCase
         } catch (FloatValueOutOfRangeException $e) {
             self::assertStringContainsString('-0.5', $e->getMessage());
         }
+    }
+
+    public function testFloatRespectsCustomRange(): void
+    {
+        ValueAssert::float(2.5, 2.0, 3.0);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testFloatWithinDefaultRangePasses(): void
+    {
+        ValueAssert::float(123.45);
+
+        $this->expectNotToPerformAssertions();
     }
 
     public function testHexValueAcceptsDigits(): void
@@ -162,13 +82,6 @@ class ValueAssertTest extends UnitTestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testHexValueRejectsNonHexCharacters(): void
-    {
-        $this->expectException(InvalidHexValueException::class);
-
-        ValueAssert::hexValue('g0');
-    }
-
     public function testHexValueRejectsEmptyString(): void
     {
         $this->expectException(InvalidHexValueException::class);
@@ -176,9 +89,89 @@ class ValueAssertTest extends UnitTestCase
         ValueAssert::hexValue('');
     }
 
+    public function testHexValueRejectsNonHexCharacters(): void
+    {
+        $this->expectException(InvalidHexValueException::class);
+
+        ValueAssert::hexValue('g0');
+    }
+
+    public function testIntAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        ValueAssert::int(32001);
+    }
+
+    public function testIntAtBoundariesPasses(): void
+    {
+        ValueAssert::int(0);
+        ValueAssert::int(32000);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testIntBelowMinThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        ValueAssert::int(-1);
+    }
+
+    public function testIntOutsideCustomRangeThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        ValueAssert::int(11, 1, 10);
+    }
+
+    public function testIntRespectsCustomRange(): void
+    {
+        ValueAssert::int(5, 1, 10);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testIntWithinDefaultRangePasses(): void
+    {
+        ValueAssert::int(100);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringLengthMeasuresBytesNotCharacters(): void
+    {
+        // 'héllo' is 6 bytes in UTF-8 (é is encoded as 0xC3 0xA9), not 5 characters.
+        ValueAssert::stringLengthBytes('héllo', 6, 6);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringLengthRejectsMultiByteStringExceedingByteLimit(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        // 'héllo' is 6 bytes; a max of 5 bytes must reject it.
+        ValueAssert::stringLengthBytes('héllo', 0, 5);
+    }
+
+    public function testStringLengthWithinRangePasses(): void
+    {
+        ValueAssert::stringLengthBytes('hello', 1, 10);
+
+        $this->expectNotToPerformAssertions();
+    }
+
     public function testStringNotContainsAllowsCleanString(): void
     {
         ValueAssert::stringNotContains('Hello World');
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringNotContainsAllowsEmptyForbiddenList(): void
+    {
+        ValueAssert::stringNotContains('Anything ^ ~ goes', []);
 
         $this->expectNotToPerformAssertions();
     }
@@ -190,18 +183,14 @@ class ValueAssertTest extends UnitTestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testStringNotContainsThrowsOnDefaultCaret(): void
+    public function testStringNotContainsExceptionMessageNamesMatchedSubstring(): void
     {
-        $this->expectException(StringValueContainsBannedValuesException::class);
-
-        ValueAssert::stringNotContains('Hello ^XA');
-    }
-
-    public function testStringNotContainsThrowsOnDefaultTilde(): void
-    {
-        $this->expectException(StringValueContainsBannedValuesException::class);
-
-        ValueAssert::stringNotContains('Hello ~JS');
+        try {
+            ValueAssert::stringNotContains('Hello ~JS');
+            self::fail('Expected exception was not thrown');
+        } catch (StringValueContainsBannedValuesException $e) {
+            self::assertStringContainsString('~', $e->getMessage());
+        }
     }
 
     public function testStringNotContainsRespectsCustomForbiddenList(): void
@@ -218,20 +207,31 @@ class ValueAssertTest extends UnitTestCase
         ValueAssert::stringNotContains('please do not include the word banana here', ['banana']);
     }
 
-    public function testStringNotContainsAllowsEmptyForbiddenList(): void
+    public function testStringNotContainsThrowsOnDefaultCaret(): void
     {
-        ValueAssert::stringNotContains('Anything ^ ~ goes', []);
+        $this->expectException(StringValueContainsBannedValuesException::class);
 
-        $this->expectNotToPerformAssertions();
+        ValueAssert::stringNotContains('Hello ^XA');
     }
 
-    public function testStringNotContainsExceptionMessageNamesMatchedSubstring(): void
+    public function testStringNotContainsThrowsOnDefaultTilde(): void
     {
-        try {
-            ValueAssert::stringNotContains('Hello ~JS');
-            self::fail('Expected exception was not thrown');
-        } catch (StringValueContainsBannedValuesException $e) {
-            self::assertStringContainsString('~', $e->getMessage());
-        }
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        ValueAssert::stringNotContains('Hello ~JS');
+    }
+
+    public function testStringTooLongThrows(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        ValueAssert::stringLengthBytes('hello world', 1, 5);
+    }
+
+    public function testStringTooShortThrows(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        ValueAssert::stringLengthBytes('hi', 3, 10);
     }
 }

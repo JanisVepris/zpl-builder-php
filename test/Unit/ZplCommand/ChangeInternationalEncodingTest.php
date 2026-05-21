@@ -13,6 +13,17 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(ChangeInternationalEncoding::class)]
 class ChangeInternationalEncodingTest extends UnitTestCase
 {
+    public function testRendersWithMultipleRemaps(): void
+    {
+        $command = new ChangeInternationalEncoding(
+            Encoding::Utf8,
+            new CharacterRemap(65, 66),
+            new CharacterRemap(67, 68),
+        );
+
+        self::assertSame('^CI28,65,66,67,68', (string) $command);
+    }
+
     public function testRendersWithoutRemaps(): void
     {
         self::assertSame('^CI28', (string) new ChangeInternationalEncoding(Encoding::Utf8));
@@ -26,16 +37,5 @@ class ChangeInternationalEncodingTest extends UnitTestCase
         );
 
         self::assertSame('^CI28,65,66', (string) $command);
-    }
-
-    public function testRendersWithMultipleRemaps(): void
-    {
-        $command = new ChangeInternationalEncoding(
-            Encoding::Utf8,
-            new CharacterRemap(65, 66),
-            new CharacterRemap(67, 68),
-        );
-
-        self::assertSame('^CI28,65,66,67,68', (string) $command);
     }
 }

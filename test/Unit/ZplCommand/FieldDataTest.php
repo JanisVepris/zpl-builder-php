@@ -13,14 +13,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldData::class)]
 class FieldDataTest extends UnitTestCase
 {
-    public function testRendersWithData(): void
+    public function testCaretInDataThrows(): void
     {
-        self::assertSame('^FDHello World', (string) new FieldData('Hello World'));
-    }
+        $this->expectException(StringValueContainsBannedValuesException::class);
 
-    public function testRendersEmptyData(): void
-    {
-        self::assertSame('^FD', (string) new FieldData(''));
+        new FieldData('breakout^XA');
     }
 
     public function testDataTooLongThrows(): void
@@ -30,11 +27,14 @@ class FieldDataTest extends UnitTestCase
         new FieldData(str_repeat('a', 3073));
     }
 
-    public function testCaretInDataThrows(): void
+    public function testRendersEmptyData(): void
     {
-        $this->expectException(StringValueContainsBannedValuesException::class);
+        self::assertSame('^FD', (string) new FieldData(''));
+    }
 
-        new FieldData('breakout^XA');
+    public function testRendersWithData(): void
+    {
+        self::assertSame('^FDHello World', (string) new FieldData('Hello World'));
     }
 
     public function testTildeInDataThrows(): void

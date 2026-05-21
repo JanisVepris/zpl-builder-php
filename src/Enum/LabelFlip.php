@@ -6,6 +6,6 @@ namespace Janisvepris\ZplBuilder\Enum;
 
 enum LabelFlip: string
 {
-    case Normal = 'N';
     case Inverted = 'I';
+    case Normal = 'N';
 }
