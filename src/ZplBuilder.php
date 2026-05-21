@@ -23,8 +23,6 @@ class ZplBuilder implements Stringable
     /** @var Commands[] */
     private array $commands = [];
 
-    private int $printQuantity = 1;
-
     private bool $formatEnded = false;
 
     /** @var FontSettings[] */
@@ -131,7 +129,6 @@ class ZplBuilder implements Stringable
             return $this;
         }
 
-        $this->addCommand(new Commands\PrintQuantity($this->printQuantity));
         $this->addCommand(new Commands\EndFormat());
 
         $this->formatEnded = true;
@@ -165,9 +162,7 @@ class ZplBuilder implements Stringable
 
     public function printQuantity(int $quantity): self
     {
-        $this->printQuantity = $quantity;
-
-        return $this;
+        return $this->addCommand(new Commands\PrintQuantity($quantity));
     }
 
     public function barcodeDefaults(
@@ -332,7 +327,6 @@ class ZplBuilder implements Stringable
         $this->commands = [];
         $this->initFontSettings();
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
-        $this->printQuantity = 1;
         $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
 

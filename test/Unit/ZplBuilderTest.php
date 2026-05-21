@@ -71,4 +71,19 @@ class ZplBuilderTest extends UnitTestCase
 
         $builder->raw('^MMT');
     }
+
+    public function testPrintQuantityEmitsAtCallSite(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5);
+
+        self::assertSame('^XA^FDHello^FS^PQ5^XZ', $output);
+    }
+
+    public function testNoPrintQuantityEmittedByDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldData('Hello');
+
+        self::assertStringNotContainsString('^PQ', $output);
+        self::assertSame('^XA^FDHello^FS^XZ', $output);
+    }
 }
