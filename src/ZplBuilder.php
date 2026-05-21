@@ -231,7 +231,7 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldHexIndicator($indicator));
     }
 
-    public function fieldNum(int $number): self
+    public function fieldNumber(int $number): self
     {
         return $this->addCommand(new Commands\FieldNumber($number));
     }
