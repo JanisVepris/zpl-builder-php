@@ -85,3 +85,18 @@ When adding a new ZPL command:
   style).
 - All exception-throwing methods document with `/** @throws ... */`.
 - Constants are typed (`private const string COMMAND = ...`) — this is a PHP 8.3 feature and is used consistently.
+
+## Changelog
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format with a project-specific section ordering: **Fixed**, **Added**, **Changed**, **Breaking changes** (in that order).
+
+When recording a change:
+
+- Put new work under `[Unreleased]` until a release is tagged. Don't backfill the historical version sections (`[0.30.2]` and earlier) — those tags predate this changelog and the per-tag context isn't reliably recoverable.
+- Every bullet ends with the relevant commit hash(es) in parentheses, e.g. `(305e3f8)` or `(305e3f8, 6d857e6)` when a change spans multiple commits.
+- Pick the section by user-facing impact, not by implementation:
+  - **Fixed** — bug fixes (incorrect output, broken behaviour, missing safety check that produced wrong ZPL).
+  - **Added** — new public APIs, new value objects, new tooling/config files.
+  - **Changed** — behavioural shifts in existing APIs that don't require callers to update their code.
+  - **Breaking changes** — anything that requires callers to update code: renames, removed APIs, type-narrowed parameters, removed default behaviours, `final` on previously-extensible classes.
+- A change with both a fix and a breaking-change aspect (e.g. tightening validation that now throws) lives in **Breaking changes** with the fix nature called out in the description.
