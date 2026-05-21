@@ -36,7 +36,6 @@ class ZplBuilder implements Stringable
     public function __construct()
     {
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
-        $this->initFontSettings();
     }
 
     public function __toString(): string
@@ -57,13 +56,33 @@ class ZplBuilder implements Stringable
         ?int $height = null,
         ?int $width = null,
     ): self {
+        $settings = $this->fontSettingsFor($font);
+
         $this->fontPresets[$name] = new FontPreset(
             font: $font,
-            height: $height ?? $this->fontSettings[$font->value]->height(),
-            width: $width ?? $this->fontSettings[$font->value]->width(),
+            height: $height ?? $settings->height(),
+            width: $width ?? $settings->width(),
         );
 
         return $this;
+    }
+
+    public function removeFontPreset(string $name): self
+    {
+        unset($this->fontPresets[$name]);
+
+        return $this;
+    }
+
+    public function hasFontPreset(string $name): bool
+    {
+        return isset($this->fontPresets[$name]);
+    }
+
+    /** @return array<string, FontPreset> */
+    public function getFontPresets(): array
+    {
+        return $this->fontPresets;
     }
 
     public function applyFontPreset(string $name): self
@@ -85,36 +104,36 @@ class ZplBuilder implements Stringable
 
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
+        $settings = $this->fontSettingsFor($font);
+
         if ($height !== null) {
-            $this->fontSettings[$font->value]->setHeight($height);
+            $settings->setHeight($height);
         }
 
         if ($width !== null) {
-            $this->fontSettings[$font->value]->setWidth($width);
+            $settings->setWidth($width);
         }
 
         return $this->addCommand(
-            new Commands\ChangeFont(
-                $font,
-                $this->fontSettings[$font->value]->height(),
-                $this->fontSettings[$font->value]->width(),
-            ),
+            new Commands\ChangeFont($font, $settings->height(), $settings->width()),
         );
     }
 
     public function render(): string
     {
-        $string = '';
-
-        foreach ($this->commands as $command) {
-            $string .= $command->__toString();
-
-            if ($this->printNewlines) {
-                $string .= PHP_EOL;
-            }
+        if ($this->commands === []) {
+            return '';
         }
 
-        return $string;
+        $separator = $this->printNewlines ? PHP_EOL : '';
+
+        return implode($separator, array_map('strval', $this->commands)).$separator;
+    }
+
+    /** @return Commands[] */
+    public function getCommands(): array
+    {
+        return $this->commands;
     }
 
     public function end(): self
@@ -309,7 +328,7 @@ class ZplBuilder implements Stringable
     public function reset(): self
     {
         $this->commands = [];
-        $this->initFontSettings();
+        $this->fontSettings = [];
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
         $this->fontPresets = [];
         $this->printNewlines = false;
@@ -318,15 +337,9 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    private function initFontSettings(): void
+    private function fontSettingsFor(Font $font): FontSettings
     {
-        $settings = [];
-
-        foreach (Font::cases() as $font) {
-            $settings[$font->value] = new FontSettings();
-        }
-
-        $this->fontSettings = $settings;
+        return $this->fontSettings[$font->value] ??= new FontSettings();
     }
 
     private function addCommand(Commands $command): self

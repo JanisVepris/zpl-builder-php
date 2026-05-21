@@ -132,4 +132,51 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertSame('^XA^FDHello^FS^XZ', $output);
     }
+
+    public function testHasFontPresetReturnsFalseForUnknown(): void
+    {
+        $builder = ZplBuilder::start();
+
+        self::assertFalse($builder->hasFontPreset('big'));
+    }
+
+    public function testHasFontPresetReturnsTrueAfterRegistration(): void
+    {
+        $builder = ZplBuilder::start()->addFontPreset('big', Font::Zero, 80, 40);
+
+        self::assertTrue($builder->hasFontPreset('big'));
+    }
+
+    public function testRemoveFontPresetDropsRegistration(): void
+    {
+        $builder = ZplBuilder::start()
+            ->addFontPreset('big', Font::Zero, 80, 40)
+            ->removeFontPreset('big');
+
+        self::assertFalse($builder->hasFontPreset('big'));
+    }
+
+    public function testGetFontPresetsExposesRegistry(): void
+    {
+        $builder = ZplBuilder::start()
+            ->addFontPreset('big', Font::Zero, 80, 40)
+            ->addFontPreset('small', Font::A, 20, 10);
+
+        $presets = $builder->getFontPresets();
+
+        self::assertCount(2, $presets);
+        self::assertArrayHasKey('big', $presets);
+        self::assertArrayHasKey('small', $presets);
+    }
+
+    public function testGetCommandsReturnsAppendedCommands(): void
+    {
+        $commands = ZplBuilder::start()
+            ->fieldData('Hello')
+            ->end()
+            ->getCommands();
+
+        // ^XA, ^FD, ^FS, ^XZ
+        self::assertCount(4, $commands);
+    }
 }

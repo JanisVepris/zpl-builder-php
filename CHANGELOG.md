@@ -25,6 +25,8 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - GitHub Actions CI workflow running `composer check-all` against PHP 8.3 + 8.4. (`2e25e50`)
 - `CHANGELOG.md` and `.gitattributes` (consumers of `composer require` no longer get `/test`, `/tmp`, `/.cache`, IDE configs, etc.). (`2e25e50`)
 - `composer.json` keywords, support links, `prefer-stable`, `sort-packages`. (`2e25e50`)
+- `ZplBuilder::getCommands()` accessor for test introspection and external rendering.
+- `ZplBuilder::hasFontPreset()`, `removeFontPreset()`, `getFontPresets()` for preset registry observability.
 
 ### Changed
 
@@ -32,6 +34,8 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::fieldData()` auto-emits `^FH_` and hex-encodes when input contains `^` or `~`; clean input still produces plain `^FD<data>^FS`. (`6d857e6`)
 - All `ZplCommand`, `ValueObject`, and exception classes marked `final`. Command and VO classes also `readonly` where compatible. (`bb41000`)
 - `FieldData`, `FieldHexIndicator`, and `FieldComment` now reject literal `^` / `~` in their inputs via `ValueAssert::stringNotContains`. (`305e3f8`)
+- `FontSettings` instances are now lazily allocated on first access (via the new private `fontSettingsFor()` helper) instead of pre-creating all 36 cases up front in the constructor and `reset()`.
+- `render()` rewritten as `implode(…) . $separator` instead of a manual `.=` loop. Trailing newline behaviour preserved.
 
 ### Breaking changes
 
