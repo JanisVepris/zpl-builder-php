@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Janisvepris\ZplBuilder\Test\Unit;
 
 use Janisvepris\ZplBuilder\Enum\Font;
-use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplBuilder;
@@ -65,25 +64,16 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^FO5,5^GB100,100,2^FS', $output);
     }
 
-    public function testRawAfterEndThrows(): void
-    {
-        $builder = ZplBuilder::start()->end();
-
-        $this->expectException(CommandAfterEndException::class);
-
-        $builder->raw('^MMT');
-    }
-
     public function testPrintQuantityEmitsAtCallSite(): void
     {
-        $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5);
+        $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5)->end();
 
         self::assertSame('^XA^FDHello^FS^PQ5^XZ', $output);
     }
 
     public function testNoPrintQuantityEmittedByDefault(): void
     {
-        $output = (string) ZplBuilder::start()->fieldData('Hello');
+        $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
 
         self::assertStringNotContainsString('^PQ', $output);
         self::assertSame('^XA^FDHello^FS^XZ', $output);
@@ -118,8 +108,8 @@ class ZplBuilderTest extends UnitTestCase
         $builder->fieldData('World');
         $second = (string) $builder;
 
-        self::assertSame('^XA^FDHello^FS^XZ', $first);
-        self::assertSame('^XA^FDHello^FS^FDWorld^FS^XZ', $second);
+        self::assertSame('^XA^FDHello^FS', $first);
+        self::assertSame('^XA^FDHello^FS^FDWorld^FS', $second);
     }
 
     public function testRenderIsIdempotent(): void
@@ -129,11 +119,17 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame((string) $builder, (string) $builder);
     }
 
-    public function testExplicitEndRendersSingleEndFormat(): void
+    public function testRenderWithoutEndOmitsEndFormat(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldData('Hello');
+
+        self::assertStringNotContainsString('^XZ', $output);
+    }
+
+    public function testEndAppendsEndFormatLikeAnyOtherCommand(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
 
         self::assertSame('^XA^FDHello^FS^XZ', $output);
-        self::assertSame(1, substr_count($output, '^XZ'));
     }
 }

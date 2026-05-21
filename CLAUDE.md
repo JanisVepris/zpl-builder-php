@@ -43,10 +43,9 @@ Stateful concerns owned by the builder (not by individual commands):
 
 - `BarcodeDefaultSettings` — remembers the last `^BY` values so `barcodeCode128()` can inherit `height` when no explicit value is passed.
 - `$fontSettings` — a map keyed by `Enum\Font` case values (`A`–`Z`, `0`–`9`) of `FontSettings` instances. `changeFont()` updates only the dimensions that were explicitly provided and emits a `^CF` with the merged height/width. This is how a caller can change just the width of font `A` without forgetting its previously-set height. The builder's font-accepting methods (`changeFont`, `addFontPreset`, `applyFontPreset`) all type-hint `Enum\Font`.
-- `$formatEnded` — once `end()` is called, any further `addCommand()` throws `CommandAfterEndException`. `reset()` re-initialises everything and re-appends `StartFormat`. `render()` does **not** flip this flag (see below).
 - `$printNewlines` — when toggled, `render()` puts `PHP_EOL` between commands. Off by default; the emitted ZPL is a single contiguous string.
 
-`ZplBuilder` implements `Stringable`; `__toString()` calls `render()`, which returns a snapshot — it appends a synthesised `EndFormat` to a local copy of the commands when the format hasn't been explicitly ended, but never mutates `$commands` or `$formatEnded`. The builder can be rendered mid-build (e.g. for debug logging) and continued.
+`ZplBuilder` implements `Stringable`; `__toString()` calls `render()`, which simply iterates `$this->commands` and concatenates their string forms. Render is pure — it never appends to `$this->commands` or otherwise mutates state. To finalise a format with `^XZ`, call `->end()` explicitly — it's a regular fluent method that appends `EndFormat` like any other command. The builder enforces no structural invariants beyond what `addCommand()` guarantees (validated VO inputs); composing valid ZPL (e.g. not adding fields after `end()`) is the caller's responsibility.
 
 `printQuantity($n)` is a regular fluent method — it emits `^PQ<n>` immediately at the call site. A label without an explicit call emits no `^PQ`.
 

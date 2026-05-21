@@ -12,7 +12,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 - `FloatValueOutOfRangeException` formatted float values with `%d`, so `-0.5` rendered as `0`. Now uses `%g`. (`241fbc5`)
 - `^FD` field data containing literal `^` or `~` produced broken ZPL — the printer interpreted them as the start of a new command. `fieldData()` now auto-escapes via `^FH_` + hex encoding; the VO itself rejects raw `^` / `~`. (`305e3f8`, `6d857e6`)
-- `(string) $builder` permanently flipped `$formatEnded`, so logging a debug copy mid-build broke the builder. `render()` is now non-mutating. (`7424e4b`)
+- `(string) $builder` permanently flipped `$formatEnded`, so logging a debug copy mid-build broke the builder. `render()` is now a pure iteration over `$this->commands`; the `$formatEnded` bookkeeping is gone entirely. (`7424e4b`, follow-up)
 - `ZplBuilder::reset()` left `$fontPresets` and `$printNewlines` untouched — partial reset is surprising. It now clears them too. (`60ae6ce`)
 
 ### Added
@@ -43,6 +43,8 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::fieldNum()` renamed to `fieldNumber()`. (`3f3df1b`)
 - `InvalidFieldCommentException` removed — `FieldComment` now throws `StringValueContainsBannedValuesException` for the same conditions. (`305e3f8`)
 - All command/VO/exception classes are `final` — subclassing them is no longer possible. Use composition or the new `raw(string)` escape hatch. (`bb41000`)
+- `render()` / `(string)$b` no longer auto-appends `^XZ`. Call `->end()` explicitly to finalise the format. `end()` is now a regular fluent method that appends `EndFormat` like any other command.
+- `CommandAfterEndException` removed. The builder no longer guards against mutations after `end()` — composing valid ZPL (e.g. not adding fields after `end()`) is the caller's responsibility.
 
 ## [0.30.2] and earlier
 

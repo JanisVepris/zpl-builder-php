@@ -12,7 +12,6 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
-use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
@@ -23,8 +22,6 @@ class ZplBuilder implements Stringable
 {
     /** @var Commands[] */
     private array $commands = [];
-
-    private bool $formatEnded = false;
 
     /** @var FontSettings[] */
     private array $fontSettings = [];
@@ -107,14 +104,9 @@ class ZplBuilder implements Stringable
 
     public function render(): string
     {
-        $commands = $this->commands;
-        if (!$this->formatEnded) {
-            $commands[] = new Commands\EndFormat();
-        }
-
         $string = '';
 
-        foreach ($commands as $command) {
+        foreach ($this->commands as $command) {
             $string .= $command->__toString();
 
             if ($this->printNewlines) {
@@ -127,15 +119,7 @@ class ZplBuilder implements Stringable
 
     public function end(): self
     {
-        if ($this->formatEnded) {
-            return $this;
-        }
-
-        $this->addCommand(new Commands\EndFormat());
-
-        $this->formatEnded = true;
-
-        return $this;
+        return $this->addCommand(new Commands\EndFormat());
     }
 
     /** Print newlines after each ZPL command in the resulting output */
@@ -149,8 +133,6 @@ class ZplBuilder implements Stringable
     /**
      * Append a literal ZPL fragment without validation. Use for commands the
      * builder does not yet have a dedicated method for.
-     *
-     * @throws CommandAfterEndException
      */
     public function raw(string $zpl): self
     {
@@ -331,7 +313,6 @@ class ZplBuilder implements Stringable
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
         $this->fontPresets = [];
         $this->printNewlines = false;
-        $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
 
         return $this;
@@ -348,13 +329,8 @@ class ZplBuilder implements Stringable
         $this->fontSettings = $settings;
     }
 
-    /** @throws CommandAfterEndException */
     private function addCommand(Commands $command): self
     {
-        if ($this->formatEnded) {
-            throw new CommandAfterEndException();
-        }
-
         $this->commands[] = $command;
 
         return $this;
