@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit;
 
+use Janisvepris\ZplBuilder\CharacterRemap;
+use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
+use Janisvepris\ZplBuilder\Enum\Justify;
+use Janisvepris\ZplBuilder\Enum\LabelFlip;
+use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplBuilder;
@@ -13,11 +19,142 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(ZplBuilder::class)]
 class ZplBuilderTest extends UnitTestCase
 {
+    public function testAddFontPresetInheritsDimensionsFromFontWhenOmitted(): void
+    {
+        $builder = ZplBuilder::start()
+            ->changeFont(Font::A, 30, 15)
+            ->addFontPreset('big', Font::A);
+
+        $preset = $builder->getFontPresets()['big'];
+
+        self::assertSame(30, $preset->height);
+        self::assertSame(15, $preset->width);
+    }
+
+    public function testApplyFontPresetEmitsChangeFontWithStoredDimensions(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->addFontPreset('big', Font::Zero, 80, 40)
+            ->applyFontPreset('big');
+
+        self::assertSame('^XA^CF0,80,40', $output);
+    }
+
+    public function testApplyFontPresetThrowsOnUnknownName(): void
+    {
+        $this->expectException(FontPresetDoesNotExistException::class);
+
+        ZplBuilder::start()->applyFontPreset('does-not-exist');
+    }
+
+    public function testBarcodeCode128EmitsBcThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode128('ABC', height: 75);
+
+        self::assertSame('^XA^BCN,75,Y,N,N,N^FDABC^FS', $output);
+    }
+
+    public function testBarcodeCode128InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode128('ABC');
+
+        self::assertStringContainsString('^BCN,50,', $output);
+    }
+
+    public function testBarcodeCode128OverridesBarcodeDefaultsHeight(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode128('ABC', height: 120);
+
+        self::assertStringContainsString('^BCN,120,', $output);
+    }
+
+    public function testBarcodeDefaultsEmitsBy(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeDefaults(3, 2.5, 75);
+
+        self::assertSame('^XA^BY3,2.5,75', $output);
+    }
+
+    public function testChangeFontEmitsCfWithLetterFont(): void
+    {
+        $output = (string) ZplBuilder::start()->changeFont(Font::A, 30, 15);
+
+        self::assertSame('^XA^CFA,30,15', $output);
+    }
+
+    public function testChangeFontEmitsCfWithNumericFontUsingDefaultWidth(): void
+    {
+        $output = (string) ZplBuilder::start()->changeFont(Font::Zero, 50);
+
+        // No width passed — inherits the FontSettings default of 5.
+        self::assertSame('^XA^CF0,50,5', $output);
+    }
+
+    public function testChangeFontRemembersHeightWhenOnlyWidthChanges(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->changeFont(Font::A, 30, 15)
+            ->changeFont(Font::A, width: 20);
+
+        self::assertSame('^XA^CFA,30,15^CFA,30,20', $output);
+    }
+
+    public function testChangeFontRemembersWidthWhenOnlyHeightChanges(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->changeFont(Font::A, 30, 15)
+            ->changeFont(Font::A, 50);
+
+        self::assertSame('^XA^CFA,30,15^CFA,50,15', $output);
+    }
+
+    public function testChangeInternationalEncodingEmitsCi(): void
+    {
+        $output = (string) ZplBuilder::start()->changeInternationalEncoding(Encoding::Utf8);
+
+        self::assertSame('^XA^CI28', $output);
+    }
+
+    public function testChangeInternationalEncodingEmitsRemaps(): void
+    {
+        $output = (string) ZplBuilder::start()->changeInternationalEncoding(
+            Encoding::Utf8,
+            new CharacterRemap(65, 66),
+        );
+
+        self::assertSame('^XA^CI28,65,66', $output);
+    }
+
+    public function testCommentEmitsFx(): void
+    {
+        $output = (string) ZplBuilder::start()->comment(' section header');
+
+        self::assertSame('^XA^FX section header', $output);
+    }
+
+    public function testEndAppendsEndFormatEveryTimeItsCalled(): void
+    {
+        $output = (string) ZplBuilder::start()->end()->end();
+
+        self::assertSame('^XA^XZ^XZ', $output);
+    }
+
     public function testEndAppendsEndFormatLikeAnyOtherCommand(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
 
         self::assertSame('^XA^FDHello^FS^XZ', $output);
+    }
+
+    public function testFieldBlockEmitsFb(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldBlock(400, 3, 5, Justify::Center, 10);
+
+        self::assertSame('^XA^FB400,3,5,C,10', $output);
     }
 
     public function testFieldDataAutoEscapesCaret(): void
@@ -57,6 +194,48 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringNotContainsString('^FH', $output);
     }
 
+    public function testFieldHexIndicatorEmitsFhWithCustomIndicator(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldHexIndicator('%');
+
+        self::assertSame('^XA^FH%', $output);
+    }
+
+    public function testFieldHexIndicatorEmitsFhWithDefaultIndicator(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldHexIndicator();
+
+        self::assertSame('^XA^FH_', $output);
+    }
+
+    public function testFieldNumberEmitsFn(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldNumber(7);
+
+        self::assertSame('^XA^FN7', $output);
+    }
+
+    public function testFieldOrientationEmitsFw(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldOrientation(Orientation::Rotate90);
+
+        self::assertSame('^XA^FWR', $output);
+    }
+
+    public function testFieldOriginDefaultsToZeroZero(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldOrigin();
+
+        self::assertSame('^XA^FO0,0', $output);
+    }
+
+    public function testFieldOriginEmitsFo(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldOrigin(50, 100);
+
+        self::assertSame('^XA^FO50,100', $output);
+    }
+
     public function testGetCommandsReturnsAppendedCommands(): void
     {
         $commands = ZplBuilder::start()
@@ -81,6 +260,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertArrayHasKey('small', $presets);
     }
 
+    public function testGraphicBoxEmitsGbAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicBox(100, 50, 2);
+
+        self::assertSame('^XA^GB100,50,2,B,0^FS', $output);
+    }
+
     public function testHasFontPresetReturnsFalseForUnknown(): void
     {
         $builder = ZplBuilder::start();
@@ -95,6 +281,34 @@ class ZplBuilderTest extends UnitTestCase
         self::assertTrue($builder->hasFontPreset('big'));
     }
 
+    public function testLabelHomeEmitsLh(): void
+    {
+        $output = (string) ZplBuilder::start()->labelHome(20, 30);
+
+        self::assertSame('^XA^LH20,30', $output);
+    }
+
+    public function testLabelLengthEmitsLl(): void
+    {
+        $output = (string) ZplBuilder::start()->labelLength(1200);
+
+        self::assertSame('^XA^LL1200', $output);
+    }
+
+    public function testLabelReversePrintEmitsLrNo(): void
+    {
+        $output = (string) ZplBuilder::start()->labelReversePrint(false);
+
+        self::assertSame('^XA^LRN', $output);
+    }
+
+    public function testLabelReversePrintEmitsLrYes(): void
+    {
+        $output = (string) ZplBuilder::start()->labelReversePrint();
+
+        self::assertSame('^XA^LRY', $output);
+    }
+
     public function testNoPrintQuantityEmittedByDefault(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
@@ -103,11 +317,32 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^FDHello^FS^XZ', $output);
     }
 
+    public function testPrintNewlinesSeparatesCommandsWithEol(): void
+    {
+        $output = (string) ZplBuilder::start()->printNewlines()->fieldData('Hi')->end();
+
+        self::assertSame('^XA'.PHP_EOL.'^FDHi'.PHP_EOL.'^FS'.PHP_EOL.'^XZ'.PHP_EOL, $output);
+    }
+
+    public function testPrintOrientationEmitsPo(): void
+    {
+        $output = (string) ZplBuilder::start()->printOrientation(LabelFlip::Inverted);
+
+        self::assertSame('^XA^POI', $output);
+    }
+
     public function testPrintQuantityEmitsAtCallSite(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5)->end();
 
         self::assertSame('^XA^FDHello^FS^PQ5^XZ', $output);
+    }
+
+    public function testPrintWidthEmitsPw(): void
+    {
+        $output = (string) ZplBuilder::start()->printWidth(800);
+
+        self::assertSame('^XA^PW800', $output);
     }
 
     public function testRawAppendsLiteralZpl(): void
@@ -122,6 +357,13 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->raw('^FO5,5^GB100,100,2^FS');
 
         self::assertStringContainsString('^FO5,5^GB100,100,2^FS', $output);
+    }
+
+    public function testRecallFormatEmitsXf(): void
+    {
+        $output = (string) ZplBuilder::start()->recallFormat('LABEL', StorageDevice::Flash);
+
+        self::assertSame('^XA^XFE:LABEL.ZPL', $output);
     }
 
     public function testRemoveFontPresetDropsRegistration(): void
@@ -178,5 +420,21 @@ class ZplBuilderTest extends UnitTestCase
             ->fieldData('Hello');
 
         self::assertStringNotContainsString(PHP_EOL, $output);
+    }
+
+    public function testResetReEmitsStartFormat(): void
+    {
+        $commands = ZplBuilder::start()
+            ->fieldData('A')
+            ->reset()
+            ->getCommands();
+
+        self::assertCount(1, $commands);
+        self::assertSame('^XA', (string) $commands[0]);
+    }
+
+    public function testStartEmitsStartFormat(): void
+    {
+        self::assertSame('^XA', (string) ZplBuilder::start());
     }
 }
