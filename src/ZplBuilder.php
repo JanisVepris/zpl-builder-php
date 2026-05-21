@@ -6,6 +6,7 @@ namespace Janisvepris\ZplBuilder;
 
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
+use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
@@ -55,14 +56,14 @@ class ZplBuilder implements Stringable
 
     public function addFontPreset(
         string $name,
-        int|string $font,
+        Font $font,
         ?int $height = null,
         ?int $width = null,
     ): self {
         $this->fontPresets[$name] = new FontPreset(
             font: $font,
-            height: $height ?? $this->fontSettings[$font]->height(),
-            width: $width ?? $this->fontSettings[$font]->width(),
+            height: $height ?? $this->fontSettings[$font->value]->height(),
+            width: $width ?? $this->fontSettings[$font->value]->width(),
         );
 
         return $this;
@@ -85,21 +86,21 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    public function changeFont(int|string $font, ?int $height = null, ?int $width = null): self
+    public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
         if ($height !== null) {
-            $this->fontSettings[$font]->setHeight($height);
+            $this->fontSettings[$font->value]->setHeight($height);
         }
 
         if ($width !== null) {
-            $this->fontSettings[$font]->setWidth($width);
+            $this->fontSettings[$font->value]->setWidth($width);
         }
 
         return $this->addCommand(
             new Commands\ChangeFont(
                 $font,
-                $this->fontSettings[$font]->height(),
-                $this->fontSettings[$font]->width(),
+                $this->fontSettings[$font->value]->height(),
+                $this->fontSettings[$font->value]->width(),
             ),
         );
     }
@@ -337,12 +338,8 @@ class ZplBuilder implements Stringable
     {
         $settings = [];
 
-        foreach (range('A', 'Z') as $key) {
-            $settings[$key] = new FontSettings();
-        }
-
-        foreach (range(0, 9) as $key) {
-            $settings[$key] = new FontSettings();
+        foreach (Font::cases() as $font) {
+            $settings[$font->value] = new FontSettings();
         }
 
         $this->fontSettings = $settings;
