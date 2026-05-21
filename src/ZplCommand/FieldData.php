@@ -16,7 +16,7 @@ final readonly class FieldData implements ZplCommand
     public function __construct(
         string $data,
     ) {
-        ValueAssert::stringLength($data, 0, 3072);
+        ValueAssert::stringLengthBytes($data, 0, 3072);
         ValueAssert::stringNotContains($data);
 
         $this->data = $data;

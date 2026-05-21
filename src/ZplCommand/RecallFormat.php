@@ -20,8 +20,8 @@ final readonly class RecallFormat implements ZplCommand
         string $name,
         string $extension,
     ) {
-        ValueAssert::stringLength($name, 1, 16);
-        ValueAssert::stringLength($extension, 1, 3);
+        ValueAssert::stringLengthBytes($name, 1, 16);
+        ValueAssert::stringLengthBytes($extension, 1, 3);
 
         $this->device = $device;
         $this->name = $name;

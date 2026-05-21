@@ -16,7 +16,7 @@ final readonly class FieldComment implements ZplCommand
     public function __construct(
         string $text,
     ) {
-        ValueAssert::stringLength($text, 0, 3072);
+        ValueAssert::stringLengthBytes($text, 0, 3072);
         ValueAssert::stringNotContains($text);
 
         $this->text = $text;

@@ -37,7 +37,7 @@ class ValueAssert
     }
 
     /** @throws StringLengthOutOfRangeException */
-    public static function stringLength(string $string, int $minBytes, int $maxBytes): void
+    public static function stringLengthBytes(string $string, int $minBytes, int $maxBytes): void
     {
         $length = strlen($string);
         if ($length < $minBytes || $length > $maxBytes) {

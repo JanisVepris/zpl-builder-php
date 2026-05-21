@@ -89,14 +89,14 @@ class ValueAssertTest extends UnitTestCase
 
     public function testStringLengthWithinRangePasses(): void
     {
-        ValueAssert::stringLength('hello', 1, 10);
+        ValueAssert::stringLengthBytes('hello', 1, 10);
 
         $this->expectNotToPerformAssertions();
     }
 
     public function testEmptyStringPassesWithZeroMin(): void
     {
-        ValueAssert::stringLength('', 0, 10);
+        ValueAssert::stringLengthBytes('', 0, 10);
 
         $this->expectNotToPerformAssertions();
     }
@@ -105,20 +105,20 @@ class ValueAssertTest extends UnitTestCase
     {
         $this->expectException(StringLengthOutOfRangeException::class);
 
-        ValueAssert::stringLength('hi', 3, 10);
+        ValueAssert::stringLengthBytes('hi', 3, 10);
     }
 
     public function testStringTooLongThrows(): void
     {
         $this->expectException(StringLengthOutOfRangeException::class);
 
-        ValueAssert::stringLength('hello world', 1, 5);
+        ValueAssert::stringLengthBytes('hello world', 1, 5);
     }
 
     public function testStringLengthMeasuresBytesNotCharacters(): void
     {
         // 'héllo' is 6 bytes in UTF-8 (é is encoded as 0xC3 0xA9), not 5 characters.
-        ValueAssert::stringLength('héllo', 6, 6);
+        ValueAssert::stringLengthBytes('héllo', 6, 6);
 
         $this->expectNotToPerformAssertions();
     }
@@ -128,7 +128,7 @@ class ValueAssertTest extends UnitTestCase
         $this->expectException(StringLengthOutOfRangeException::class);
 
         // 'héllo' is 6 bytes; a max of 5 bytes must reject it.
-        ValueAssert::stringLength('héllo', 0, 5);
+        ValueAssert::stringLengthBytes('héllo', 0, 5);
     }
 
     public function testFloatExceptionMessageRendersFloatValueNotInteger(): void

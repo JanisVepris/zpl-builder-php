@@ -15,7 +15,7 @@ final readonly class FieldHexIndicator implements ZplCommand
     public function __construct(
         string $indicator,
     ) {
-        ValueAssert::stringLength($indicator, 1, 1);
+        ValueAssert::stringLengthBytes($indicator, 1, 1);
         ValueAssert::stringNotContains($indicator);
 
         $this->indicator = $indicator;
