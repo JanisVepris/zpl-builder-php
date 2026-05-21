@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit;
 
+use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
+use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -85,5 +87,26 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertStringNotContainsString('^PQ', $output);
         self::assertSame('^XA^FDHello^FS^XZ', $output);
+    }
+
+    public function testResetClearsFontPresets(): void
+    {
+        $builder = ZplBuilder::start()
+            ->addFontPreset('big', Font::Zero, 80, 40)
+            ->reset();
+
+        $this->expectException(FontPresetDoesNotExistException::class);
+
+        $builder->applyFontPreset('big');
+    }
+
+    public function testResetClearsPrintNewlinesPreference(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->printNewlines()
+            ->reset()
+            ->fieldData('Hello');
+
+        self::assertStringNotContainsString(PHP_EOL, $output);
     }
 }

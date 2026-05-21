@@ -328,6 +328,8 @@ class ZplBuilder implements Stringable
         $this->commands = [];
         $this->initFontSettings();
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
+        $this->fontPresets = [];
+        $this->printNewlines = false;
         $this->formatEnded = false;
         $this->addCommand(new Commands\StartFormat());
 
