@@ -22,7 +22,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::raw(string)` escape hatch + `ZplCommand\RawCommand` VO for emitting arbitrary ZPL fragments the builder doesn't natively support. ([`7e8d829`](https://github.com/JanisVepris/zpl-builder-php/commit/7e8d829))
 - `Enum\Font` with 36 cases (`A`–`Z`, `Zero`–`Nine`) replacing the loose `int|string` font key. ([`dabd2b3`](https://github.com/JanisVepris/zpl-builder-php/commit/dabd2b3))
 - `Enum\LabelFlip` (replaces the clashy `Enum\PrintOrientation`). ([`a936842`](https://github.com/JanisVepris/zpl-builder-php/commit/a936842))
-- GitHub Actions CI workflow running `cs`, `stan`, and `test` as separate jobs across PHP 8.3 / 8.4 / 8.5. ([`2e25e50`](https://github.com/JanisVepris/zpl-builder-php/commit/2e25e50))
+- GitHub Actions CI workflow running `cs`, `stan`, and `test` as separate jobs across PHP 8.3 / 8.4 / 8.5. ([`2e25e50`](https://github.com/JanisVepris/zpl-builder-php/commit/2e25e50), [`f5c9e8d`](https://github.com/JanisVepris/zpl-builder-php/commit/f5c9e8d))
 - `CHANGELOG.md` and `.gitattributes` (consumers of `composer require` no longer get `/test`, `/tmp`, `/.cache`, IDE configs, etc.). ([`2e25e50`](https://github.com/JanisVepris/zpl-builder-php/commit/2e25e50))
 - `composer.json` keywords, support links, `prefer-stable`, `sort-packages`. ([`2e25e50`](https://github.com/JanisVepris/zpl-builder-php/commit/2e25e50))
 - `ZplBuilder::getCommands()` accessor for test introspection and external rendering. ([`36243bc`](https://github.com/JanisVepris/zpl-builder-php/commit/36243bc))
