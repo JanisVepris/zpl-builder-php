@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\ZplCommand;
 
-use Janisvepris\ZplBuilder\Enum\PrintOrientation as PrintOrientationEnum;
+use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\ZplCommand;
 
 final readonly class PrintOrientation implements ZplCommand
@@ -12,7 +12,7 @@ final readonly class PrintOrientation implements ZplCommand
     private const string FORMAT = '^PO%s';
 
     public function __construct(
-        private PrintOrientationEnum $orientation,
+        private LabelFlip $orientation,
     ) {}
 
     public function __toString()

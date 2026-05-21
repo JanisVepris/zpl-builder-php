@@ -8,9 +8,9 @@ use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\Justify;
+use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
-use Janisvepris\ZplBuilder\Enum\PrintOrientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
@@ -157,7 +157,7 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\RawCommand($zpl));
     }
 
-    public function printOrientation(PrintOrientation $orientation): self
+    public function printOrientation(LabelFlip $orientation): self
     {
         return $this->addCommand(new Commands\PrintOrientation($orientation));
     }
