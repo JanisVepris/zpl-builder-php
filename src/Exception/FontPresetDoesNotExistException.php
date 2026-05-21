@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 use InvalidArgumentException;
 use JetBrains\PhpStorm\Pure;
 
-class FontPresetDoesNotExistException extends InvalidArgumentException
+final class FontPresetDoesNotExistException extends InvalidArgumentException
 {
     #[Pure]
     public function __construct(string $presetName)

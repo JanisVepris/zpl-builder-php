@@ -7,11 +7,11 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class FieldComment implements ZplCommand
+final readonly class FieldComment implements ZplCommand
 {
     private const string FORMAT = '^FX%s';
 
-    private readonly string $text;
+    private string $text;
 
     public function __construct(
         string $text,

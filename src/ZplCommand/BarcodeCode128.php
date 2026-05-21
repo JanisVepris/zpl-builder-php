@@ -10,13 +10,13 @@ use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class BarcodeCode128 implements ZplCommand
+final readonly class BarcodeCode128 implements ZplCommand
 {
     private const string COMMAND = '^BC%s,%d,%s,%s,%s,%s';
-    private readonly Orientation $orientation;
-    private readonly int $height;
-    private readonly bool $printInterpretation;
-    private readonly bool $interpretationAboveCode;
+    private Orientation $orientation;
+    private int $height;
+    private bool $printInterpretation;
+    private bool $interpretationAboveCode;
     private bool $useUccCheckDigit;
     private Code128Mode $mode;
 

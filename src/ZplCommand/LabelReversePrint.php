@@ -7,12 +7,12 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class LabelReversePrint implements ZplCommand
+final readonly class LabelReversePrint implements ZplCommand
 {
     private const string FORMAT = '^LR%s';
 
     public function __construct(
-        private readonly bool $reversePrint,
+        private bool $reversePrint,
     ) {}
 
     public function __toString()

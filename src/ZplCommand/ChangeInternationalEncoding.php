@@ -8,16 +8,16 @@ use Janisvepris\ZplBuilder\CharacterRemap;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class ChangeInternationalEncoding implements ZplCommand
+final readonly class ChangeInternationalEncoding implements ZplCommand
 {
     private const string FORMAT = '^CI%s';
     private const string FORMAT_WITH_REMAPS = '^CI%s,%s';
 
     /** @var CharacterRemap[] */
-    private array $characterRemaps = [];
+    private array $characterRemaps;
 
     public function __construct(
-        private readonly Encoding $encoding,
+        private Encoding $encoding,
         CharacterRemap ...$characterRemaps,
     ) {
         $this->characterRemaps = $characterRemaps;

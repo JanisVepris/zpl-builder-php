@@ -7,10 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class LabelLength implements ZplCommand
+final readonly class LabelLength implements ZplCommand
 {
     private const string FORMAT = '^LL%d';
-    private readonly int $length;
+    private int $length;
 
     public function __construct(
         int $length,

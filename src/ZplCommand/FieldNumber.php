@@ -7,11 +7,11 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class FieldNumber implements ZplCommand
+final readonly class FieldNumber implements ZplCommand
 {
     private const string FORMAT = '^FN%d';
 
-    private readonly int $number;
+    private int $number;
 
     public function __construct(
         int $number,

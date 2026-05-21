@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 use JetBrains\PhpStorm\Pure;
 use UnexpectedValueException;
 
-class InvalidHexValueException extends UnexpectedValueException
+final class InvalidHexValueException extends UnexpectedValueException
 {
     #[Pure]
     public function __construct(string $value)

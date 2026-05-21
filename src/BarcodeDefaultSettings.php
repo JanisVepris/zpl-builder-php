@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder;
 
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 
-class BarcodeDefaultSettings
+final class BarcodeDefaultSettings
 {
     public function __construct(
         private int $moduleWidth = 2,

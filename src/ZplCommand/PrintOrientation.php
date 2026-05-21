@@ -7,12 +7,12 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\PrintOrientation as PrintOrientationEnum;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class PrintOrientation implements ZplCommand
+final readonly class PrintOrientation implements ZplCommand
 {
     private const string FORMAT = '^PO%s';
 
     public function __construct(
-        private readonly PrintOrientationEnum $orientation,
+        private PrintOrientationEnum $orientation,
     ) {}
 
     public function __toString()

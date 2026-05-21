@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\ValueObject;
 
-readonly class FontPreset
+final readonly class FontPreset
 {
     public function __construct(
         public int|string $font,

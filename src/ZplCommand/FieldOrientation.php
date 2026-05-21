@@ -7,12 +7,12 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class FieldOrientation implements ZplCommand
+final readonly class FieldOrientation implements ZplCommand
 {
     private const string COMMAND = '^FW%s';
 
     public function __construct(
-        private readonly Orientation $fieldRotation,
+        private Orientation $fieldRotation,
     ) {}
 
     public function __toString()

@@ -7,10 +7,10 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Stringable;
 
-class CharacterRemap implements Stringable
+final readonly class CharacterRemap implements Stringable
 {
-    public readonly int $source;
-    public readonly int $destination;
+    public int $source;
+    public int $destination;
 
     public function __construct(
         int $source,

@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 use JetBrains\PhpStorm\Pure;
 use OutOfRangeException;
 
-class IntegerValueOutOfRangeException extends OutOfRangeException
+final class IntegerValueOutOfRangeException extends OutOfRangeException
 {
     #[Pure]
     public function __construct(int $value, int $min, int $max)

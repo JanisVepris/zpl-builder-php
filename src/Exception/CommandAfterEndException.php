@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 
-class CommandAfterEndException extends RuntimeException
+final class CommandAfterEndException extends RuntimeException
 {
     #[Pure]
     public function __construct()

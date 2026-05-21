@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 use JetBrains\PhpStorm\Pure;
 use OutOfRangeException;
 
-class FloatValueOutOfRangeException extends OutOfRangeException
+final class FloatValueOutOfRangeException extends OutOfRangeException
 {
     #[Pure]
     public function __construct(float $value, float $min, float $max)

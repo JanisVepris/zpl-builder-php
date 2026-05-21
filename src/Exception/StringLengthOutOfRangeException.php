@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 use JetBrains\PhpStorm\Pure;
 use OutOfRangeException;
 
-class StringLengthOutOfRangeException extends OutOfRangeException
+final class StringLengthOutOfRangeException extends OutOfRangeException
 {
     #[Pure]
     public function __construct(int $length, int $min, int $max)

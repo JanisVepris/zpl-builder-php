@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 use InvalidArgumentException;
 use JetBrains\PhpStorm\Pure;
 
-class StringValueContainsBannedValuesException extends InvalidArgumentException
+final class StringValueContainsBannedValuesException extends InvalidArgumentException
 {
     #[Pure]
     public function __construct(string $value, string $forbiddenSubstring)
