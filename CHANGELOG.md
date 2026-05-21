@@ -27,6 +27,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `composer.json` keywords, support links, `prefer-stable`, `sort-packages`. ([`2e25e50`](https://github.com/JanisVepris/zpl-builder-php/commit/2e25e50))
 - `ZplBuilder::getCommands()` accessor for test introspection and external rendering. ([`36243bc`](https://github.com/JanisVepris/zpl-builder-php/commit/36243bc))
 - `ZplBuilder::hasFontPreset()`, `removeFontPreset()`, `getFontPresets()` for preset registry observability. ([`36243bc`](https://github.com/JanisVepris/zpl-builder-php/commit/36243bc))
+- Full unit-test coverage of `ZplBuilder` — every public method now has at least one positive test, 53 tests in `ZplBuilderTest` total. ([`887d4ed`](https://github.com/JanisVepris/zpl-builder-php/commit/887d4ed))
 
 ### Changed
 
@@ -38,6 +39,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `render()` rewritten as `implode(…) . $separator` instead of a manual `.=` loop. Trailing newline behaviour preserved. ([`36243bc`](https://github.com/JanisVepris/zpl-builder-php/commit/36243bc))
 - Every public `ZplBuilder` method now has a short docblock describing what it does and which ZPL command it emits. Methods that can throw also document the exception types via `@throws`. ([`436494f`](https://github.com/JanisVepris/zpl-builder-php/commit/436494f), [`caef0aa`](https://github.com/JanisVepris/zpl-builder-php/commit/caef0aa))
 - Dropped the `jetbrains/phpstorm-attributes` dev dependency and removed `#[Pure]` from exception constructors. The attribute was IDE-only and didn't earn its keep. ([`caef0aa`](https://github.com/JanisVepris/zpl-builder-php/commit/caef0aa))
+- PHP-CS-Fixer now enforces alphabetical class member ordering via `ordered_class_elements`. ([`3a49a05`](https://github.com/JanisVepris/zpl-builder-php/commit/3a49a05))
 
 ### Breaking changes
 
