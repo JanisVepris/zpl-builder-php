@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eaf2d2c59fae359db85337ea303afac5",
+    "content-hash": "e089436dcd0d7178b8e82b22c4a24d88",
     "packages": [],
     "packages-dev": [
         {
@@ -574,48 +574,6 @@
                 }
             ],
             "time": "2026-05-15T09:20:44+00:00"
-        },
-        {
-            "name": "jetbrains/phpstorm-attributes",
-            "version": "1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/JetBrains/phpstorm-attributes.git",
-                "reference": "64de815a4509c29e00d5e3474087fd24c171afc2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/JetBrains/phpstorm-attributes/zipball/64de815a4509c29e00d5e3474087fd24c171afc2",
-                "reference": "64de815a4509c29e00d5e3474087fd24c171afc2",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "JetBrains\\PhpStorm\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "JetBrains",
-                    "homepage": "https://www.jetbrains.com"
-                }
-            ],
-            "description": "PhpStorm specific attributes",
-            "keywords": [
-                "attributes",
-                "jetbrains",
-                "phpstorm"
-            ],
-            "support": {
-                "issues": "https://youtrack.jetbrains.com/newIssue?project=WI",
-                "source": "https://github.com/JetBrains/phpstorm-attributes/tree/1.2"
-            },
-            "time": "2024-10-11T10:46:19+00:00"
         },
         {
             "name": "myclabs/deep-copy",

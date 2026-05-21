@@ -12,7 +12,11 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
+use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
@@ -66,7 +70,12 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /** Apply a previously registered font preset, emitting `^CF` with its stored dimensions. */
+    /**
+     * Apply a previously registered font preset, emitting `^CF` with its stored dimensions.
+     *
+     * @throws FontPresetDoesNotExistException
+     * @throws IntegerValueOutOfRangeException
+     */
     public function applyFontPreset(string $name): self
     {
         if (!isset($this->fontPresets[$name])) {
@@ -87,6 +96,9 @@ class ZplBuilder implements Stringable
     /**
      * Draw a Code 128 barcode with the given data (`^BC` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
      */
     public function barcodeCode128(
         string $data,
@@ -114,6 +126,9 @@ class ZplBuilder implements Stringable
     /**
      * Set defaults for subsequent barcodes — module width, wide-to-narrow ratio,
      * and bar height (`^BY`).
+     *
+     * @throws FloatValueOutOfRangeException
+     * @throws IntegerValueOutOfRangeException
      */
     public function barcodeDefaults(
         int $moduleWidth = 2,
@@ -136,6 +151,8 @@ class ZplBuilder implements Stringable
     /**
      * Change the default font (`^CF`) and optionally its height and/or width.
      * Unspecified dimensions keep the last value set for that font.
+     *
+     * @throws IntegerValueOutOfRangeException
      */
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
@@ -162,7 +179,12 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /** Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging. */
+    /**
+     * Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
     public function comment(string $text): self
     {
         return $this->addCommand(new Commands\FieldComment($text));
@@ -177,6 +199,8 @@ class ZplBuilder implements Stringable
     /**
      * Format the next field as a multi-line text block with the given width,
      * maximum line count, line spacing, justification, and hanging indent (`^FB`).
+     *
+     * @throws IntegerValueOutOfRangeException
      */
     public function fieldBlock(
         int $width = 0,
@@ -199,6 +223,8 @@ class ZplBuilder implements Stringable
     /**
      * Write text into the current field (`^FD ... ^FS`). Auto-escapes `^` and `~`
      * via `^FH_` if present, since the printer would otherwise treat them as command starts.
+     *
+     * @throws StringLengthOutOfRangeException
      */
     public function fieldData(string $data): self
     {
@@ -212,13 +238,22 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
-    /** Declare the hex-escape character used by the next `^FD` (`^FH`). */
+    /**
+     * Declare the hex-escape character used by the next `^FD` (`^FH`).
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
     public function fieldHexIndicator(string $indicator = '_'): self
     {
         return $this->addCommand(new Commands\FieldHexIndicator($indicator));
     }
 
-    /** Tag the next field with a number, for use with stored formats (`^FN`). */
+    /**
+     * Tag the next field with a number, for use with stored formats (`^FN`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function fieldNumber(int $number): self
     {
         return $this->addCommand(new Commands\FieldNumber($number));
@@ -230,7 +265,11 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldOrientation($rotation));
     }
 
-    /** Position the next field at the given (x, y) coordinate in dots (`^FO`). */
+    /**
+     * Position the next field at the given (x, y) coordinate in dots (`^FO`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function fieldOrigin(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\FieldOrigin($x, $y));
@@ -259,6 +298,8 @@ class ZplBuilder implements Stringable
     /**
      * Draw a rectangle or line of the given width × height with the chosen thickness,
      * color, and corner rounding (`^GB ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
      */
     public function graphicBox(
         int $width,
@@ -286,13 +327,21 @@ class ZplBuilder implements Stringable
         return isset($this->fontPresets[$name]);
     }
 
-    /** Move the label's home origin to the given (x, y) coordinate (`^LH`). */
+    /**
+     * Move the label's home origin to the given (x, y) coordinate (`^LH`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function labelHome(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\LabelHome($x, $y));
     }
 
-    /** Set the label's length in dots (`^LL`). */
+    /**
+     * Set the label's length in dots (`^LL`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function labelLength(int $length): self
     {
         return $this->addCommand(new Commands\LabelLength($length));
@@ -318,13 +367,21 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\PrintOrientation($orientation));
     }
 
-    /** Set how many labels to print (`^PQ`). */
+    /**
+     * Set how many labels to print (`^PQ`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function printQuantity(int $quantity): self
     {
         return $this->addCommand(new Commands\PrintQuantity($quantity));
     }
 
-    /** Set the label's print width in dots (`^PW`). */
+    /**
+     * Set the label's print width in dots (`^PW`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
     public function printWidth(int $width): self
     {
         return $this->addCommand(new Commands\PrintWidth($width));
@@ -339,7 +396,11 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\RawCommand($zpl));
     }
 
-    /** Invoke a stored format from the printer's memory (`^XF`). */
+    /**
+     * Invoke a stored format from the printer's memory (`^XF`).
+     *
+     * @throws StringLengthOutOfRangeException
+     */
     public function recallFormat(
         string $name,
         StorageDevice $device = StorageDevice::Ram,

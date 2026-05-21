@@ -36,6 +36,8 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `FieldData`, `FieldHexIndicator`, and `FieldComment` now reject literal `^` / `~` in their inputs via `ValueAssert::stringNotContains`. ([`305e3f8`](https://github.com/JanisVepris/zpl-builder-php/commit/305e3f8))
 - `FontSettings` instances are now lazily allocated on first access (via the new private `fontSettingsFor()` helper) instead of pre-creating all 36 cases up front in the constructor and `reset()`. ([`36243bc`](https://github.com/JanisVepris/zpl-builder-php/commit/36243bc))
 - `render()` rewritten as `implode(…) . $separator` instead of a manual `.=` loop. Trailing newline behaviour preserved. ([`36243bc`](https://github.com/JanisVepris/zpl-builder-php/commit/36243bc))
+- Every public `ZplBuilder` method now has a short docblock describing what it does and which ZPL command it emits. Methods that can throw also document the exception types via `@throws`. ([`436494f`](https://github.com/JanisVepris/zpl-builder-php/commit/436494f))
+- Dropped the `jetbrains/phpstorm-attributes` dev dependency and removed `#[Pure]` from exception constructors. The attribute was IDE-only and didn't earn its keep.
 
 ### Breaking changes
 

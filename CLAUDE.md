@@ -67,7 +67,7 @@ When adding a new ZPL command:
 ### 3. Enums, exceptions, helpers — `src/Enum`, `src/Exception`, `src/Util`
 
 - `Enum/*` — backed string enums whose `value` is the literal character ZPL expects (e.g. `Orientation::Rotate0 = 'N'`, `Code128Mode::None = 'N'`, `LabelFlip::Normal = 'N'`). Cases are PascalCase. Always prefer adding an enum case to passing raw strings.
-- `Exception/*` — all custom exceptions are `final` and extend the SPL exception that best matches their semantics (`OutOfRangeException`, `RuntimeException`, `InvalidArgumentException`, etc.). Constructors are marked `#[JetBrains\PhpStorm\Pure]`.
+- `Exception/*` — all custom exceptions are `final` and extend the SPL exception that best matches their semantics (`OutOfRangeException`, `RuntimeException`, `InvalidArgumentException`, etc.).
 - `Util/ValueAssert` — single source of truth for input validation. `int` / `float` cover numeric range checks (general ZPL range is `0..32000`; specific commands pass narrower bounds). `stringLengthBytes` checks byte length (matches ZPL's printer-buffer limit, not character count). `stringNotContains` rejects strings containing banned substrings (defaults to `^` / `~`, the ZPL command terminators). `hexValue` checks that a string is hex-digit only.
 - `Util/BoolToStr` — the only place that should map `bool` to `'Y'`/`'N'`.
 - `Util/FieldDataEncoder` — `escape(string $raw, string $indicator = '_')` hex-escapes `^`, `~`, and the indicator itself for inclusion in `^FD` data after a `^FH<indicator>` declaration. Used internally by `ZplBuilder::fieldData()` when the input contains banned characters.
