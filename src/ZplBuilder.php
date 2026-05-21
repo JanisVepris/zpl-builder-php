@@ -13,6 +13,7 @@ use Janisvepris\ZplBuilder\Enum\PrintOrientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
+use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
 use Stringable;
@@ -201,6 +202,11 @@ class ZplBuilder implements Stringable
 
     public function fieldData(string $data): self
     {
+        if (str_contains($data, '^') || str_contains($data, '~')) {
+            $this->fieldHexIndicator();
+            $data = FieldDataEncoder::escape($data);
+        }
+
         $this->addCommand(new Commands\FieldData($data));
 
         return $this->addCommand(new Commands\FieldSeparator());
