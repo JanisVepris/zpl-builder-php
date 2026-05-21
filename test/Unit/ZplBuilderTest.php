@@ -109,4 +109,31 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertStringNotContainsString(PHP_EOL, $output);
     }
+
+    public function testRenderDoesNotMutateState(): void
+    {
+        $builder = ZplBuilder::start()->fieldData('Hello');
+
+        $first = (string) $builder;
+        $builder->fieldData('World');
+        $second = (string) $builder;
+
+        self::assertSame('^XA^FDHello^FS^XZ', $first);
+        self::assertSame('^XA^FDHello^FS^FDWorld^FS^XZ', $second);
+    }
+
+    public function testRenderIsIdempotent(): void
+    {
+        $builder = ZplBuilder::start()->fieldData('Hello');
+
+        self::assertSame((string) $builder, (string) $builder);
+    }
+
+    public function testExplicitEndRendersSingleEndFormat(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
+
+        self::assertSame('^XA^FDHello^FS^XZ', $output);
+        self::assertSame(1, substr_count($output, '^XZ'));
+    }
 }

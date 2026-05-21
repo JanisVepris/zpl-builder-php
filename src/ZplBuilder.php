@@ -107,13 +107,14 @@ class ZplBuilder implements Stringable
 
     public function render(): string
     {
+        $commands = $this->commands;
         if (!$this->formatEnded) {
-            $this->end();
+            $commands[] = new Commands\EndFormat();
         }
 
         $string = '';
 
-        foreach ($this->commands as $command) {
+        foreach ($commands as $command) {
             $string .= $command->__toString();
 
             if ($this->printNewlines) {
