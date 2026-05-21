@@ -147,6 +147,17 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
+    /**
+     * Append a literal ZPL fragment without validation. Use for commands the
+     * builder does not yet have a dedicated method for.
+     *
+     * @throws CommandAfterEndException
+     */
+    public function raw(string $zpl): self
+    {
+        return $this->addCommand(new Commands\RawCommand($zpl));
+    }
+
     public function printOrientation(PrintOrientation $orientation): self
     {
         return $this->addCommand(new Commands\PrintOrientation($orientation));

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit;
 
+use Janisvepris\ZplBuilder\Exception\CommandAfterEndException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -46,5 +47,28 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertStringContainsString('^FDid_42^FS', $output);
         self::assertStringNotContainsString('^FH', $output);
+    }
+
+    public function testRawAppendsLiteralZpl(): void
+    {
+        $output = (string) ZplBuilder::start()->raw('^MMT');
+
+        self::assertStringContainsString('^MMT', $output);
+    }
+
+    public function testRawPreservesArbitraryFragment(): void
+    {
+        $output = (string) ZplBuilder::start()->raw('^FO5,5^GB100,100,2^FS');
+
+        self::assertStringContainsString('^FO5,5^GB100,100,2^FS', $output);
+    }
+
+    public function testRawAfterEndThrows(): void
+    {
+        $builder = ZplBuilder::start()->end();
+
+        $this->expectException(CommandAfterEndException::class);
+
+        $builder->raw('^MMT');
     }
 }
