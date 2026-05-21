@@ -8,6 +8,7 @@ use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\InvalidHexValueException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -154,5 +155,64 @@ class ValueAssertTest extends UnitTestCase
         $this->expectException(InvalidHexValueException::class);
 
         ValueAssert::hexValue('');
+    }
+
+    public function testStringNotContainsAllowsCleanString(): void
+    {
+        ValueAssert::stringNotContains('Hello World');
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringNotContainsAllowsEmptyString(): void
+    {
+        ValueAssert::stringNotContains('');
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringNotContainsThrowsOnDefaultCaret(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        ValueAssert::stringNotContains('Hello ^XA');
+    }
+
+    public function testStringNotContainsThrowsOnDefaultTilde(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        ValueAssert::stringNotContains('Hello ~JS');
+    }
+
+    public function testStringNotContainsRespectsCustomForbiddenList(): void
+    {
+        ValueAssert::stringNotContains('Hello ^ World', ['~']);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringNotContainsThrowsOnCustomSubstring(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        ValueAssert::stringNotContains('please do not include the word banana here', ['banana']);
+    }
+
+    public function testStringNotContainsAllowsEmptyForbiddenList(): void
+    {
+        ValueAssert::stringNotContains('Anything ^ ~ goes', []);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testStringNotContainsExceptionMessageNamesMatchedSubstring(): void
+    {
+        try {
+            ValueAssert::stringNotContains('Hello ~JS');
+            self::fail('Expected exception was not thrown');
+        } catch (StringValueContainsBannedValuesException $e) {
+            self::assertStringContainsString('~', $e->getMessage());
+        }
     }
 }

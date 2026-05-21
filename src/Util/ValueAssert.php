@@ -8,6 +8,7 @@ use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\InvalidHexValueException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 
 class ValueAssert
 {
@@ -52,6 +53,23 @@ class ValueAssert
     {
         if (!ctype_xdigit($value)) {
             throw new InvalidHexValueException($value);
+        }
+    }
+
+    /**
+     * @param array<int, string> $forbiddenSubstrings
+     *
+     * @throws StringValueContainsBannedValuesException
+     */
+    public static function stringNotContains(string $string, array $forbiddenSubstrings = ['^', '~']): void
+    {
+        foreach ($forbiddenSubstrings as $substring) {
+            if (str_contains($string, $substring)) {
+                throw new StringValueContainsBannedValuesException(
+                    value: $string,
+                    forbiddenSubstring: $substring,
+                );
+            }
         }
     }
 }

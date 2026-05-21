@@ -17,6 +17,7 @@ class FieldData implements ZplCommand
         string $data,
     ) {
         ValueAssert::stringLength($data, 0, 3072);
+        ValueAssert::stringNotContains($data);
 
         $this->data = $data;
     }

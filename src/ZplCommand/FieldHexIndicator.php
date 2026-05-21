@@ -16,6 +16,7 @@ class FieldHexIndicator implements ZplCommand
         string $indicator,
     ) {
         ValueAssert::stringLength($indicator, 1, 1);
+        ValueAssert::stringNotContains($indicator);
 
         $this->indicator = $indicator;
     }

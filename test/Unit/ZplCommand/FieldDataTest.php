@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplCommand\FieldData;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -27,5 +28,19 @@ class FieldDataTest extends UnitTestCase
         $this->expectException(StringLengthOutOfRangeException::class);
 
         new FieldData(str_repeat('a', 3073));
+    }
+
+    public function testCaretInDataThrows(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        new FieldData('breakout^XA');
+    }
+
+    public function testTildeInDataThrows(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        new FieldData('breakout~JS');
     }
 }
