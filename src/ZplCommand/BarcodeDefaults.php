@@ -9,7 +9,7 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 final readonly class BarcodeDefaults implements ZplCommand
 {
-    private const string FORMAT = '^BY%d,%0.1f,%d';
+    private const string FORMAT = '^BY%d,%0.1F,%d';
     private int $height;
 
     private int $moduleWidth;

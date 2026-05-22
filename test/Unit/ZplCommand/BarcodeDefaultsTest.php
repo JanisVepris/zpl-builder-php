@@ -13,6 +13,32 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(BarcodeDefaults::class)]
 class BarcodeDefaultsTest extends UnitTestCase
 {
+    public function testFloatFormattingIsLocaleIndependent(): void
+    {
+        $previous = setlocale(LC_NUMERIC, '0');
+        $applied = setlocale(
+            LC_NUMERIC,
+            'de_DE.UTF-8',
+            'de_DE',
+            'fr_FR.UTF-8',
+            'fr_FR',
+            'German_Germany.1252',
+            'French_France.1252',
+        );
+
+        if ($applied === false || (localeconv()['decimal_point'] ?? '.') === '.') {
+            setlocale(LC_NUMERIC, $previous !== false ? $previous : 'C');
+            self::markTestSkipped('No comma-decimal locale available on this system.');
+        }
+
+        try {
+            self::assertSame('^BY2,3.0,75', (string) new BarcodeDefaults(2, 3.0, 75));
+            self::assertSame('^BY3,2.5,100', (string) new BarcodeDefaults(3, 2.5, 100));
+        } finally {
+            setlocale(LC_NUMERIC, $previous !== false ? $previous : 'C');
+        }
+    }
+
     public function testHeightBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
