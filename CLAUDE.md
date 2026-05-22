@@ -60,7 +60,7 @@ When adding a new ZPL command:
 1. Create `src/ZplCommand/MyCommand.php` as a `final readonly class` implementing `ZplCommand`. Hold the format string in a `private const string FORMAT` / `COMMAND`.
 2. Validate all numeric/string inputs in the constructor using `ValueAssert::int|float|stringLengthBytes|hexValue|stringNotContains`. Don't re-implement range checks inline.
 3. Convert booleans destined for ZPL output via `Util\BoolToStr::conv()` (returns `'Y'`/`'N'`).
-4. Add a fluent method to `ZplBuilder` that constructs the command and routes through `addCommand()` (never push to `$commands` directly — `addCommand()` enforces the end-of-format guard).
+4. Add a fluent method to `ZplBuilder` that constructs the command and routes through `addCommand()` (never push to `$commands` directly — `addCommand()` is the single insertion point and may grow guards in future).
 5. If the command pairs with `^FD ... ^FS` (most field-producing commands do), follow the `barcodeCode128()` pattern: emit the command, then call `$this->fieldData($data)`, which appends both `FieldData` and `FieldSeparator` (and auto-emits `^FH_` with hex-escaping if `$data` contains `^` or `~`).
 6. Reference the documentation to know exactly which parameters are required vs optional, and their valid ranges.
 
