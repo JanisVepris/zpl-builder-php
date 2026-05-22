@@ -11,6 +11,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 ### Fixed
 
 - `^BY` (barcode defaults) formatted the wide-to-narrow ratio with `%0.1f`, which honours `LC_NUMERIC`. On comma-decimal locales (e.g. `de_DE`, `fr_FR`) the emitted ZPL became `^BY2,3,0,100` and was parsed by the printer as four arguments. Now uses `%0.1F` for locale-independent output. ([`f212cfd`](https://github.com/JanisVepris/zpl-builder-php/commit/f212cfd))
+- `ZplBuilder::changeFont()` partially mutated its cached `FontSettings` before raising on an invalid argument. A failed call like `changeFont(Font::A, 30, -1)` wrote height=30 into the cache but never emitted `^CF`, so the very next no-arg `changeFont(Font::A)` used the leaked height. `changeFont()` and `barcodeDefaults()` now build a fresh settings value (validated via its constructor) and swap the cached reference atomically — partial writes on failure are no longer possible. ([`0569b4d`](https://github.com/JanisVepris/zpl-builder-php/commit/0569b4d))
 
 ### Breaking changes
 
