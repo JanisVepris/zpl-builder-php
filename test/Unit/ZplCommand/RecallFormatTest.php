@@ -13,6 +13,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(RecallFormat::class)]
 class RecallFormatTest extends UnitTestCase
 {
+    public function testEmptyExtensionThrows(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        new RecallFormat(StorageDevice::Ram, 'SAMPLE', '');
+    }
+
     public function testEmptyNameThrows(): void
     {
         $this->expectException(StringLengthOutOfRangeException::class);

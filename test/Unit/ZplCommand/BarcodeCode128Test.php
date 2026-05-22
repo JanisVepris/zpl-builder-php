@@ -14,6 +14,20 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(BarcodeCode128::class)]
 class BarcodeCode128Test extends UnitTestCase
 {
+    public function testHeightAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new BarcodeCode128(
+            orientation: Orientation::Rotate0,
+            height: 32001,
+            printInterpretation: false,
+            interpretationAboveCode: false,
+            useUccCheckDigit: false,
+            mode: Code128Mode::None,
+        );
+    }
+
     public function testHeightBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);

@@ -12,6 +12,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(LabelLength::class)]
 class LabelLengthTest extends UnitTestCase
 {
+    public function testLengthAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new LabelLength(32001);
+    }
+
     public function testLengthBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
