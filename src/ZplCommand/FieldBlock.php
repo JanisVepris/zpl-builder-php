@@ -10,6 +10,9 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 final readonly class FieldBlock implements ZplCommand
 {
+    /** Per-parameter integer cap for `^FB` width/lines/spacing/indent per the ZPL spec. */
+    public const int MAX_PARAM = 9999;
+
     private const string FORMAT = '^FB%d,%d,%d,%s,%d';
     private int $hangingIndent;
     private Justify $justify;
@@ -24,10 +27,10 @@ final readonly class FieldBlock implements ZplCommand
         Justify $justify,
         int $hangingIndent,
     ) {
-        ValueAssert::int($width, 0, 9999);
-        ValueAssert::int($maxLines, 1, 9999);
-        ValueAssert::int($lineSpacing, -9999, 9999);
-        ValueAssert::int($hangingIndent, 0, 9999);
+        ValueAssert::int($width, 0, self::MAX_PARAM);
+        ValueAssert::int($maxLines, 1, self::MAX_PARAM);
+        ValueAssert::int($lineSpacing, -self::MAX_PARAM, self::MAX_PARAM);
+        ValueAssert::int($hangingIndent, 0, self::MAX_PARAM);
 
         $this->lineSpacing = $lineSpacing;
         $this->maxLines = $maxLines;

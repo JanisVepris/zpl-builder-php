@@ -12,8 +12,11 @@ use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 
 class ValueAssert
 {
+    /** Default upper bound for ZPL numeric parameters (dots) — see ZPL II Programming Guide. */
+    public const int MAX_DIMENSION = 32000;
+
     /** @throws FloatValueOutOfRangeException */
-    public static function float(float $value, float $min = 0.0, float $max = 32000.0): void
+    public static function float(float $value, float $min = 0.0, float $max = self::MAX_DIMENSION): void
     {
         if ($value < $min || $value > $max) {
             throw new FloatValueOutOfRangeException(
@@ -32,7 +35,7 @@ class ValueAssert
     }
 
     /** @throws IntegerValueOutOfRangeException */
-    public static function int(int $value, int $min = 0, int $max = 32000): void
+    public static function int(int $value, int $min = 0, int $max = self::MAX_DIMENSION): void
     {
         if ($value < $min || $value > $max) {
             throw new IntegerValueOutOfRangeException(
