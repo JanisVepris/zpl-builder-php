@@ -391,8 +391,10 @@ class ZplBuilder implements Stringable
     }
 
     /**
-     * Append a literal ZPL fragment without validation. Use for commands the
-     * builder does not yet have a dedicated method for.
+     * Append a literal ZPL fragment without content validation. Use for commands the
+     * builder does not yet have a dedicated method for. The fragment must be non-empty.
+     *
+     * @throws StringLengthOutOfRangeException
      */
     public function raw(string $zpl): self
     {
