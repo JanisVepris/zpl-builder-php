@@ -12,11 +12,11 @@ readonly class FieldOrientation implements ZplCommand
     private const string FORMAT = '^FW%s';
 
     public function __construct(
-        private Orientation $fieldRotation,
+        private Orientation $orientation,
     ) {}
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->fieldRotation->value);
+        return sprintf(self::FORMAT, $this->orientation->value);
     }
 }
