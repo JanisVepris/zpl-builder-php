@@ -39,8 +39,11 @@ class ZplBuilder implements Stringable
 
     private bool $printNewlines = false;
 
-    /** Create a bare builder. Prefer the `start()` factory for the typical flow. */
-    public function __construct()
+    /**
+     * Protected — use the `start()` static factory to create a builder for normal use,
+     * or call `parent::__construct()` from a subclass.
+     */
+    protected function __construct()
     {
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
     }
