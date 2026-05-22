@@ -438,7 +438,7 @@ class ZplBuilder implements Stringable
 
         $separator = $this->printNewlines ? PHP_EOL : '';
 
-        return implode($separator, array_map('strval', $this->commands)).$separator;
+        return implode($separator, array_map('strval', $this->commands)) . $separator;
     }
 
     /**

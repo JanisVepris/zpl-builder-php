@@ -19,9 +19,9 @@ class FieldDataEncoder
         ValueAssert::stringNotContains($indicator);
 
         $map = [
-            $indicator => $indicator.sprintf('%02X', ord($indicator)),
-            '^' => $indicator.'5E',
-            '~' => $indicator.'7E',
+            $indicator => $indicator . sprintf('%02X', ord($indicator)),
+            '^' => $indicator . '5E',
+            '~' => $indicator . '7E',
         ];
 
         return strtr($raw, $map);

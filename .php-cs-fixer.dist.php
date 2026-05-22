@@ -24,7 +24,7 @@ return (new PhpCsFixer\Config())
         'set_type_to_cast' => true,
         'array_syntax' => ['syntax' => 'short'],
 
-        'concat_space' => ['spacing' => 'none'],
+        'concat_space' => ['spacing' => 'one'],
 
         'declare_strict_types' => true,
         'strict_comparison' => true,

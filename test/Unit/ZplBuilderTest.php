@@ -410,7 +410,7 @@ class ZplBuilderTest extends UnitTestCase
     {
         $output = (string) ZplBuilder::start()->printNewlines()->fieldData('Hi')->end();
 
-        self::assertSame('^XA'.PHP_EOL.'^FDHi'.PHP_EOL.'^FS'.PHP_EOL.'^XZ'.PHP_EOL, $output);
+        self::assertSame('^XA' . PHP_EOL . '^FDHi' . PHP_EOL . '^FS' . PHP_EOL . '^XZ' . PHP_EOL, $output);
     }
 
     public function testPrintOrientationEmitsPo(): void
