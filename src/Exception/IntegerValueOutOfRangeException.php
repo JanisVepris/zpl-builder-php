@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 
 use RangeException;
 
-final class IntegerValueOutOfRangeException extends RangeException
+class IntegerValueOutOfRangeException extends RangeException
 {
     public function __construct(int $value, int $min, int $max)
     {

@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class BarcodeDefaults implements ZplCommand
+readonly class BarcodeDefaults implements ZplCommand
 {
     private const string FORMAT = '^BY%d,%0.1F,%d';
     private int $height;

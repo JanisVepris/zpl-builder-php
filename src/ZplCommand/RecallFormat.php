@@ -8,7 +8,7 @@ use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class RecallFormat implements ZplCommand
+readonly class RecallFormat implements ZplCommand
 {
     private const string FORMAT = '^XF%s:%s.%s';
     private StorageDevice $device;

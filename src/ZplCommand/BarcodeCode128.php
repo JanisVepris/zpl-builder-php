@@ -10,7 +10,7 @@ use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class BarcodeCode128 implements ZplCommand
+readonly class BarcodeCode128 implements ZplCommand
 {
     private const string FORMAT = '^BC%s,%d,%s,%s,%s,%s';
     private int $height;

@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 
-final class FontSettings
+class FontSettings
 {
     private int $height;
     private int $width;

@@ -8,7 +8,7 @@ use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class GraphicBox implements ZplCommand
+readonly class GraphicBox implements ZplCommand
 {
     private const string FORMAT = '^GB%d,%d,%d,%s,%d';
     private LineColor $color;

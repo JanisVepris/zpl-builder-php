@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 
 use RangeException;
 
-final class FloatValueOutOfRangeException extends RangeException
+class FloatValueOutOfRangeException extends RangeException
 {
     public function __construct(float $value, float $min, float $max)
     {

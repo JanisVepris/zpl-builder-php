@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 
 use InvalidArgumentException;
 
-final class FontPresetDoesNotExistException extends InvalidArgumentException
+class FontPresetDoesNotExistException extends InvalidArgumentException
 {
     public function __construct(string $presetName)
     {

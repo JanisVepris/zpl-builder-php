@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldNumber implements ZplCommand
+readonly class FieldNumber implements ZplCommand
 {
     private const string FORMAT = '^FN%d';
 

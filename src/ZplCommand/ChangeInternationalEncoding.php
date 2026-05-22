@@ -8,7 +8,7 @@ use Janisvepris\ZplBuilder\CharacterRemap;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class ChangeInternationalEncoding implements ZplCommand
+readonly class ChangeInternationalEncoding implements ZplCommand
 {
     private const string FORMAT = '^CI%s';
     private const string FORMAT_WITH_REMAPS = '^CI%s,%s';

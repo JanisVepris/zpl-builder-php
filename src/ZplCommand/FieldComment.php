@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldComment implements ZplCommand
+readonly class FieldComment implements ZplCommand
 {
     /** Printer command-text buffer limit (bytes) for `^FX` comment text. */
     public const int MAX_TEXT_BYTES = 3072;

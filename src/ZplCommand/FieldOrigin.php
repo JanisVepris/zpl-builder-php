@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldOrigin implements ZplCommand
+readonly class FieldOrigin implements ZplCommand
 {
     private const string FORMAT = '^FO%d,%d';
     private int $x;

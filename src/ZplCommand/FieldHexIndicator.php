@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldHexIndicator implements ZplCommand
+readonly class FieldHexIndicator implements ZplCommand
 {
     private const string FORMAT = '^FH%s';
     private string $indicator;

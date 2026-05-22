@@ -8,7 +8,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldBlock implements ZplCommand
+readonly class FieldBlock implements ZplCommand
 {
     /** Per-parameter integer cap for `^FB` width/lines/spacing/indent per the ZPL spec. */
     public const int MAX_PARAM = 9999;

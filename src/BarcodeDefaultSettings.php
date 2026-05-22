@@ -8,7 +8,7 @@ use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 
-final class BarcodeDefaultSettings
+class BarcodeDefaultSettings
 {
     private int $height;
     private int $moduleWidth;

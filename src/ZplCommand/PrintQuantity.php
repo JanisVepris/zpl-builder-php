@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class PrintQuantity implements ZplCommand
+readonly class PrintQuantity implements ZplCommand
 {
     private const string FORMAT = '^PQ%d';
     private int $quantity;

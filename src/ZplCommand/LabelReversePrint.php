@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class LabelReversePrint implements ZplCommand
+readonly class LabelReversePrint implements ZplCommand
 {
     private const string FORMAT = '^LR%s';
 

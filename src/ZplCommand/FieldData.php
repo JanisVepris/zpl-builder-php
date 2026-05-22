@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldData implements ZplCommand
+readonly class FieldData implements ZplCommand
 {
     /** Printer command-text buffer limit (bytes) for `^FD` field data. */
     public const int MAX_DATA_BYTES = 3072;

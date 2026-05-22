@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class PrintOrientation implements ZplCommand
+readonly class PrintOrientation implements ZplCommand
 {
     private const string FORMAT = '^PO%s';
 

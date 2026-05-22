@@ -8,7 +8,7 @@ use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 
-final readonly class FontPreset
+readonly class FontPreset
 {
     /** @throws IntegerValueOutOfRangeException */
     public function __construct(

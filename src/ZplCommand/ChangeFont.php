@@ -9,7 +9,7 @@ use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class ChangeFont implements ZplCommand
+readonly class ChangeFont implements ZplCommand
 {
     private const string FORMAT = '^CF%s,%d,%d';
 

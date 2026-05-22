@@ -7,7 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class LabelHome implements ZplCommand
+readonly class LabelHome implements ZplCommand
 {
     private const string FORMAT = '^LH%d,%d';
     private int $x;
