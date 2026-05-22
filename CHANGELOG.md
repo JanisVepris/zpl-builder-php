@@ -20,6 +20,10 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `Util\FieldDataEncoder::escape()` now validates the `$indicator` argument (length 1 byte, not `^` or `~`) and throws `StringLengthOutOfRangeException` or `StringValueContainsBannedValuesException`. Previously multi-byte or empty indicators emitted PHP deprecation/warning notices and produced invalid ZPL, and `^` / `~` indicators silently produced a `^FH` declaration the printer can't parse. Matches the validation already enforced by `ZplCommand\FieldHexIndicator`. ([`fcdbaf5`](https://github.com/JanisVepris/zpl-builder-php/commit/fcdbaf5))
 - `ZplBuilder::barcodeDefaults()` no-arg height changed from `100` to `10` to match `BarcodeDefaultSettings`'s own constructor default. Previously calling `barcodeDefaults()` with no args jumped to 100 while never calling it left the cached height at 10 — the two paths now agree. Callers depending on the old `100` default need to pass it explicitly. ([`07c3662`](https://github.com/JanisVepris/zpl-builder-php/commit/07c3662))
 
+### Changed
+
+- `ZplBuilder::addCommand()` and `ZplBuilder::fontSettingsFor()` relaxed from `private` to `protected`. Subclasses can now register their own `ZplCommand` implementations and read the lazy-allocated per-font state cache without reimplementing the facade. No impact on existing callers — `ZplBuilder` is intentionally non-final and this formalises the extension surface. ([`fcb5e38`](https://github.com/JanisVepris/zpl-builder-php/commit/fcb5e38))
+
 ## [0.40.1] - 2026-05-21
 
 ### Fixed
