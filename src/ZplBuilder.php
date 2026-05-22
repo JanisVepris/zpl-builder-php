@@ -135,7 +135,7 @@ class ZplBuilder implements Stringable
     public function barcodeDefaults(
         int $moduleWidth = 2,
         float $wideToNarrowRatio = 3.0,
-        int $height = 100,
+        int $height = 10,
     ): self {
         $settings = new BarcodeDefaultSettings($moduleWidth, $wideToNarrowRatio, $height);
         $this->barcodeDefaultSettings = $settings;

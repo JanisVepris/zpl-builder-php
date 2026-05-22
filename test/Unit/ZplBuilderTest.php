@@ -81,6 +81,15 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^BY3,2.5,75', $output);
     }
 
+    public function testBarcodeDefaultsNoArgsEmitsAlignedDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeDefaults();
+
+        // The fluent method's defaults must match BarcodeDefaultSettings'
+        // constructor defaults so the cached state and the emitted ^BY agree.
+        self::assertSame('^XA^BY2,3.0,10', $output);
+    }
+
     public function testBarcodeDefaultsValidationFailureLeavesNoCommandAppended(): void
     {
         $builder = ZplBuilder::start();
