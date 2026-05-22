@@ -426,9 +426,17 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /** Drop a previously registered font preset. No-op if the name isn't registered. */
+    /**
+     * Drop a previously registered font preset.
+     *
+     * @throws FontPresetDoesNotExistException
+     */
     public function removeFontPreset(string $name): self
     {
+        if (!isset($this->fontPresets[$name])) {
+            throw new FontPresetDoesNotExistException($name);
+        }
+
         unset($this->fontPresets[$name]);
 
         return $this;

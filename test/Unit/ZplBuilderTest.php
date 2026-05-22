@@ -473,6 +473,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertFalse($builder->hasFontPreset('big'));
     }
 
+    public function testRemoveFontPresetThrowsOnUnknownName(): void
+    {
+        $this->expectException(FontPresetDoesNotExistException::class);
+
+        ZplBuilder::start()->removeFontPreset('does-not-exist');
+    }
+
     public function testRenderDoesNotMutateState(): void
     {
         $builder = ZplBuilder::start()->fieldData('Hello');
