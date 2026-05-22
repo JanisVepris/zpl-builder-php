@@ -57,7 +57,7 @@ ZplBuilder::start()
 ## Reference
 
 - [Zebra ZPL II Programming Guide](https://www.zebra.com/content/dam/support-dam/en/documentation/unrestricted/guide/software/zpl-zbi2-pg-en.pdf)
-- [Online command reference](https://docs.zebra.com/us/en/printers/software/zpl-pg/c-zpl-zpl-commands/c-zpl-commands.html)
+- [Online command reference (alphabetical index)](https://docs.zebra.com/us/en/printers/software/zpl-pg/c-zpl-zpl-commands.html)
 
 ## License
 
