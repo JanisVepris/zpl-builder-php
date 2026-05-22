@@ -8,10 +8,10 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 final class EndFormat implements ZplCommand
 {
-    private const string COMMAND = '^XZ';
+    private const string FORMAT = '^XZ';
 
     public function __toString()
     {
-        return self::COMMAND;
+        return self::FORMAT;
     }
 }

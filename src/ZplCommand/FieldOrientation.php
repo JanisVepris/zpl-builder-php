@@ -9,7 +9,7 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 final readonly class FieldOrientation implements ZplCommand
 {
-    private const string COMMAND = '^FW%s';
+    private const string FORMAT = '^FW%s';
 
     public function __construct(
         private Orientation $fieldRotation,
@@ -17,6 +17,6 @@ final readonly class FieldOrientation implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::COMMAND, $this->fieldRotation->value);
+        return sprintf(self::FORMAT, $this->fieldRotation->value);
     }
 }
