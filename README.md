@@ -1,6 +1,6 @@
 # zpl-builder-php
 
-A small PHP 8.3+ library that generates [ZPL II](https://docs.zebra.com/us/en/printers/software/zpl-pg/c-getting-started.html) (Zebra Programming Language) label payloads via a fluent builder API. No runtime dependencies beyond PHP itself.
+A small PHP 8.3+ library that generates [ZPL II](https://docs.zebra.com/us/en/printers/software/zpl-pg/zpl-ii,-zbi-2,-set-get-do,-mirror,-wml-programming-guide.html) (Zebra Programming Language) label payloads via a fluent builder API. No runtime dependencies beyond PHP itself.
 
 > **Status:** work in progress — the public API is **unstable until 1.0** and minor releases may include breaking changes. See [`CHANGELOG.md`](CHANGELOG.md) for the per-version breakdown.
 
