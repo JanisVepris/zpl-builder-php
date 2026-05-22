@@ -466,8 +466,11 @@ class ZplBuilder implements Stringable
         return $builder->addCommand(new Commands\StartFormat());
     }
 
-    /** Append a command to the internal list. All public mutation methods route through this. */
-    private function addCommand(Commands $command): self
+    /**
+     * Append a command to the internal list. All public mutation methods route through this,
+     * and subclasses can call it to register their own `ZplCommand` implementations.
+     */
+    protected function addCommand(Commands $command): self
     {
         $this->commands[] = $command;
 
@@ -475,7 +478,7 @@ class ZplBuilder implements Stringable
     }
 
     /** Lazy-allocate and return the `FontSettings` for the given font. */
-    private function fontSettingsFor(Font $font): FontSettings
+    protected function fontSettingsFor(Font $font): FontSettings
     {
         return $this->fontSettings[$font->value] ??= new FontSettings();
     }
