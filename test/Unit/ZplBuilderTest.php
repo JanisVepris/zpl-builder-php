@@ -11,7 +11,9 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
+use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -79,6 +81,32 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^BY3,2.5,75', $output);
     }
 
+    public function testBarcodeDefaultsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->barcodeDefaults(5, 2.5, 0);
+            self::fail('Expected IntegerValueOutOfRangeException on invalid height.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testBarcodeDefaultsValidationFailureLeavesNoCommandAppendedForRatio(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->barcodeDefaults(5, 3.5);
+            self::fail('Expected FloatValueOutOfRangeException on invalid ratio.');
+        } catch (FloatValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
     public function testChangeFontEmitsCfWithLetterFont(): void
     {
         $output = (string) ZplBuilder::start()->changeFont(Font::A, 30, 15);
@@ -110,6 +138,23 @@ class ZplBuilderTest extends UnitTestCase
             ->changeFont(Font::A, 50);
 
         self::assertSame('^XA^CFA,30,15^CFA,50,15', $output);
+    }
+
+    public function testChangeFontWidthFailureDoesNotLeakHeightIntoNextCall(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->changeFont(Font::A, 30, -1);
+            self::fail('Expected IntegerValueOutOfRangeException on invalid width.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        // The failed call must not leak height=30 into the cached FontSettings.
+        // A subsequent no-arg changeFont() should still use the defaults (9, 5).
+        $builder->changeFont(Font::A);
+
+        self::assertSame('^XA^CFA,9,5', (string) $builder);
     }
 
     public function testChangeInternationalEncodingEmitsCi(): void

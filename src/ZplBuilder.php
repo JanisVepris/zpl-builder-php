@@ -135,15 +135,14 @@ class ZplBuilder implements Stringable
         float $wideToNarrowRatio = 3.0,
         int $height = 100,
     ): self {
-        $this->barcodeDefaultSettings->setModuleWidth($moduleWidth);
-        $this->barcodeDefaultSettings->setWideToNarrowRatio($wideToNarrowRatio);
-        $this->barcodeDefaultSettings->setHeight($height);
+        $settings = new BarcodeDefaultSettings($moduleWidth, $wideToNarrowRatio, $height);
+        $this->barcodeDefaultSettings = $settings;
 
         return $this->addCommand(
             new Commands\BarcodeDefaults(
-                moduleWidth: $this->barcodeDefaultSettings->moduleWidth(),
-                wideToNarrowRatio: $this->barcodeDefaultSettings->wideToNarrowRatio(),
-                height: $this->barcodeDefaultSettings->height(),
+                moduleWidth: $settings->moduleWidth(),
+                wideToNarrowRatio: $settings->wideToNarrowRatio(),
+                height: $settings->height(),
             ),
         );
     }
@@ -156,15 +155,12 @@ class ZplBuilder implements Stringable
      */
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
-        $settings = $this->fontSettingsFor($font);
-
-        if ($height !== null) {
-            $settings->setHeight($height);
-        }
-
-        if ($width !== null) {
-            $settings->setWidth($width);
-        }
+        $current = $this->fontSettingsFor($font);
+        $settings = new FontSettings(
+            $height ?? $current->height(),
+            $width ?? $current->width(),
+        );
+        $this->fontSettings[$font->value] = $settings;
 
         return $this->addCommand(
             new Commands\ChangeFont($font, $settings->height(), $settings->width()),
