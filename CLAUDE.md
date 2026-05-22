@@ -51,7 +51,7 @@ Stateful concerns owned by the builder (not by individual commands):
 
 ### 2. `ZplCommand` value objects — `src/ZplCommand/*`
 
-Each ZPL command (`^XA`, `^FD`, `^FO`, `^BC`, `^CF`, `^CI`, `^FB`, …) is a `readonly class` implementing the `ZplCommand` interface (extends `Stringable`). They are immutable value objects: constructor validates inputs via `Util\ValueAssert`, and `__toString()` returns the formatted ZPL fragment built with `sprintf`. The three trivial commands with no properties (`StartFormat`, `EndFormat`, `FieldSeparator`) are plain `class` only — `readonly` would be a no-op without properties. No class is `final`; the library is meant to be freely extensible by downstream consumers (subclasses of a `readonly` class must themselves be `readonly`, per PHP).
+Each ZPL command (`^XA`, `^FD`, `^FO`, `^BC`, `^CF`, `^CI`, `^FB`, …) is a `readonly class` implementing the `ZplCommand` interface (extends `Stringable`). They are immutable value objects: constructor validates inputs via `Util\ValueAssert`, and `__toString()` returns the formatted ZPL fragment built with `sprintf`. The trivial commands with no properties (`StartFormat`, `EndFormat`, `FieldSeparator`) are also `readonly class` — even though `readonly` is a no-op on a class without state, it keeps the contract uniform across the layer and forces any subclasses to remain readonly. No class is `final`; the library is meant to be freely extensible by downstream consumers (subclasses of a `readonly` class must themselves be `readonly`, per PHP).
 
 `ZplCommand\RawCommand` exists as an escape hatch for callers who need to emit arbitrary ZPL the builder doesn't natively support — reached via `ZplBuilder::raw(string)`.
 
