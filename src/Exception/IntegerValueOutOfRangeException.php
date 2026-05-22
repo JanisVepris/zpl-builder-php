@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Exception;
 
-use OutOfRangeException;
+use RangeException;
 
-final class IntegerValueOutOfRangeException extends OutOfRangeException
+final class IntegerValueOutOfRangeException extends RangeException
 {
     public function __construct(int $value, int $min, int $max)
     {
