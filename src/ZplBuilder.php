@@ -265,10 +265,10 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldNumber($number));
     }
 
-    /** Set the rotation applied to subsequent fields (`^FW`). */
-    public function fieldOrientation(Orientation $rotation): self
+    /** Set the orientation applied to subsequent fields (`^FW`). */
+    public function fieldOrientation(Orientation $orientation): self
     {
-        return $this->addCommand(new Commands\FieldOrientation($rotation));
+        return $this->addCommand(new Commands\FieldOrientation($orientation));
     }
 
     /**
