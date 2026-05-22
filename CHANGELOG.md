@@ -12,6 +12,10 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 - `^BY` (barcode defaults) formatted the wide-to-narrow ratio with `%0.1f`, which honours `LC_NUMERIC`. On comma-decimal locales (e.g. `de_DE`, `fr_FR`) the emitted ZPL became `^BY2,3,0,100` and was parsed by the printer as four arguments. Now uses `%0.1F` for locale-independent output. ([`f212cfd`](https://github.com/JanisVepris/zpl-builder-php/commit/f212cfd))
 
+### Breaking changes
+
+- `ZplCommand\ChangeFont`, `ValueObject\FontPreset`, `FontSettings`, and `BarcodeDefaultSettings` constructors now validate height/width (and barcode module width / ratio) via `ValueAssert` and throw `IntegerValueOutOfRangeException` / `FloatValueOutOfRangeException` for out-of-range inputs. Previously the `ChangeFont` and `FontPreset` VOs accepted any int and the settings classes only validated through their setters, so direct instantiation could produce out-of-spec `^CF` output. ([`e7e1a1b`](https://github.com/JanisVepris/zpl-builder-php/commit/e7e1a1b))
+
 ## [0.40.1] - 2026-05-21
 
 ### Fixed
