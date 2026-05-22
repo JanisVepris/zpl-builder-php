@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 
-use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,11 +11,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(RawCommand::class)]
 class RawCommandTest extends UnitTestCase
 {
-    public function testRejectsEmptyString(): void
+    public function testRendersEmptyString(): void
     {
-        $this->expectException(StringLengthOutOfRangeException::class);
-
-        new RawCommand('');
+        self::assertSame('', (string) new RawCommand(''));
     }
 
     public function testRendersMultipleCommandsVerbatim(): void

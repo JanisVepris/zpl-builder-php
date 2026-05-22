@@ -392,12 +392,15 @@ class ZplBuilder implements Stringable
 
     /**
      * Append a literal ZPL fragment without content validation. Use for commands the
-     * builder does not yet have a dedicated method for. The fragment must be non-empty.
-     *
-     * @throws StringLengthOutOfRangeException
+     * builder does not yet have a dedicated method for. Empty input is a no-op —
+     * nothing is appended to the command list.
      */
     public function raw(string $zpl): self
     {
+        if ($zpl === '') {
+            return $this;
+        }
+
         return $this->addCommand(new Commands\RawCommand($zpl));
     }
 

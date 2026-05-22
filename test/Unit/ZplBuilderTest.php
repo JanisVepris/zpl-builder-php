@@ -441,6 +441,15 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^MMT', $output);
     }
 
+    public function testRawIsNoOpForEmptyInput(): void
+    {
+        $builder = ZplBuilder::start()->raw('');
+
+        self::assertSame('^XA', (string) $builder);
+        // Empty input must not bump the command list either.
+        self::assertCount(1, $builder->getCommands());
+    }
+
     public function testRawPreservesArbitraryFragment(): void
     {
         $output = (string) ZplBuilder::start()->raw('^FO5,5^GB100,100,2^FS');
