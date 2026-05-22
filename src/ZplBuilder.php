@@ -35,6 +35,8 @@ class ZplBuilder implements Stringable
     /** @var FontSettings[] */
     private array $fontSettings = [];
 
+    private ?string $pendingHexIndicator = null;
+
     private bool $printNewlines = false;
 
     /** Create a bare builder. Prefer the `start()` factory for the typical flow. */
@@ -225,11 +227,14 @@ class ZplBuilder implements Stringable
     public function fieldData(string $data): self
     {
         if (str_contains($data, '^') || str_contains($data, '~')) {
-            $this->fieldHexIndicator();
-            $data = FieldDataEncoder::escape($data);
+            if ($this->pendingHexIndicator === null) {
+                $this->fieldHexIndicator();
+            }
+            $data = FieldDataEncoder::escape($data, $this->pendingHexIndicator ?? '_');
         }
 
         $this->addCommand(new Commands\FieldData($data));
+        $this->pendingHexIndicator = null;
 
         return $this->addCommand(new Commands\FieldSeparator());
     }
@@ -242,6 +247,8 @@ class ZplBuilder implements Stringable
      */
     public function fieldHexIndicator(string $indicator = '_'): self
     {
+        $this->pendingHexIndicator = $indicator;
+
         return $this->addCommand(new Commands\FieldHexIndicator($indicator));
     }
 
@@ -444,6 +451,7 @@ class ZplBuilder implements Stringable
         $this->fontSettings = [];
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
         $this->fontPresets = [];
+        $this->pendingHexIndicator = null;
         $this->printNewlines = false;
         $this->addCommand(new Commands\StartFormat());
 

@@ -216,6 +216,18 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^FH_^FDA_7EB^FS', $output);
     }
 
+    public function testFieldDataClearsPendingIndicatorAfterUse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->fieldHexIndicator('%')
+            ->fieldData('clean')
+            ->fieldData('foo^bar');
+
+        // After the first fieldData ends the field with ^FS, the pending indicator
+        // is cleared. The next dirty fieldData falls back to the default ^FH_.
+        self::assertSame('^XA^FH%^FDclean^FS^FH_^FDfoo_5Ebar^FS', $output);
+    }
+
     public function testFieldDataDoesNotEmitHexIndicatorWhenInputHasOnlyUnderscore(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('id_42');
@@ -237,6 +249,29 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertStringContainsString('^FDHello World^FS', $output);
         self::assertStringNotContainsString('^FH', $output);
+    }
+
+    public function testFieldDataReusesPendingHexIndicatorAcrossIntermediateCommands(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->fieldHexIndicator('%')
+            ->fieldOrigin(50, 50)
+            ->fieldData('foo^bar');
+
+        // ^FH applies until the next ^FS per the ZPL spec, so commands between
+        // fieldHexIndicator and fieldData don't reset the pending indicator.
+        self::assertSame('^XA^FH%^FO50,50^FDfoo%5Ebar^FS', $output);
+    }
+
+    public function testFieldDataReusesPendingHexIndicatorInsteadOfEmittingDuplicate(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->fieldHexIndicator('%')
+            ->fieldData('foo^bar');
+
+        // The user's explicit ^FH% must be preserved and used for escape encoding
+        // (no duplicate ^FH_ appended, and the data is escaped with % not _).
+        self::assertSame('^XA^FH%^FDfoo%5Ebar^FS', $output);
     }
 
     public function testFieldHexIndicatorEmitsFhWithCustomIndicator(): void
