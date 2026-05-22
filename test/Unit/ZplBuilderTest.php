@@ -190,6 +190,25 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^FX section header', $output);
     }
 
+    public function testComposesRealisticLabel(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->labelHome(30, 30)
+            ->changeFont(Font::Zero, 40, 20)
+            ->fieldOrigin(50, 50)
+            ->fieldData('Hello, ZPL!')
+            ->fieldOrigin(50, 120)
+            ->barcodeDefaults(3, 3.0, 100)
+            ->barcodeCode128('ABC123')
+            ->printQuantity(1)
+            ->end();
+
+        self::assertSame(
+            '^XA^LH30,30^CF0,40,20^FO50,50^FDHello, ZPL!^FS^FO50,120^BY3,3.0,100^BCN,100,Y,N,N,N^FDABC123^FS^PQ1^XZ',
+            $output,
+        );
+    }
+
     public function testEndAppendsEndFormatEveryTimeItsCalled(): void
     {
         $output = (string) ZplBuilder::start()->end()->end();
