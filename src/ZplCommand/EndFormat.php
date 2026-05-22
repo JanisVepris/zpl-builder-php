@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 
 use Janisvepris\ZplBuilder\ZplCommand;
 
-class EndFormat implements ZplCommand
+readonly class EndFormat implements ZplCommand
 {
     private const string FORMAT = '^XZ';
 
