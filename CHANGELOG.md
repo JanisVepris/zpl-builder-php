@@ -8,6 +8,10 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ## [Unreleased]
 
+### Added
+
+- Public class constants for previously-magic numeric bounds: `Util\ValueAssert::MAX_DIMENSION` (32000), `ZplCommand\FieldData::MAX_DATA_BYTES` (3072), `ZplCommand\FieldComment::MAX_TEXT_BYTES` (3072), `ZplCommand\FieldBlock::MAX_PARAM` (9999). Internal validators now reference these constants instead of repeating literals; tests and callers can reference them when constructing boundary inputs. ([`75e19c4`](https://github.com/JanisVepris/zpl-builder-php/commit/75e19c4))
+
 ### Fixed
 
 - `^BY` (barcode defaults) formatted the wide-to-narrow ratio with `%0.1f`, which honours `LC_NUMERIC`. On comma-decimal locales (e.g. `de_DE`, `fr_FR`) the emitted ZPL became `^BY2,3,0,100` and was parsed by the printer as four arguments. Now uses `%0.1F` for locale-independent output. ([`f212cfd`](https://github.com/JanisVepris/zpl-builder-php/commit/f212cfd))
