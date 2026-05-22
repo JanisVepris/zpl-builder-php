@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit\Util;
 
+use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -11,6 +13,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldDataEncoder::class)]
 class FieldDataEncoderTest extends UnitTestCase
 {
+    public function testCaretIndicatorRejected(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        FieldDataEncoder::escape('foo', '^');
+    }
+
     public function testCleanStringPassesThrough(): void
     {
         self::assertSame('Hello World', FieldDataEncoder::escape('Hello World'));
@@ -24,6 +33,13 @@ class FieldDataEncoderTest extends UnitTestCase
     public function testCustomIndicatorLeavesDefaultIndicatorAlone(): void
     {
         self::assertSame('A_B%5EC', FieldDataEncoder::escape('A_B^C', '%'));
+    }
+
+    public function testEmptyIndicatorRejected(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        FieldDataEncoder::escape('foo', '');
     }
 
     public function testEmptyStringPassesThrough(): void
@@ -51,8 +67,22 @@ class FieldDataEncoderTest extends UnitTestCase
         self::assertSame('A_7EB', FieldDataEncoder::escape('A~B'));
     }
 
+    public function testMultiByteIndicatorRejected(): void
+    {
+        $this->expectException(StringLengthOutOfRangeException::class);
+
+        FieldDataEncoder::escape('foo', 'é');
+    }
+
     public function testMultiByteUtf8PassesThrough(): void
     {
         self::assertSame('héllo', FieldDataEncoder::escape('héllo'));
+    }
+
+    public function testTildeIndicatorRejected(): void
+    {
+        $this->expectException(StringValueContainsBannedValuesException::class);
+
+        FieldDataEncoder::escape('foo', '~');
     }
 }
