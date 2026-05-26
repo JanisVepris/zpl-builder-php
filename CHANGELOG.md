@@ -6,35 +6,65 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 The public API is **unstable until 1.0** — minor versions may include breaking changes.
 
-## [Unreleased]
+## [0.50.0] - 2026-05-26
 
 ### Added
 
-- Public class constants for previously-magic numeric bounds: `Util\ValueAssert::MAX_DIMENSION` (32000), `ZplCommand\FieldData::MAX_DATA_BYTES` (3072), `ZplCommand\FieldComment::MAX_TEXT_BYTES` (3072), `ZplCommand\FieldBlock::MAX_PARAM` (9999). Internal validators now reference these constants instead of repeating literals; tests and callers can reference them when constructing boundary inputs. ([`75e19c4`](https://github.com/JanisVepris/zpl-builder-php/commit/75e19c4))
-- Every `ZplCommand\*` value object now exposes two public typed constants: `COMMAND` (the literal command sigil, e.g. `'^BC'`, `'^FD'`, `'^XA'`) and `FORMAT` (the parameter-only sprintf template, e.g. `'%s,%d,%s,%s,%s,%s'`; empty for parameter-less commands). Previously `FORMAT` was private and held the full command-plus-params template; the split lets callers reference either piece programmatically (e.g. when adding their own command in a subclass or parsing emitted ZPL). `RawCommand` is unchanged — it doesn't model a fixed command literal. ([`c7ad2ef`](https://github.com/JanisVepris/zpl-builder-php/commit/c7ad2ef))
+- Public class constants for previously-magic numeric bounds: `Util\ValueAssert::MAX_DIMENSION` (32000), `ZplCommand\FieldData::MAX_DATA_BYTES` (3072), `ZplCommand\FieldComment::MAX_TEXT_BYTES` (
+  3072), `ZplCommand\FieldBlock::MAX_PARAM` (9999). Internal validators now reference these constants instead of repeating literals; tests and callers can reference them when constructing boundary
+  inputs. ([`75e19c4`](https://github.com/JanisVepris/zpl-builder-php/commit/75e19c4))
+- Every `ZplCommand\*` value object now exposes two public typed constants: `COMMAND` (the literal command sigil, e.g. `'^BC'`, `'^FD'`, `'^XA'`) and `FORMAT` (the parameter-only sprintf template,
+  e.g. `'%s,%d,%s,%s,%s,%s'`; empty for parameter-less commands). Previously `FORMAT` was private and held the full command-plus-params template; the split lets callers reference either piece
+  programmatically (e.g. when adding their own command in a subclass or parsing emitted ZPL). `RawCommand` is unchanged — it doesn't model a fixed command literal. ([
+  `c7ad2ef`](https://github.com/JanisVepris/zpl-builder-php/commit/c7ad2ef))
 
 ### Fixed
 
-- `^BY` (barcode defaults) formatted the wide-to-narrow ratio with `%0.1f`, which honours `LC_NUMERIC`. On comma-decimal locales (e.g. `de_DE`, `fr_FR`) the emitted ZPL became `^BY2,3,0,100` and was parsed by the printer as four arguments. Now uses `%0.1F` for locale-independent output. ([`f212cfd`](https://github.com/JanisVepris/zpl-builder-php/commit/f212cfd))
-- `ZplBuilder::changeFont()` partially mutated its cached `FontSettings` before raising on an invalid argument. A failed call like `changeFont(Font::A, 30, -1)` wrote height=30 into the cache but never emitted `^CF`, so the very next no-arg `changeFont(Font::A)` used the leaked height. `changeFont()` and `barcodeDefaults()` now build a fresh settings value (validated via its constructor) and swap the cached reference atomically — partial writes on failure are no longer possible. ([`0569b4d`](https://github.com/JanisVepris/zpl-builder-php/commit/0569b4d))
-- `ZplBuilder::fieldData()` ignored an explicit `fieldHexIndicator()` declaration and always emitted `^FH_`, then escaped with `_`. A caller doing `fieldHexIndicator('%')->fieldData('foo^bar')` got `^FH%^FH_^FDfoo_5Ebar^FS` — the user's `%` was dead-letter ZPL and the data was escaped with the wrong character. The builder now tracks a pending indicator, reuses it for escape in the next `fieldData()`, and clears it at the `^FS` boundary per the ZPL spec. ([`7e74085`](https://github.com/JanisVepris/zpl-builder-php/commit/7e74085))
+- `^BY` (barcode defaults) formatted the wide-to-narrow ratio with `%0.1f`, which honours `LC_NUMERIC`. On comma-decimal locales (e.g. `de_DE`, `fr_FR`) the emitted ZPL became `^BY2,3,0,100` and was
+  parsed by the printer as four arguments. Now uses `%0.1F` for locale-independent output. ([`f212cfd`](https://github.com/JanisVepris/zpl-builder-php/commit/f212cfd))
+- `ZplBuilder::changeFont()` partially mutated its cached `FontSettings` before raising on an invalid argument. A failed call like `changeFont(Font::A, 30, -1)` wrote height=30 into the cache but
+  never emitted `^CF`, so the very next no-arg `changeFont(Font::A)` used the leaked height. `changeFont()` and `barcodeDefaults()` now build a fresh settings value (validated via its constructor) and
+  swap the cached reference atomically — partial writes on failure are no longer possible. ([`0569b4d`](https://github.com/JanisVepris/zpl-builder-php/commit/0569b4d))
+- `ZplBuilder::fieldData()` ignored an explicit `fieldHexIndicator()` declaration and always emitted `^FH_`, then escaped with `_`. A caller doing `fieldHexIndicator('%')->fieldData('foo^bar')` got
+  `^FH%^FH_^FDfoo_5Ebar^FS` — the user's `%` was dead-letter ZPL and the data was escaped with the wrong character. The builder now tracks a pending indicator, reuses it for escape in the next
+  `fieldData()`, and clears it at the `^FS` boundary per the ZPL spec. ([`7e74085`](https://github.com/JanisVepris/zpl-builder-php/commit/7e74085))
 
 ### Breaking changes
 
-- `ZplCommand\ChangeFont`, `ValueObject\FontPreset`, `FontSettings`, and `BarcodeDefaultSettings` constructors now validate height/width (and barcode module width / ratio) via `ValueAssert` and throw `IntegerValueOutOfRangeException` / `FloatValueOutOfRangeException` for out-of-range inputs. Previously the `ChangeFont` and `FontPreset` VOs accepted any int and the settings classes only validated through their setters, so direct instantiation could produce out-of-spec `^CF` output. ([`e7e1a1b`](https://github.com/JanisVepris/zpl-builder-php/commit/e7e1a1b))
-- `Util\FieldDataEncoder::escape()` now validates the `$indicator` argument (length 1 byte, not `^` or `~`) and throws `StringLengthOutOfRangeException` or `StringValueContainsBannedValuesException`. Previously multi-byte or empty indicators emitted PHP deprecation/warning notices and produced invalid ZPL, and `^` / `~` indicators silently produced a `^FH` declaration the printer can't parse. Matches the validation already enforced by `ZplCommand\FieldHexIndicator`. ([`fcdbaf5`](https://github.com/JanisVepris/zpl-builder-php/commit/fcdbaf5))
-- `ZplBuilder::barcodeDefaults()` no-arg height changed from `100` to `10` to match `BarcodeDefaultSettings`'s own constructor default. Previously calling `barcodeDefaults()` with no args jumped to 100 while never calling it left the cached height at 10 — the two paths now agree. Callers depending on the old `100` default need to pass it explicitly. ([`07c3662`](https://github.com/JanisVepris/zpl-builder-php/commit/07c3662))
-- `ZplBuilder::__construct()` is now `protected`. `start()` is the sole external entry point; subclasses can still call `parent::__construct()`. Previously `new ZplBuilder()` produced a builder without the `^XA` start-of-format command and silently diverged from the `start()`-based flow. ([`b58ab19`](https://github.com/JanisVepris/zpl-builder-php/commit/b58ab19))
-- `ZplBuilder::removeFontPreset()` now throws `FontPresetDoesNotExistException` when the name isn't registered, matching `applyFontPreset()`. Previously remove silently no-opped, hiding typos in preset names. ([`70b3cca`](https://github.com/JanisVepris/zpl-builder-php/commit/70b3cca))
-- `ZplCommand\FieldOrientation` constructor parameter renamed from `$fieldRotation` to `$orientation`, and `ZplBuilder::fieldOrientation()` parameter renamed from `$rotation` to `$orientation`. Both match the class/method name and the ZPL spec's "field orientation" terminology. Callers using the named-arg forms (`new FieldOrientation(fieldRotation: …)` or `fieldOrientation(rotation: …)`) must update to `orientation:`. Positional callers are unaffected. ([`47a3d4a`](https://github.com/JanisVepris/zpl-builder-php/commit/47a3d4a), [`74307f2`](https://github.com/JanisVepris/zpl-builder-php/commit/74307f2))
-- `FloatValueOutOfRangeException`, `IntegerValueOutOfRangeException`, and `StringLengthOutOfRangeException` now extend `RangeException` (RuntimeException) instead of `OutOfRangeException` (LogicException). The values these exceptions guard against come from runtime user input, so the SPL semantics match. Callers that caught the SPL parent `OutOfRangeException` / `LogicException` must update to `RangeException` / `RuntimeException`; catching the specific library class still works. ([`1d31397`](https://github.com/JanisVepris/zpl-builder-php/commit/1d31397))
+- `ZplCommand\ChangeFont`, `ValueObject\FontPreset`, `FontSettings`, and `BarcodeDefaultSettings` constructors now validate height/width (and barcode module width / ratio) via `ValueAssert` and throw
+  `IntegerValueOutOfRangeException` / `FloatValueOutOfRangeException` for out-of-range inputs. Previously the `ChangeFont` and `FontPreset` VOs accepted any int and the settings classes only validated
+  through their setters, so direct instantiation could produce out-of-spec `^CF` output. ([`e7e1a1b`](https://github.com/JanisVepris/zpl-builder-php/commit/e7e1a1b))
+- `Util\FieldDataEncoder::escape()` now validates the `$indicator` argument (length 1 byte, not `^` or `~`) and throws `StringLengthOutOfRangeException` or `StringValueContainsBannedValuesException`.
+  Previously multi-byte or empty indicators emitted PHP deprecation/warning notices and produced invalid ZPL, and `^` / `~` indicators silently produced a `^FH` declaration the printer can't parse.
+  Matches the validation already enforced by `ZplCommand\FieldHexIndicator`. ([`fcdbaf5`](https://github.com/JanisVepris/zpl-builder-php/commit/fcdbaf5))
+- `ZplBuilder::barcodeDefaults()` no-arg height changed from `100` to `10` to match `BarcodeDefaultSettings`'s own constructor default. Previously calling `barcodeDefaults()` with no args jumped to
+  100 while never calling it left the cached height at 10 — the two paths now agree. Callers depending on the old `100` default need to pass it explicitly. ([
+  `07c3662`](https://github.com/JanisVepris/zpl-builder-php/commit/07c3662))
+- `ZplBuilder::__construct()` is now `protected`. `start()` is the sole external entry point; subclasses can still call `parent::__construct()`. Previously `new ZplBuilder()` produced a builder
+  without the `^XA` start-of-format command and silently diverged from the `start()`-based flow. ([`b58ab19`](https://github.com/JanisVepris/zpl-builder-php/commit/b58ab19))
+- `ZplBuilder::removeFontPreset()` now throws `FontPresetDoesNotExistException` when the name isn't registered, matching `applyFontPreset()`. Previously remove silently no-opped, hiding typos in
+  preset names. ([`70b3cca`](https://github.com/JanisVepris/zpl-builder-php/commit/70b3cca))
+- `ZplCommand\FieldOrientation` constructor parameter renamed from `$fieldRotation` to `$orientation`, and `ZplBuilder::fieldOrientation()` parameter renamed from `$rotation` to `$orientation`. Both
+  match the class/method name and the ZPL spec's "field orientation" terminology. Callers using the named-arg forms (`new FieldOrientation(fieldRotation: …)` or `fieldOrientation(rotation: …)`) must
+  update to `orientation:`. Positional callers are unaffected. ([`47a3d4a`](https://github.com/JanisVepris/zpl-builder-php/commit/47a3d4a), [
+  `74307f2`](https://github.com/JanisVepris/zpl-builder-php/commit/74307f2))
+- `FloatValueOutOfRangeException`, `IntegerValueOutOfRangeException`, and `StringLengthOutOfRangeException` now extend `RangeException` (RuntimeException) instead of `OutOfRangeException` (
+  LogicException). The values these exceptions guard against come from runtime user input, so the SPL semantics match. Callers that caught the SPL parent `OutOfRangeException` / `LogicException` must
+  update to `RangeException` / `RuntimeException`; catching the specific library class still works. ([`1d31397`](https://github.com/JanisVepris/zpl-builder-php/commit/1d31397))
 
 ### Changed
 
-- `ZplBuilder::addCommand()` and `ZplBuilder::fontSettingsFor()` relaxed from `private` to `protected`. Subclasses can now register their own `ZplCommand` implementations and read the lazy-allocated per-font state cache without reimplementing the facade. No impact on existing callers — `ZplBuilder` is intentionally non-final and this formalises the extension surface. ([`fcb5e38`](https://github.com/JanisVepris/zpl-builder-php/commit/fcb5e38))
-- All classes are now non-`final`. v0.40.0 marked every command, VO, and exception `final`; v0.50.0 reverses that policy across the board so downstream consumers can subclass anything in the library. `readonly` stays where it was (subclasses of a `readonly` class must themselves be `readonly` per PHP). No impact on existing callers; new extension surface for subclassers. ([`fb8d134`](https://github.com/JanisVepris/zpl-builder-php/commit/fb8d134))
-- The parameter-less commands `StartFormat`, `EndFormat`, and `FieldSeparator` are now `readonly class` (previously plain `class` since they have no state). Keeps the ZplCommand layer uniformly `readonly` — subclassers of these three must also be `readonly`, matching every other command VO. ([`397443c`](https://github.com/JanisVepris/zpl-builder-php/commit/397443c))
-- `ZplBuilder::raw('')` is now a true no-op — empty input short-circuits inside `raw()` and nothing is appended to the command list. Previously a `RawCommand('')` entry was added that rendered as the empty string, so `getCommands()` length bumped while the rendered ZPL gained nothing. The rendered output is unchanged; callers inspecting `getCommands()` may see a smaller count. ([`e9f89fc`](https://github.com/JanisVepris/zpl-builder-php/commit/e9f89fc))
+- `ZplBuilder::addCommand()` and `ZplBuilder::fontSettingsFor()` relaxed from `private` to `protected`. Subclasses can now register their own `ZplCommand` implementations and read the lazy-allocated
+  per-font state cache without reimplementing the facade. No impact on existing callers — `ZplBuilder` is intentionally non-final and this formalises the extension surface. ([
+  `fcb5e38`](https://github.com/JanisVepris/zpl-builder-php/commit/fcb5e38))
+- All classes are now non-`final`. v0.40.0 marked every command, VO, and exception `final`; v0.50.0 reverses that policy across the board so downstream consumers can subclass anything in the library.
+  `readonly` stays where it was (subclasses of a `readonly` class must themselves be `readonly` per PHP). No impact on existing callers; new extension surface for subclassers. ([
+  `fb8d134`](https://github.com/JanisVepris/zpl-builder-php/commit/fb8d134))
+- The parameter-less commands `StartFormat`, `EndFormat`, and `FieldSeparator` are now `readonly class` (previously plain `class` since they have no state). Keeps the ZplCommand layer uniformly
+  `readonly` — subclassers of these three must also be `readonly`, matching every other command VO. ([`397443c`](https://github.com/JanisVepris/zpl-builder-php/commit/397443c))
+- `ZplBuilder::raw('')` is now a true no-op — empty input short-circuits inside `raw()` and nothing is appended to the command list. Previously a `RawCommand('')` entry was added that rendered as the
+  empty string, so `getCommands()` length bumped while the rendered ZPL gained nothing. The rendered output is unchanged; callers inspecting `getCommands()` may see a smaller count. ([
+  `e9f89fc`](https://github.com/JanisVepris/zpl-builder-php/commit/e9f89fc))
 
 ## [0.40.1] - 2026-05-21
 
