@@ -11,6 +11,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
@@ -228,6 +229,40 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldBlock(400, 3, 5, Justify::Center, 10);
 
         self::assertSame('^XA^FB400,3,5,C,10', $output);
+    }
+
+    public function testFieldClockEmitsFcWithAllIndicators(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldClock('%', '{', '#');
+
+        self::assertSame('^XA^FC%,{,#', $output);
+    }
+
+    public function testFieldClockEmitsFcWithDefaultPrimaryIndicator(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldClock();
+
+        self::assertSame('^XA^FC%', $output);
+    }
+
+    public function testFieldClockEmitsFcWithSecondaryIndicator(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldClock('%', '{');
+
+        self::assertSame('^XA^FC%,{', $output);
+    }
+
+    public function testFieldClockValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->fieldClock('%', '%');
+            self::fail('Expected DuplicateClockIndicatorException on duplicate secondary indicator.');
+        } catch (DuplicateClockIndicatorException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
     }
 
     public function testFieldDataAutoEscapesCaret(): void

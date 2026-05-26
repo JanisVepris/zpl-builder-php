@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 The public API is **unstable until 1.0** — minor versions may include breaking changes.
 
+## [Unreleased]
+
+### Added
+
+- `ZplBuilder::fieldClock()` and `ZplCommand\FieldClock` add support for `^FC` (Field Clock), which sets the primary, secondary, and tertiary clock-indicator characters that the next `^FD` substitutes with Real-Time Clock values. Primary defaults to `%`; secondary and tertiary are optional. Out-of-spec inputs throw `DuplicateClockIndicatorException` (two indicators collide), `TertiaryClockIndicatorWithoutSecondaryException` (positional gap), `StringLengthOutOfRangeException` (indicator must be a single byte), or `StringValueContainsBannedValuesException` (indicator cannot be `^`, `~`, or `,` — those would corrupt the wire format).
+
 ## [0.50.0] - 2026-05-26
 
 ### Added

@@ -12,11 +12,13 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
+use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
@@ -217,6 +219,29 @@ class ZplBuilder implements Stringable
                 lineSpacing: $lineSpacing,
                 justify: $justify,
                 hangingIndent: $hangingIndent,
+            ),
+        );
+    }
+
+    /**
+     * Set the Real-Time Clock indicators that the next `^FD` will substitute (`^FC`).
+     * Secondary and tertiary indicators are optional; tertiary requires secondary.
+     *
+     * @throws DuplicateClockIndicatorException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     * @throws TertiaryClockIndicatorWithoutSecondaryException
+     */
+    public function fieldClock(
+        string $primary = '%',
+        ?string $secondary = null,
+        ?string $tertiary = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\FieldClock(
+                primary: $primary,
+                secondary: $secondary,
+                tertiary: $tertiary,
             ),
         );
     }

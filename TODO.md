@@ -10,7 +10,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^CI` — Change International Font/Encoding
 - [ ] `^CW` — Font Identifier
 - [x] `^FB` — Field Block
-- [ ] `^FC` — Field Clock (Real-Time Clock data)
+- [x] `^FC` — Field Clock (Real-Time Clock data)
 - [x] `^FD` — Field Data
 - [x] `^FH` — Field Hexadecimal Indicator
 - [ ] `^FM` — Multiple Field Origin Locations
