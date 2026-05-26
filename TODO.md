@@ -1,20 +1,28 @@
-# Unimplemented ZPL II commands
+# ZPL II command coverage
 
-Checklist of ZPL II commands documented in the [Zebra ZPL II Programming Guide](https://www.servopack.de/support/zebra/ZPLII-Prog.pdf) that this library does not yet model. Implemented commands live in [`src/ZplCommand/`](src/ZplCommand/) and are not listed here.
-
-Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/ZplBuilder.php) is the escape hatch.
+Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Guide](https://www.servopack.de/support/zebra/ZPLII-Prog.pdf). Checked items have a dedicated builder method (see [`src/ZplCommand/`](src/ZplCommand/)); unchecked items currently require [`ZplBuilder::raw('…')`](src/ZplBuilder.php) as the escape hatch.
 
 ## Fonts, fields and text
 
 - [ ] `^A` — Scalable/Bitmapped Font (per-field)
 - [ ] `^A@` — Use Font Name to Call Font
+- [x] `^CF` — Change Alphanumeric Default Font
+- [x] `^CI` — Change International Font/Encoding
 - [ ] `^CW` — Font Identifier
+- [x] `^FB` — Field Block
 - [ ] `^FC` — Field Clock (Real-Time Clock data)
+- [x] `^FD` — Field Data
+- [x] `^FH` — Field Hexadecimal Indicator
 - [ ] `^FM` — Multiple Field Origin Locations
+- [x] `^FN` — Field Number
+- [x] `^FO` — Field Origin
 - [ ] `^FP` — Field Parameter
 - [ ] `^FR` — Field Reverse Print
+- [x] `^FS` — Field Separator
 - [ ] `^FT` — Field Typeset
 - [ ] `^FV` — Field Variable
+- [x] `^FW` — Field Orientation
+- [x] `^FX` — Comment
 - [ ] `^KD` — Select Date and Time Format (for Real-Time Clock)
 - [ ] `^SE` — Select Encoding
 - [ ] `^SF` — Serialization Field
@@ -37,6 +45,7 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `^B9` — UPC-E
 - [ ] `^BA` — Code 93
 - [ ] `^BB` — CODABLOCK
+- [x] `^BC` — Code 128 (Subsets A, B, and C)
 - [ ] `^BD` — UPS MaxiCode
 - [ ] `^BE` — EAN-13
 - [ ] `^BF` — Micro-PDF417
@@ -52,22 +61,24 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `^BT` — TLC39
 - [ ] `^BU` — UPC-A
 - [ ] `^BX` — Data Matrix
+- [x] `^BY` — Bar Code Field Default
 - [ ] `^BZ` — POSTNET
 
 ## Graphics and images
 
+- [x] `^GB` — Graphic Box
 - [ ] `^GC` — Graphic Circle
 - [ ] `^GD` — Graphic Diagonal Line
 - [ ] `^GE` — Graphic Ellipse
 - [ ] `^GF` — Graphic Field
 - [ ] `^GS` — Graphic Symbol
+- [ ] `^HG` — Host Graphic
+- [ ] `^HY` — Upload Graphics
 - [ ] `^ID` — Object Delete
 - [ ] `^IL` — Image Load
 - [ ] `^IM` — Image Move
 - [ ] `^IS` — Image Save
 - [ ] `^XG` — Recall Graphic
-- [ ] `^HG` — Host Graphic
-- [ ] `^HY` — Upload Graphics
 - [ ] `~DG` — Download Graphics
 - [ ] `~DN` — Abort Download Graphic
 - [ ] `~DY` — Download Graphics / Native TrueType or OpenType Font
@@ -75,21 +86,25 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 
 ## Label layout and format control
 
+- [ ] `^DF` — Download Format
+- [ ] `^HF` — Host Format
+- [x] `^LH` — Label Home
+- [x] `^LL` — Label Length
+- [x] `^LR` — Label Reverse Print
 - [ ] `^LS` — Label Shift
 - [ ] `^LT` — Label Top
 - [ ] `^PF` — Slew Given Number of Dot Rows
 - [ ] `^PM` — Printing Mirror Image of Label
+- [x] `^XA` — Start Format
 - [ ] `^XB` — Suppress Backfeed
-- [ ] `^DF` — Download Format
-- [ ] `^HF` — Host Format
+- [x] `^XF` — Recall Format
+- [x] `^XZ` — End Format
 
 ## Printing control and media
 
-- [ ] `^PR` — Print Rate
-- [ ] `~PR` — Applicator Reprint
-- [ ] `~PS` — Print Start
-- [ ] `~SD` — Set Darkness
-- [ ] `~TA` — Tear-off Adjust Position
+- [ ] `^CM` — Change Memory Letter Designation
+- [ ] `^CO` — Cache On
+- [ ] `^CV` — Code Validation
 - [ ] `^MC` — Map Clear
 - [ ] `^MD` — Media Darkness
 - [ ] `^MF` — Media Feed
@@ -100,13 +115,18 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `^MT` — Media Type
 - [ ] `^MU` — Set Units of Measurement
 - [ ] `^MW` — Modify Head Cold Warning
+- [x] `^PO` — Print Orientation
+- [x] `^PQ` — Print Quantity
+- [ ] `^PR` — Print Rate
+- [x] `^PW` — Print Width
 - [ ] `^SP` — Start Print
 - [ ] `^SS` — Set Media Sensors
 - [ ] `^SZ` — Set ZPL
 - [ ] `^ZZ` — Printer Sleep
-- [ ] `^CM` — Change Memory Letter Designation
-- [ ] `^CO` — Cache On
-- [ ] `^CV` — Code Validation
+- [ ] `~PR` — Applicator Reprint
+- [ ] `~PS` — Print Start
+- [ ] `~SD` — Set Darkness
+- [ ] `~TA` — Tear-off Adjust Position
 
 ## Host I/O, diagnostics, printer state (lower priority — typically managed out-of-band)
 
@@ -114,12 +134,6 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `^HV` — Host Verification
 - [ ] `^HW` — Host Directory List
 - [ ] `^HZ` — Display Description Information
-- [ ] `~HB` — Battery Status
-- [ ] `~HD` — Head Diagnostic
-- [ ] `~HI` — Host Identification
-- [ ] `~HM` — Host RAM Status
-- [ ] `~HS` — Host Status Return
-- [ ] `~HU` — Return ZebraNet Alert Configuration
 - [ ] `^JB` — Initialize Flash Memory
 - [ ] `^JJ` — Set Auxiliary Port
 - [ ] `^JM` — Set Dots per Millimeter
@@ -128,6 +142,24 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `^JU` — Configuration Update
 - [ ] `^JW` — Set Ribbon Tension
 - [ ] `^JZ` — Reprint After Error
+- [ ] `^KL` — Define Language
+- [ ] `^KN` — Define Printer Name
+- [ ] `^KP` — Define Password
+- [ ] `^SC` — Set Serial Communications
+- [ ] `^SQ` — Halt ZebraNet Alert
+- [ ] `^SR` — Set Printhead Resistance
+- [ ] `^SX` — Set ZebraNet Alert
+- [ ] `~DB` — Download Bitmap Font
+- [ ] `~DE` — Download Encoding
+- [ ] `~DS` — Download Intellifont (Scalable Font)
+- [ ] `~DT` — Download Bounded TrueType Font
+- [ ] `~DU` — Download Unbounded TrueType Font
+- [ ] `~HB` — Battery Status
+- [ ] `~HD` — Head Diagnostic
+- [ ] `~HI` — Host Identification
+- [ ] `~HM` — Host RAM Status
+- [ ] `~HS` — Host Status Return
+- [ ] `~HU` — Return ZebraNet Alert Configuration
 - [ ] `~JA` — Cancel All
 - [ ] `~JB` — Reset Optional Memory
 - [ ] `~JC` — Set Media Sensor Calibration
@@ -144,21 +176,10 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `~JX` — Cancel Current Partially Input Format
 - [ ] `~KB` — Kill Battery
 - [ ] `~RO` — Reset Advanced Counter
-- [ ] `^KL` — Define Language
-- [ ] `^KN` — Define Printer Name
-- [ ] `^KP` — Define Password
-- [ ] `^SC` — Set Serial Communications
-- [ ] `^SQ` — Halt ZebraNet Alert
-- [ ] `^SR` — Set Printhead Resistance
-- [ ] `^SX` — Set ZebraNet Alert
-- [ ] `~DB` — Download Bitmap Font
-- [ ] `~DE` — Download Encoding
-- [ ] `~DS` — Download Intellifont (Scalable Font)
-- [ ] `~DT` — Download Bounded TrueType Font
-- [ ] `~DU` — Download Unbounded TrueType Font
 
 ## Networking, wireless and RFID (likely out of scope for label generation)
 
+- [ ] `^HR` — Calibrate RFID Transponder Position
 - [ ] `^NB` — Search for Wired Print Server during Network Boot
 - [ ] `^NI` — Network ID Number
 - [ ] `^NN` — Set SNMP
@@ -166,24 +187,6 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `^NS` — Change Networking Settings
 - [ ] `^NT` — Set SMTP
 - [ ] `^NW` — Set Web Authentication Timeout Value
-- [ ] `~NC` — Network Connect
-- [ ] `~NR` — Set All Network Printers Transparent
-- [ ] `~NT` — Set Currently Connected Printer Transparent
-- [ ] `^WA` — Set Antenna Parameters
-- [ ] `^WD` — Print Directory Label
-- [ ] `^WE` — Set WEP Mode
-- [ ] `^WF` — Encode AFI or DSFID Byte
-- [ ] `^WI` — Change Wireless Network Settings
-- [ ] `^WL` — Set LEAP Parameters
-- [ ] `^WP` — Set Wireless Password
-- [ ] `^WR` — Set Transmit Rate
-- [ ] `^WS` — Set Wireless Card Values
-- [ ] `^WT` — Write (Encode) Tag
-- [ ] `^WV` — Verify RFID Encoding Operation
-- [ ] `~WC` — Print Configuration Label
-- [ ] `~WL` — Print Network Configuration Label
-- [ ] `~WR` — Reset Wireless Card
-- [ ] `^HR` — Calibrate RFID Transponder Position
 - [ ] `^RA` — Read AFI or DSFID Byte
 - [ ] `^RB` — Define EPC Data Structure
 - [ ] `^RE` — Enable/Disable E.A.S. Bit
@@ -196,4 +199,21 @@ Until a command has a dedicated builder method, [`ZplBuilder::raw('…')`](src/Z
 - [ ] `^RT` — Read RFID Tag
 - [ ] `^RW` — Set RFID Read and Write Power Levels
 - [ ] `^RZ` — Set RFID Tag Password and Lock Tag
+- [ ] `^WA` — Set Antenna Parameters
+- [ ] `^WD` — Print Directory Label
+- [ ] `^WE` — Set WEP Mode
+- [ ] `^WF` — Encode AFI or DSFID Byte
+- [ ] `^WI` — Change Wireless Network Settings
+- [ ] `^WL` — Set LEAP Parameters
+- [ ] `^WP` — Set Wireless Password
+- [ ] `^WR` — Set Transmit Rate
+- [ ] `^WS` — Set Wireless Card Values
+- [ ] `^WT` — Write (Encode) Tag
+- [ ] `^WV` — Verify RFID Encoding Operation
+- [ ] `~NC` — Network Connect
+- [ ] `~NR` — Set All Network Printers Transparent
+- [ ] `~NT` — Set Currently Connected Printer Transparent
 - [ ] `~RV` — Report RFID Encoding Results
+- [ ] `~WC` — Print Configuration Label
+- [ ] `~WL` — Print Network Configuration Label
+- [ ] `~WR` — Reset Wireless Card
