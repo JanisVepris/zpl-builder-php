@@ -11,6 +11,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 ### Added
 
 - `ZplBuilder::fieldClock()` and `ZplCommand\FieldClock` add support for `^FC` (Field Clock), which sets the primary, secondary, and tertiary clock-indicator characters that the next `^FD` substitutes with Real-Time Clock values. Primary defaults to `%`; secondary and tertiary are optional. Out-of-spec inputs throw `DuplicateClockIndicatorException` (two indicators collide), `TertiaryClockIndicatorWithoutSecondaryException` (positional gap), `StringLengthOutOfRangeException` (indicator must be a single byte), or `StringValueContainsBannedValuesException` (indicator cannot be `^`, `~`, or `,` — those would corrupt the wire format).
+- `ZplBuilder::fieldOrigins(FieldOriginLocation ...$locations)` and `ZplCommand\MultipleFieldOrigin` add support for `^FM` (Multiple Field Origin Locations), used to place multiple symbols when printing PDF417 (`^B7`) / MicroPDF417 (`^BF`) structured-append bar codes. Each location is a `FieldOriginLocation`, constructed via `FieldOriginLocation::at($x, $y)` for a positioned symbol or `FieldOriginLocation::excluded()` to render the per-pair `e,e` skip-this-symbol marker. Empty input to `fieldOrigins()` is a no-op; passing more than 60 locations throws `IntegerValueOutOfRangeException` (spec maximum).
 
 ## [0.50.0] - 2026-05-26
 

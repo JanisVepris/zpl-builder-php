@@ -307,6 +307,22 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Set multiple field origin locations for PDF417 (`^B7`) / MicroPDF417 (`^BF`)
+     * structured-append printing (`^FM`). Up to 60 locations; printer ignores `^FM`
+     * for other commands. Empty input is a no-op.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function fieldOrigins(FieldOriginLocation ...$locations): self
+    {
+        if ($locations === []) {
+            return $this;
+        }
+
+        return $this->addCommand(new Commands\MultipleFieldOrigin(...$locations));
+    }
+
+    /**
      * Return the list of commands accumulated so far. Useful for testing and external rendering.
      *
      * @return Commands[]

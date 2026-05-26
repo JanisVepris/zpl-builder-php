@@ -15,6 +15,7 @@ use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
+use Janisvepris\ZplBuilder\FieldOriginLocation;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -377,6 +378,48 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldOrigin(50, 100);
 
         self::assertSame('^XA^FO50,100', $output);
+    }
+
+    public function testFieldOriginsEmitsFm(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldOrigins(
+            FieldOriginLocation::at(100, 200),
+            FieldOriginLocation::at(100, 600),
+        );
+
+        self::assertSame('^XA^FM100,200,100,600', $output);
+    }
+
+    public function testFieldOriginsNoLocationsIsNoop(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldOrigins();
+
+        self::assertSame('^XA', $output);
+    }
+
+    public function testFieldOriginsTooManyValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $locations = array_fill(0, 61, FieldOriginLocation::at(0, 0));
+
+        try {
+            $builder->fieldOrigins(...$locations);
+            self::fail('Expected IntegerValueOutOfRangeException on too many ^FM locations.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testFieldOriginsWithExcludedLocation(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldOrigins(
+            FieldOriginLocation::at(100, 200),
+            FieldOriginLocation::excluded(),
+            FieldOriginLocation::at(100, 600),
+        );
+
+        self::assertSame('^XA^FM100,200,e,e,100,600', $output);
     }
 
     public function testGetCommandsReturnsAppendedCommands(): void
