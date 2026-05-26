@@ -9,7 +9,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class PrintQuantity implements ZplCommand
 {
-    private const string FORMAT = '^PQ%d';
+    public const string COMMAND = '^PQ';
+    public const string FORMAT = '%d';
     private int $quantity;
 
     public function __construct(
@@ -21,6 +22,6 @@ readonly class PrintQuantity implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->quantity);
+        return self::COMMAND . sprintf(self::FORMAT, $this->quantity);
     }
 }

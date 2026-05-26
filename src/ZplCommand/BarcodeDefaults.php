@@ -9,7 +9,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class BarcodeDefaults implements ZplCommand
 {
-    private const string FORMAT = '^BY%d,%0.1F,%d';
+    public const string COMMAND = '^BY';
+    public const string FORMAT = '%d,%0.1F,%d';
     private int $height;
 
     private int $moduleWidth;
@@ -31,7 +32,7 @@ readonly class BarcodeDefaults implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->moduleWidth,
             $this->wideToNarrowRatio,

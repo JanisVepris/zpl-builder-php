@@ -9,10 +9,11 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class FieldComment implements ZplCommand
 {
+    public const string COMMAND = '^FX';
+    public const string FORMAT = '%s';
+
     /** Printer command-text buffer limit (bytes) for `^FX` comment text. */
     public const int MAX_TEXT_BYTES = 3072;
-
-    private const string FORMAT = '^FX%s';
 
     private string $text;
 
@@ -27,6 +28,6 @@ readonly class FieldComment implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->text);
+        return self::COMMAND . sprintf(self::FORMAT, $this->text);
     }
 }

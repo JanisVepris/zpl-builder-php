@@ -10,7 +10,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class RecallFormat implements ZplCommand
 {
-    private const string FORMAT = '^XF%s:%s.%s';
+    public const string COMMAND = '^XF';
+    public const string FORMAT = '%s:%s.%s';
     private StorageDevice $device;
     private string $extension;
     private string $name;
@@ -30,7 +31,7 @@ readonly class RecallFormat implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->device->value,
             $this->name,

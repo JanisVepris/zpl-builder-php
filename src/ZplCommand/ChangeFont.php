@@ -11,7 +11,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class ChangeFont implements ZplCommand
 {
-    private const string FORMAT = '^CF%s,%d,%d';
+    public const string COMMAND = '^CF';
+    public const string FORMAT = '%s,%d,%d';
 
     private int $height;
     private int $width;
@@ -31,7 +32,7 @@ readonly class ChangeFont implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->font->value,
             $this->height,

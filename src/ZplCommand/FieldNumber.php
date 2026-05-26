@@ -9,7 +9,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class FieldNumber implements ZplCommand
 {
-    private const string FORMAT = '^FN%d';
+    public const string COMMAND = '^FN';
+    public const string FORMAT = '%d';
 
     private int $number;
 
@@ -23,6 +24,6 @@ readonly class FieldNumber implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->number);
+        return self::COMMAND . sprintf(self::FORMAT, $this->number);
     }
 }

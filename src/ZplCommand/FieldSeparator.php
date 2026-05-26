@@ -8,10 +8,11 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class FieldSeparator implements ZplCommand
 {
-    private const string FORMAT = '^FS';
+    public const string COMMAND = '^FS';
+    public const string FORMAT = '';
 
     public function __toString()
     {
-        return self::FORMAT;
+        return self::COMMAND;
     }
 }

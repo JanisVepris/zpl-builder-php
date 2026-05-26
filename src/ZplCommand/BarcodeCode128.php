@@ -12,7 +12,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class BarcodeCode128 implements ZplCommand
 {
-    private const string FORMAT = '^BC%s,%d,%s,%s,%s,%s';
+    public const string COMMAND = '^BC';
+    public const string FORMAT = '%s,%d,%s,%s,%s,%s';
     private int $height;
     private bool $interpretationAboveCode;
     private Code128Mode $mode;
@@ -39,7 +40,7 @@ readonly class BarcodeCode128 implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->orientation->value,
             $this->height,

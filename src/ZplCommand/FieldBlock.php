@@ -10,10 +10,11 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class FieldBlock implements ZplCommand
 {
+    public const string COMMAND = '^FB';
+    public const string FORMAT = '%d,%d,%d,%s,%d';
+
     /** Per-parameter integer cap for `^FB` width/lines/spacing/indent per the ZPL spec. */
     public const int MAX_PARAM = 9999;
-
-    private const string FORMAT = '^FB%d,%d,%d,%s,%d';
     private int $hangingIndent;
     private Justify $justify;
     private int $lineSpacing;
@@ -41,7 +42,7 @@ readonly class FieldBlock implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->width,
             $this->maxLines,

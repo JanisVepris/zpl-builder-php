@@ -9,7 +9,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class LabelLength implements ZplCommand
 {
-    private const string FORMAT = '^LL%d';
+    public const string COMMAND = '^LL';
+    public const string FORMAT = '%d';
     private int $length;
 
     public function __construct(
@@ -21,6 +22,6 @@ readonly class LabelLength implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->length);
+        return self::COMMAND . sprintf(self::FORMAT, $this->length);
     }
 }

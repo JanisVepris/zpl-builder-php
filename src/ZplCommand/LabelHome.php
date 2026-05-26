@@ -9,7 +9,8 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class LabelHome implements ZplCommand
 {
-    private const string FORMAT = '^LH%d,%d';
+    public const string COMMAND = '^LH';
+    public const string FORMAT = '%d,%d';
     private int $x;
     private int $y;
 
@@ -26,6 +27,6 @@ readonly class LabelHome implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->x, $this->y);
+        return self::COMMAND . sprintf(self::FORMAT, $this->x, $this->y);
     }
 }

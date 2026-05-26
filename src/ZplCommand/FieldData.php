@@ -9,10 +9,11 @@ use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class FieldData implements ZplCommand
 {
+    public const string COMMAND = '^FD';
+    public const string FORMAT = '%s';
+
     /** Printer command-text buffer limit (bytes) for `^FD` field data. */
     public const int MAX_DATA_BYTES = 3072;
-
-    private const string FORMAT = '^FD%s';
 
     private string $data;
 
@@ -27,6 +28,6 @@ readonly class FieldData implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->data);
+        return self::COMMAND . sprintf(self::FORMAT, $this->data);
     }
 }
