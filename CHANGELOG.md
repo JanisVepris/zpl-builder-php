@@ -11,6 +11,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 ### Added
 
 - Public class constants for previously-magic numeric bounds: `Util\ValueAssert::MAX_DIMENSION` (32000), `ZplCommand\FieldData::MAX_DATA_BYTES` (3072), `ZplCommand\FieldComment::MAX_TEXT_BYTES` (3072), `ZplCommand\FieldBlock::MAX_PARAM` (9999). Internal validators now reference these constants instead of repeating literals; tests and callers can reference them when constructing boundary inputs. ([`75e19c4`](https://github.com/JanisVepris/zpl-builder-php/commit/75e19c4))
+- Every `ZplCommand\*` value object now exposes two public typed constants: `COMMAND` (the literal command sigil, e.g. `'^BC'`, `'^FD'`, `'^XA'`) and `FORMAT` (the parameter-only sprintf template, e.g. `'%s,%d,%s,%s,%s,%s'`; empty for parameter-less commands). Previously `FORMAT` was private and held the full command-plus-params template; the split lets callers reference either piece programmatically (e.g. when adding their own command in a subclass or parsing emitted ZPL). `RawCommand` is unchanged — it doesn't model a fixed command literal. ([`c7ad2ef`](https://github.com/JanisVepris/zpl-builder-php/commit/c7ad2ef))
 
 ### Fixed
 

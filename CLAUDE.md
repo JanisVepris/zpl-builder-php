@@ -57,7 +57,7 @@ Each ZPL command (`^XA`, `^FD`, `^FO`, `^BC`, `^CF`, `^CI`, `^FB`, …) is a `re
 
 When adding a new ZPL command:
 
-1. Create `src/ZplCommand/MyCommand.php` as a `readonly class` implementing `ZplCommand`. Hold the format string in a `private const string FORMAT`.
+1. Create `src/ZplCommand/MyCommand.php` as a `readonly class` implementing `ZplCommand`. Expose two public typed constants: `public const string COMMAND = '^XX';` (the literal command sigil) and `public const string FORMAT = '...';` (the parameter-only sprintf template, or `''` for parameter-less commands). `__toString()` should be `return self::COMMAND . sprintf(self::FORMAT, …);` for parameterized commands, or just `return self::COMMAND;` for parameter-less.
 2. Validate all numeric/string inputs in the constructor using `ValueAssert::int|float|stringLengthBytes|hexValue|stringNotContains`. Don't re-implement range checks inline.
 3. Convert booleans destined for ZPL output via `Util\BoolToStr::conv()` (returns `'Y'`/`'N'`).
 4. Add a fluent method to `ZplBuilder` that constructs the command and routes through `addCommand()` (never push to `$commands` directly — `addCommand()` is the single insertion point and may grow guards in future).
