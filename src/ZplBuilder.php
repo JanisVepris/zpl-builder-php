@@ -12,11 +12,13 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
+use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
@@ -222,6 +224,29 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Set the Real-Time Clock indicators that the next `^FD` will substitute (`^FC`).
+     * Secondary and tertiary indicators are optional; tertiary requires secondary.
+     *
+     * @throws DuplicateClockIndicatorException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     * @throws TertiaryClockIndicatorWithoutSecondaryException
+     */
+    public function fieldClock(
+        string $primary = '%',
+        ?string $secondary = null,
+        ?string $tertiary = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\FieldClock(
+                primary: $primary,
+                secondary: $secondary,
+                tertiary: $tertiary,
+            ),
+        );
+    }
+
+    /**
      * Write text into the current field (`^FD ... ^FS`). Auto-escapes `^` and `~`
      * via `^FH_` if present, since the printer would otherwise treat them as command starts.
      *
@@ -279,6 +304,22 @@ class ZplBuilder implements Stringable
     public function fieldOrigin(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\FieldOrigin($x, $y));
+    }
+
+    /**
+     * Set multiple field origin locations for PDF417 (`^B7`) / MicroPDF417 (`^BF`)
+     * structured-append printing (`^FM`). Up to 60 locations; printer ignores `^FM`
+     * for other commands. Empty input is a no-op.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function fieldOrigins(FieldOriginLocation ...$locations): self
+    {
+        if ($locations === []) {
+            return $this;
+        }
+
+        return $this->addCommand(new Commands\MultipleFieldOrigin(...$locations));
     }
 
     /**
