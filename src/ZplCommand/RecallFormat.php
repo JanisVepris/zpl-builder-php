@@ -8,9 +8,10 @@ use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class RecallFormat implements ZplCommand
+readonly class RecallFormat implements ZplCommand
 {
-    private const string FORMAT = '^XF%s:%s.%s';
+    public const string COMMAND = '^XF';
+    public const string FORMAT = '%s:%s.%s';
     private StorageDevice $device;
     private string $extension;
     private string $name;
@@ -30,7 +31,7 @@ final readonly class RecallFormat implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->device->value,
             $this->name,

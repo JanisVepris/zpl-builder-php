@@ -19,6 +19,13 @@ class LabelHomeTest extends UnitTestCase
         new LabelHome(-1, 0);
     }
 
+    public function testNegativeYThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new LabelHome(0, -1);
+    }
+
     public function testRendersNonZeroCoordinates(): void
     {
         self::assertSame('^LH25,40', (string) new LabelHome(25, 40));
@@ -27,5 +34,19 @@ class LabelHomeTest extends UnitTestCase
     public function testRendersWithCoordinates(): void
     {
         self::assertSame('^LH0,0', (string) new LabelHome(0, 0));
+    }
+
+    public function testXAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new LabelHome(32001, 0);
+    }
+
+    public function testYAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new LabelHome(0, 32001);
     }
 }

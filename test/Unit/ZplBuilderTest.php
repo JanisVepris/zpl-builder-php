@@ -11,7 +11,9 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
+use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -79,6 +81,41 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^BY3,2.5,75', $output);
     }
 
+    public function testBarcodeDefaultsNoArgsEmitsAlignedDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeDefaults();
+
+        // The fluent method's defaults must match BarcodeDefaultSettings'
+        // constructor defaults so the cached state and the emitted ^BY agree.
+        self::assertSame('^XA^BY2,3.0,10', $output);
+    }
+
+    public function testBarcodeDefaultsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->barcodeDefaults(5, 2.5, 0);
+            self::fail('Expected IntegerValueOutOfRangeException on invalid height.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testBarcodeDefaultsValidationFailureLeavesNoCommandAppendedForRatio(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->barcodeDefaults(5, 3.5);
+            self::fail('Expected FloatValueOutOfRangeException on invalid ratio.');
+        } catch (FloatValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
     public function testChangeFontEmitsCfWithLetterFont(): void
     {
         $output = (string) ZplBuilder::start()->changeFont(Font::A, 30, 15);
@@ -112,6 +149,23 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^CFA,30,15^CFA,50,15', $output);
     }
 
+    public function testChangeFontWidthFailureDoesNotLeakHeightIntoNextCall(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->changeFont(Font::A, 30, -1);
+            self::fail('Expected IntegerValueOutOfRangeException on invalid width.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        // The failed call must not leak height=30 into the cached FontSettings.
+        // A subsequent no-arg changeFont() should still use the defaults (9, 5).
+        $builder->changeFont(Font::A);
+
+        self::assertSame('^XA^CFA,9,5', (string) $builder);
+    }
+
     public function testChangeInternationalEncodingEmitsCi(): void
     {
         $output = (string) ZplBuilder::start()->changeInternationalEncoding(Encoding::Utf8);
@@ -134,6 +188,25 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->comment(' section header');
 
         self::assertSame('^XA^FX section header', $output);
+    }
+
+    public function testComposesRealisticLabel(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->labelHome(30, 30)
+            ->changeFont(Font::Zero, 40, 20)
+            ->fieldOrigin(50, 50)
+            ->fieldData('Hello, ZPL!')
+            ->fieldOrigin(50, 120)
+            ->barcodeDefaults(3, 3.0, 100)
+            ->barcodeCode128('ABC123')
+            ->printQuantity(1)
+            ->end();
+
+        self::assertSame(
+            '^XA^LH30,30^CF0,40,20^FO50,50^FDHello, ZPL!^FS^FO50,120^BY3,3.0,100^BCN,100,Y,N,N,N^FDABC123^FS^PQ1^XZ',
+            $output,
+        );
     }
 
     public function testEndAppendsEndFormatEveryTimeItsCalled(): void
@@ -171,6 +244,18 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^FH_^FDA_7EB^FS', $output);
     }
 
+    public function testFieldDataClearsPendingIndicatorAfterUse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->fieldHexIndicator('%')
+            ->fieldData('clean')
+            ->fieldData('foo^bar');
+
+        // After the first fieldData ends the field with ^FS, the pending indicator
+        // is cleared. The next dirty fieldData falls back to the default ^FH_.
+        self::assertSame('^XA^FH%^FDclean^FS^FH_^FDfoo_5Ebar^FS', $output);
+    }
+
     public function testFieldDataDoesNotEmitHexIndicatorWhenInputHasOnlyUnderscore(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('id_42');
@@ -192,6 +277,29 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertStringContainsString('^FDHello World^FS', $output);
         self::assertStringNotContainsString('^FH', $output);
+    }
+
+    public function testFieldDataReusesPendingHexIndicatorAcrossIntermediateCommands(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->fieldHexIndicator('%')
+            ->fieldOrigin(50, 50)
+            ->fieldData('foo^bar');
+
+        // ^FH applies until the next ^FS per the ZPL spec, so commands between
+        // fieldHexIndicator and fieldData don't reset the pending indicator.
+        self::assertSame('^XA^FH%^FO50,50^FDfoo%5Ebar^FS', $output);
+    }
+
+    public function testFieldDataReusesPendingHexIndicatorInsteadOfEmittingDuplicate(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->fieldHexIndicator('%')
+            ->fieldData('foo^bar');
+
+        // The user's explicit ^FH% must be preserved and used for escape encoding
+        // (no duplicate ^FH_ appended, and the data is escaped with % not _).
+        self::assertSame('^XA^FH%^FDfoo%5Ebar^FS', $output);
     }
 
     public function testFieldHexIndicatorEmitsFhWithCustomIndicator(): void
@@ -321,7 +429,7 @@ class ZplBuilderTest extends UnitTestCase
     {
         $output = (string) ZplBuilder::start()->printNewlines()->fieldData('Hi')->end();
 
-        self::assertSame('^XA'.PHP_EOL.'^FDHi'.PHP_EOL.'^FS'.PHP_EOL.'^XZ'.PHP_EOL, $output);
+        self::assertSame('^XA' . PHP_EOL . '^FDHi' . PHP_EOL . '^FS' . PHP_EOL . '^XZ' . PHP_EOL, $output);
     }
 
     public function testPrintOrientationEmitsPo(): void
@@ -352,6 +460,15 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^MMT', $output);
     }
 
+    public function testRawIsNoOpForEmptyInput(): void
+    {
+        $builder = ZplBuilder::start()->raw('');
+
+        self::assertSame('^XA', (string) $builder);
+        // Empty input must not bump the command list either.
+        self::assertCount(1, $builder->getCommands());
+    }
+
     public function testRawPreservesArbitraryFragment(): void
     {
         $output = (string) ZplBuilder::start()->raw('^FO5,5^GB100,100,2^FS');
@@ -373,6 +490,13 @@ class ZplBuilderTest extends UnitTestCase
             ->removeFontPreset('big');
 
         self::assertFalse($builder->hasFontPreset('big'));
+    }
+
+    public function testRemoveFontPresetThrowsOnUnknownName(): void
+    {
+        $this->expectException(FontPresetDoesNotExistException::class);
+
+        ZplBuilder::start()->removeFontPreset('does-not-exist');
     }
 
     public function testRenderDoesNotMutateState(): void

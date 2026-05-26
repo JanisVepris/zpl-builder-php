@@ -7,9 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class BarcodeDefaults implements ZplCommand
+readonly class BarcodeDefaults implements ZplCommand
 {
-    private const string FORMAT = '^BY%d,%0.1f,%d';
+    public const string COMMAND = '^BY';
+    public const string FORMAT = '%d,%0.1F,%d';
     private int $height;
 
     private int $moduleWidth;
@@ -31,7 +32,7 @@ final readonly class BarcodeDefaults implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->moduleWidth,
             $this->wideToNarrowRatio,

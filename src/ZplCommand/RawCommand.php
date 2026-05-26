@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class RawCommand implements ZplCommand
+readonly class RawCommand implements ZplCommand
 {
     public function __construct(
         private string $zpl,

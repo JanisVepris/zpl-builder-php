@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 
 use InvalidArgumentException;
 
-final class StringValueContainsBannedValuesException extends InvalidArgumentException
+class StringValueContainsBannedValuesException extends InvalidArgumentException
 {
     public function __construct(string $value, string $forbiddenSubstring)
     {

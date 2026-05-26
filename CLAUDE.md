@@ -42,7 +42,7 @@ The fluent facade. Construction is via the static factory `ZplBuilder::start()`,
 Stateful concerns owned by the builder (not by individual commands):
 
 - `BarcodeDefaultSettings` — remembers the last `^BY` values so `barcodeCode128()` can inherit `height` when no explicit value is passed.
-- `$fontSettings` — a map keyed by `Enum\Font` case values (`A`–`Z`, `0`–`9`) of `FontSettings` instances. `changeFont()` updates only the dimensions that were explicitly provided and emits a `^CF` with the merged height/width. This is how a caller can change just the width of font `A` without forgetting its previously-set height. The builder's font-accepting methods (`changeFont`, `addFontPreset`, `applyFontPreset`) all type-hint `Enum\Font`.
+- `$fontSettings` — a map keyed by `Enum\Font` case values (`A`–`Z`, `0`–`9`) of `FontSettings` instances (lazily allocated on first access with defaults `height=9, width=5`). `changeFont()` writes only explicitly-provided dimensions into the cache and then always emits `^CF` with both height and width — omitted dimensions fall back to the cached value, which is the per-font default on the first call. So `changeFont(Font::A)` with no other args emits `^CFA,9,5`, and a later `changeFont(Font::A, width: 20)` emits `^CFA,9,20` (height remembered from the prior call). The builder's font-accepting methods (`changeFont`, `addFontPreset`, `applyFontPreset`) all type-hint `Enum\Font`.
 - `$printNewlines` — when toggled, `render()` puts `PHP_EOL` between commands. Off by default; the emitted ZPL is a single contiguous string.
 
 `ZplBuilder` implements `Stringable`; `__toString()` calls `render()`, which simply iterates `$this->commands` and concatenates their string forms. Render is pure — it never appends to `$this->commands` or otherwise mutates state. To finalise a format with `^XZ`, call `->end()` explicitly — it's a regular fluent method that appends `EndFormat` like any other command. The builder enforces no structural invariants beyond what `addCommand()` guarantees (validated VO inputs); composing valid ZPL (e.g. not adding fields after `end()`) is the caller's responsibility.
@@ -51,23 +51,23 @@ Stateful concerns owned by the builder (not by individual commands):
 
 ### 2. `ZplCommand` value objects — `src/ZplCommand/*`
 
-Each ZPL command (`^XA`, `^FD`, `^FO`, `^BC`, `^CF`, `^CI`, `^FB`, …) is a `final readonly class` implementing the `ZplCommand` interface (extends `Stringable`). They are immutable value objects: constructor validates inputs via `Util\ValueAssert`, and `__toString()` returns the formatted ZPL fragment built with `sprintf`. The three trivial commands with no properties (`StartFormat`, `EndFormat`, `FieldSeparator`) are `final class` only — `readonly` would be a no-op without properties.
+Each ZPL command (`^XA`, `^FD`, `^FO`, `^BC`, `^CF`, `^CI`, `^FB`, …) is a `readonly class` implementing the `ZplCommand` interface (extends `Stringable`). They are immutable value objects: constructor validates inputs via `Util\ValueAssert`, and `__toString()` returns the formatted ZPL fragment built with `sprintf`. The trivial commands with no properties (`StartFormat`, `EndFormat`, `FieldSeparator`) are also `readonly class` — even though `readonly` is a no-op on a class without state, it keeps the contract uniform across the layer and forces any subclasses to remain readonly. No class is `final`; the library is meant to be freely extensible by downstream consumers (subclasses of a `readonly` class must themselves be `readonly`, per PHP).
 
 `ZplCommand\RawCommand` exists as an escape hatch for callers who need to emit arbitrary ZPL the builder doesn't natively support — reached via `ZplBuilder::raw(string)`.
 
 When adding a new ZPL command:
 
-1. Create `src/ZplCommand/MyCommand.php` as a `final readonly class` implementing `ZplCommand`. Hold the format string in a `private const string FORMAT` / `COMMAND`.
+1. Create `src/ZplCommand/MyCommand.php` as a `readonly class` implementing `ZplCommand`. Expose two public typed constants: `public const string COMMAND = '^XX';` (the literal command sigil) and `public const string FORMAT = '...';` (the parameter-only sprintf template, or `''` for parameter-less commands). `__toString()` should be `return self::COMMAND . sprintf(self::FORMAT, …);` for parameterized commands, or just `return self::COMMAND;` for parameter-less.
 2. Validate all numeric/string inputs in the constructor using `ValueAssert::int|float|stringLengthBytes|hexValue|stringNotContains`. Don't re-implement range checks inline.
 3. Convert booleans destined for ZPL output via `Util\BoolToStr::conv()` (returns `'Y'`/`'N'`).
-4. Add a fluent method to `ZplBuilder` that constructs the command and routes through `addCommand()` (never push to `$commands` directly — `addCommand()` enforces the end-of-format guard).
+4. Add a fluent method to `ZplBuilder` that constructs the command and routes through `addCommand()` (never push to `$commands` directly — `addCommand()` is the single insertion point and may grow guards in future).
 5. If the command pairs with `^FD ... ^FS` (most field-producing commands do), follow the `barcodeCode128()` pattern: emit the command, then call `$this->fieldData($data)`, which appends both `FieldData` and `FieldSeparator` (and auto-emits `^FH_` with hex-escaping if `$data` contains `^` or `~`).
 6. Reference the documentation to know exactly which parameters are required vs optional, and their valid ranges.
 
 ### 3. Enums, exceptions, helpers — `src/Enum`, `src/Exception`, `src/Util`
 
 - `Enum/*` — backed string enums whose `value` is the literal character ZPL expects (e.g. `Orientation::Rotate0 = 'N'`, `Code128Mode::None = 'N'`, `LabelFlip::Normal = 'N'`). Cases are PascalCase. Always prefer adding an enum case to passing raw strings.
-- `Exception/*` — all custom exceptions are `final` and extend the SPL exception that best matches their semantics (`OutOfRangeException`, `RuntimeException`, `InvalidArgumentException`, etc.).
+- `Exception/*` — all custom exceptions extend the SPL exception that best matches their semantics (`RangeException`, `RuntimeException`, `InvalidArgumentException`, `UnexpectedValueException`, etc.). Not `final` — downstream consumers may extend them.
 - `Util/ValueAssert` — single source of truth for input validation. `int` / `float` cover numeric range checks (general ZPL range is `0..32000`; specific commands pass narrower bounds). `stringLengthBytes` checks byte length (matches ZPL's printer-buffer limit, not character count). `stringNotContains` rejects strings containing banned substrings (defaults to `^` / `~`, the ZPL command terminators). `hexValue` checks that a string is hex-digit only.
 - `Util/BoolToStr` — the only place that should map `bool` to `'Y'`/`'N'`.
 - `Util/FieldDataEncoder` — `escape(string $raw, string $indicator = '_')` hex-escapes `^`, `~`, and the indicator itself for inclusion in `^FD` data after a `^FH<indicator>` declaration. Used internally by `ZplBuilder::fieldData()` when the input contains banned characters.

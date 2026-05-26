@@ -6,7 +6,7 @@ namespace Janisvepris\ZplBuilder\Exception;
 
 use UnexpectedValueException;
 
-final class InvalidHexValueException extends UnexpectedValueException
+class InvalidHexValueException extends UnexpectedValueException
 {
     public function __construct(string $value)
     {

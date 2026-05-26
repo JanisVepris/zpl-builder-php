@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Exception;
 
-use OutOfRangeException;
+use RangeException;
 
-final class StringLengthOutOfRangeException extends OutOfRangeException
+class StringLengthOutOfRangeException extends RangeException
 {
     public function __construct(int $length, int $min, int $max)
     {

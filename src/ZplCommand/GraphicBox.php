@@ -8,9 +8,10 @@ use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class GraphicBox implements ZplCommand
+readonly class GraphicBox implements ZplCommand
 {
-    private const string FORMAT = '^GB%d,%d,%d,%s,%d';
+    public const string COMMAND = '^GB';
+    public const string FORMAT = '%d,%d,%d,%s,%d';
     private LineColor $color;
     private int $height;
     private int $rounding;
@@ -38,7 +39,7 @@ final readonly class GraphicBox implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
+        return self::COMMAND . sprintf(
             self::FORMAT,
             $this->width,
             $this->height,

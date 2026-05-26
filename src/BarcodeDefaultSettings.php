@@ -4,15 +4,26 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 
-final class BarcodeDefaultSettings
+class BarcodeDefaultSettings
 {
-    public function __construct(
-        private int $moduleWidth = 2,
-        private float $wideToNarrowRatio = 3.0,
-        private int $height = 10,
-    ) {}
+    private int $height;
+    private int $moduleWidth;
+    private float $wideToNarrowRatio;
+
+    /**
+     * @throws FloatValueOutOfRangeException
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function __construct(int $moduleWidth = 2, float $wideToNarrowRatio = 3.0, int $height = 10)
+    {
+        $this->setModuleWidth($moduleWidth);
+        $this->setWideToNarrowRatio($wideToNarrowRatio);
+        $this->setHeight($height);
+    }
 
     public function height(): int
     {

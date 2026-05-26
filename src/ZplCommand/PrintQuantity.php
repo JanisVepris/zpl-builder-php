@@ -7,9 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class PrintQuantity implements ZplCommand
+readonly class PrintQuantity implements ZplCommand
 {
-    private const string FORMAT = '^PQ%d';
+    public const string COMMAND = '^PQ';
+    public const string FORMAT = '%d';
     private int $quantity;
 
     public function __construct(
@@ -21,6 +22,6 @@ final readonly class PrintQuantity implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->quantity);
+        return self::COMMAND . sprintf(self::FORMAT, $this->quantity);
     }
 }

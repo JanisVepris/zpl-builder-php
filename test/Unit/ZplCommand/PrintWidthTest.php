@@ -22,6 +22,13 @@ class PrintWidthTest extends UnitTestCase
         self::assertSame('^PW1160', (string) new PrintWidth(1160));
     }
 
+    public function testWidthAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new PrintWidth(32001);
+    }
+
     public function testWidthBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);

@@ -7,9 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class LabelHome implements ZplCommand
+readonly class LabelHome implements ZplCommand
 {
-    private const string FORMAT = '^LH%d,%d';
+    public const string COMMAND = '^LH';
+    public const string FORMAT = '%d,%d';
     private int $x;
     private int $y;
 
@@ -26,6 +27,6 @@ final readonly class LabelHome implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->x, $this->y);
+        return self::COMMAND . sprintf(self::FORMAT, $this->x, $this->y);
     }
 }

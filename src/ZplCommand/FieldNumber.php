@@ -7,9 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldNumber implements ZplCommand
+readonly class FieldNumber implements ZplCommand
 {
-    private const string FORMAT = '^FN%d';
+    public const string COMMAND = '^FN';
+    public const string FORMAT = '%d';
 
     private int $number;
 
@@ -23,6 +24,6 @@ final readonly class FieldNumber implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->number);
+        return self::COMMAND . sprintf(self::FORMAT, $this->number);
     }
 }

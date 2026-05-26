@@ -35,10 +35,15 @@ class ZplBuilder implements Stringable
     /** @var FontSettings[] */
     private array $fontSettings = [];
 
+    private ?string $pendingHexIndicator = null;
+
     private bool $printNewlines = false;
 
-    /** Create a bare builder. Prefer the `start()` factory for the typical flow. */
-    public function __construct()
+    /**
+     * Protected — use the `start()` static factory to create a builder for normal use,
+     * or call `parent::__construct()` from a subclass.
+     */
+    protected function __construct()
     {
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
     }
@@ -133,17 +138,16 @@ class ZplBuilder implements Stringable
     public function barcodeDefaults(
         int $moduleWidth = 2,
         float $wideToNarrowRatio = 3.0,
-        int $height = 100,
+        int $height = 10,
     ): self {
-        $this->barcodeDefaultSettings->setModuleWidth($moduleWidth);
-        $this->barcodeDefaultSettings->setWideToNarrowRatio($wideToNarrowRatio);
-        $this->barcodeDefaultSettings->setHeight($height);
+        $settings = new BarcodeDefaultSettings($moduleWidth, $wideToNarrowRatio, $height);
+        $this->barcodeDefaultSettings = $settings;
 
         return $this->addCommand(
             new Commands\BarcodeDefaults(
-                moduleWidth: $this->barcodeDefaultSettings->moduleWidth(),
-                wideToNarrowRatio: $this->barcodeDefaultSettings->wideToNarrowRatio(),
-                height: $this->barcodeDefaultSettings->height(),
+                moduleWidth: $settings->moduleWidth(),
+                wideToNarrowRatio: $settings->wideToNarrowRatio(),
+                height: $settings->height(),
             ),
         );
     }
@@ -156,15 +160,12 @@ class ZplBuilder implements Stringable
      */
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
-        $settings = $this->fontSettingsFor($font);
-
-        if ($height !== null) {
-            $settings->setHeight($height);
-        }
-
-        if ($width !== null) {
-            $settings->setWidth($width);
-        }
+        $current = $this->fontSettingsFor($font);
+        $settings = new FontSettings(
+            $height ?? $current->height(),
+            $width ?? $current->width(),
+        );
+        $this->fontSettings[$font->value] = $settings;
 
         return $this->addCommand(
             new Commands\ChangeFont($font, $settings->height(), $settings->width()),
@@ -229,11 +230,14 @@ class ZplBuilder implements Stringable
     public function fieldData(string $data): self
     {
         if (str_contains($data, '^') || str_contains($data, '~')) {
-            $this->fieldHexIndicator();
-            $data = FieldDataEncoder::escape($data);
+            if ($this->pendingHexIndicator === null) {
+                $this->fieldHexIndicator();
+            }
+            $data = FieldDataEncoder::escape($data, $this->pendingHexIndicator ?? '_');
         }
 
         $this->addCommand(new Commands\FieldData($data));
+        $this->pendingHexIndicator = null;
 
         return $this->addCommand(new Commands\FieldSeparator());
     }
@@ -246,6 +250,8 @@ class ZplBuilder implements Stringable
      */
     public function fieldHexIndicator(string $indicator = '_'): self
     {
+        $this->pendingHexIndicator = $indicator;
+
         return $this->addCommand(new Commands\FieldHexIndicator($indicator));
     }
 
@@ -259,10 +265,10 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldNumber($number));
     }
 
-    /** Set the rotation applied to subsequent fields (`^FW`). */
-    public function fieldOrientation(Orientation $rotation): self
+    /** Set the orientation applied to subsequent fields (`^FW`). */
+    public function fieldOrientation(Orientation $orientation): self
     {
-        return $this->addCommand(new Commands\FieldOrientation($rotation));
+        return $this->addCommand(new Commands\FieldOrientation($orientation));
     }
 
     /**
@@ -388,11 +394,16 @@ class ZplBuilder implements Stringable
     }
 
     /**
-     * Append a literal ZPL fragment without validation. Use for commands the
-     * builder does not yet have a dedicated method for.
+     * Append a literal ZPL fragment without content validation. Use for commands the
+     * builder does not yet have a dedicated method for. Empty input is a no-op —
+     * nothing is appended to the command list.
      */
     public function raw(string $zpl): self
     {
+        if ($zpl === '') {
+            return $this;
+        }
+
         return $this->addCommand(new Commands\RawCommand($zpl));
     }
 
@@ -415,9 +426,17 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /** Drop a previously registered font preset. No-op if the name isn't registered. */
+    /**
+     * Drop a previously registered font preset.
+     *
+     * @throws FontPresetDoesNotExistException
+     */
     public function removeFontPreset(string $name): self
     {
+        if (!isset($this->fontPresets[$name])) {
+            throw new FontPresetDoesNotExistException($name);
+        }
+
         unset($this->fontPresets[$name]);
 
         return $this;
@@ -435,7 +454,7 @@ class ZplBuilder implements Stringable
 
         $separator = $this->printNewlines ? PHP_EOL : '';
 
-        return implode($separator, array_map('strval', $this->commands)).$separator;
+        return implode($separator, array_map('strval', $this->commands)) . $separator;
     }
 
     /**
@@ -448,6 +467,7 @@ class ZplBuilder implements Stringable
         $this->fontSettings = [];
         $this->barcodeDefaultSettings = new BarcodeDefaultSettings();
         $this->fontPresets = [];
+        $this->pendingHexIndicator = null;
         $this->printNewlines = false;
         $this->addCommand(new Commands\StartFormat());
 
@@ -462,8 +482,11 @@ class ZplBuilder implements Stringable
         return $builder->addCommand(new Commands\StartFormat());
     }
 
-    /** Append a command to the internal list. All public mutation methods route through this. */
-    private function addCommand(Commands $command): self
+    /**
+     * Append a command to the internal list. All public mutation methods route through this,
+     * and subclasses can call it to register their own `ZplCommand` implementations.
+     */
+    protected function addCommand(Commands $command): self
     {
         $this->commands[] = $command;
 
@@ -471,7 +494,7 @@ class ZplBuilder implements Stringable
     }
 
     /** Lazy-allocate and return the `FontSettings` for the given font. */
-    private function fontSettingsFor(Font $font): FontSettings
+    protected function fontSettingsFor(Font $font): FontSettings
     {
         return $this->fontSettings[$font->value] ??= new FontSettings();
     }

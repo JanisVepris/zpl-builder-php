@@ -7,9 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class PrintOrientation implements ZplCommand
+readonly class PrintOrientation implements ZplCommand
 {
-    private const string FORMAT = '^PO%s';
+    public const string COMMAND = '^PO';
+    public const string FORMAT = '%s';
 
     public function __construct(
         private LabelFlip $orientation,
@@ -17,6 +18,6 @@ final readonly class PrintOrientation implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->orientation->value);
+        return self::COMMAND . sprintf(self::FORMAT, $this->orientation->value);
     }
 }

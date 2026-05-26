@@ -13,11 +13,32 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(FieldBlock::class)]
 class FieldBlockTest extends UnitTestCase
 {
+    public function testHangingIndentAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new FieldBlock(100, 1, 0, Justify::Left, 10000);
+    }
+
+    public function testLineSpacingAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new FieldBlock(100, 1, 10000, Justify::Left, 0);
+    }
+
     public function testLineSpacingBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
         new FieldBlock(100, 1, -10000, Justify::Left, 0);
+    }
+
+    public function testMaxLinesAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new FieldBlock(100, 10000, 0, Justify::Left, 0);
     }
 
     public function testMaxLinesBelowMinThrows(): void

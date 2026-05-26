@@ -10,9 +10,10 @@ use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class BarcodeCode128 implements ZplCommand
+readonly class BarcodeCode128 implements ZplCommand
 {
-    private const string COMMAND = '^BC%s,%d,%s,%s,%s,%s';
+    public const string COMMAND = '^BC';
+    public const string FORMAT = '%s,%d,%s,%s,%s,%s';
     private int $height;
     private bool $interpretationAboveCode;
     private Code128Mode $mode;
@@ -39,8 +40,8 @@ final readonly class BarcodeCode128 implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(
-            self::COMMAND,
+        return self::COMMAND . sprintf(
+            self::FORMAT,
             $this->orientation->value,
             $this->height,
             BoolToStr::conv($this->printInterpretation),

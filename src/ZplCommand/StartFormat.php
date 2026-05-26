@@ -6,9 +6,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final class StartFormat implements ZplCommand
+readonly class StartFormat implements ZplCommand
 {
-    private const string COMMAND = '^XA';
+    public const string COMMAND = '^XA';
+    public const string FORMAT = '';
 
     public function __toString()
     {

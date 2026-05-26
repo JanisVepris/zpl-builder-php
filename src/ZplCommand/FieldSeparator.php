@@ -6,12 +6,13 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final class FieldSeparator implements ZplCommand
+readonly class FieldSeparator implements ZplCommand
 {
-    private const string FORMAT = '^FS';
+    public const string COMMAND = '^FS';
+    public const string FORMAT = '';
 
     public function __toString()
     {
-        return self::FORMAT;
+        return self::COMMAND;
     }
 }

@@ -1,5 +1,4 @@
 /vendor/
-/phpstan/
 /.idea/
 /.cache/
 .claude/

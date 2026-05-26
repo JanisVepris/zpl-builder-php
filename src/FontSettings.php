@@ -7,12 +7,17 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 
-final class FontSettings
+class FontSettings
 {
-    public function __construct(
-        private int $height = 9,
-        private int $width = 5,
-    ) {}
+    private int $height;
+    private int $width;
+
+    /** @throws IntegerValueOutOfRangeException */
+    public function __construct(int $height = 9, int $width = 5)
+    {
+        $this->setHeight($height);
+        $this->setWidth($width);
+    }
 
     public function height(): int
     {

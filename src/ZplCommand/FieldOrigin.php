@@ -7,9 +7,10 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
-final readonly class FieldOrigin implements ZplCommand
+readonly class FieldOrigin implements ZplCommand
 {
-    private const string FORMAT = '^FO%d,%d';
+    public const string COMMAND = '^FO';
+    public const string FORMAT = '%d,%d';
     private int $x;
     private int $y;
 
@@ -26,6 +27,6 @@ final readonly class FieldOrigin implements ZplCommand
 
     public function __toString()
     {
-        return sprintf(self::FORMAT, $this->x, $this->y);
+        return self::COMMAND . sprintf(self::FORMAT, $this->x, $this->y);
     }
 }
