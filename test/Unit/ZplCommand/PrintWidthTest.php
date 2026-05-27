@@ -6,10 +6,14 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(PrintWidth::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class PrintWidthTest extends UnitTestCase
 {
     public function testRendersMinimumWidth(): void

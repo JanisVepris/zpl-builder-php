@@ -9,10 +9,17 @@ use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\FieldClock;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(FieldClock::class)]
+#[UsesClass(DuplicateClockIndicatorException::class)]
+#[UsesClass(StringLengthOutOfRangeException::class)]
+#[UsesClass(StringValueContainsBannedValuesException::class)]
+#[UsesClass(TertiaryClockIndicatorWithoutSecondaryException::class)]
+#[UsesClass(ValueAssert::class)]
 class FieldClockTest extends UnitTestCase
 {
     public function testCommaInIndicatorThrows(): void

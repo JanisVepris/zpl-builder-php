@@ -8,8 +8,10 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplCommand\PrintOrientation;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(PrintOrientation::class)]
+#[UsesClass(LabelFlip::class)]
 class PrintOrientationTest extends UnitTestCase
 {
     public function testRendersInverted(): void

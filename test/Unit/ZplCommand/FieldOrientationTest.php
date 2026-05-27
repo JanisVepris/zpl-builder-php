@@ -8,8 +8,10 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\ZplCommand\FieldOrientation;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(FieldOrientation::class)]
+#[UsesClass(Orientation::class)]
 class FieldOrientationTest extends UnitTestCase
 {
     public function testRendersNormalOrientation(): void

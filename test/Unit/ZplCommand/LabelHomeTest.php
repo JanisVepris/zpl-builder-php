@@ -6,10 +6,14 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(LabelHome::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class LabelHomeTest extends UnitTestCase
 {
     public function testNegativeXThrows(): void

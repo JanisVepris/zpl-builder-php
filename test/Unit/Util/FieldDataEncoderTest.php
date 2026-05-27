@@ -8,9 +8,14 @@ use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(FieldDataEncoder::class)]
+#[UsesClass(StringLengthOutOfRangeException::class)]
+#[UsesClass(StringValueContainsBannedValuesException::class)]
+#[UsesClass(ValueAssert::class)]
 class FieldDataEncoderTest extends UnitTestCase
 {
     public function testCaretIndicatorRejected(): void

@@ -7,11 +7,21 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\BoolToStr;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(BarcodeCode128::class)]
+#[UsesClass(BoolToStr::class)]
+#[UsesClass(Code128Mode::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(Orientation::class)]
+#[UsesClass(StringLengthOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class BarcodeCode128Test extends UnitTestCase
 {
     public function testHeightAboveMaxThrows(): void

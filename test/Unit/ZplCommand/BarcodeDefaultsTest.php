@@ -7,10 +7,15 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(BarcodeDefaults::class)]
+#[UsesClass(FloatValueOutOfRangeException::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class BarcodeDefaultsTest extends UnitTestCase
 {
     public function testFloatFormattingIsLocaleIndependent(): void

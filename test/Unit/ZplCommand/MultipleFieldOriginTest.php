@@ -7,10 +7,15 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\FieldOriginLocation;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\MultipleFieldOrigin;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(MultipleFieldOrigin::class)]
+#[UsesClass(FieldOriginLocation::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class MultipleFieldOriginTest extends UnitTestCase
 {
     public function testNoLocationsThrows(): void

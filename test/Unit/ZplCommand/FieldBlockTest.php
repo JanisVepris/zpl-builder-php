@@ -7,10 +7,15 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\FieldBlock;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(FieldBlock::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(Justify::class)]
+#[UsesClass(ValueAssert::class)]
 class FieldBlockTest extends UnitTestCase
 {
     public function testHangingIndentAboveMaxThrows(): void

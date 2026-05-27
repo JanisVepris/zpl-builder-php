@@ -8,9 +8,14 @@ use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(BarcodeDefaultSettings::class)]
+#[UsesClass(FloatValueOutOfRangeException::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class BarcodeDefaultSettingsTest extends UnitTestCase
 {
     public function testConstructorRejectsHeightBelowMin(): void

@@ -12,8 +12,14 @@ use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(ValueAssert::class)]
+#[UsesClass(FloatValueOutOfRangeException::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(InvalidHexValueException::class)]
+#[UsesClass(StringLengthOutOfRangeException::class)]
+#[UsesClass(StringValueContainsBannedValuesException::class)]
 class ValueAssertTest extends UnitTestCase
 {
     public function testEmptyStringPassesWithZeroMin(): void

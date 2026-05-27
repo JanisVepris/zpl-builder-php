@@ -4,23 +4,108 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit;
 
+use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
+use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
+use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
+use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
 use Janisvepris\ZplBuilder\FieldOriginLocation;
+use Janisvepris\ZplBuilder\FontSettings;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\BoolToStr;
+use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
+use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
+use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
+use Janisvepris\ZplBuilder\ZplCommand\ChangeInternationalEncoding;
+use Janisvepris\ZplBuilder\ZplCommand\EndFormat;
+use Janisvepris\ZplBuilder\ZplCommand\FieldBlock;
+use Janisvepris\ZplBuilder\ZplCommand\FieldClock;
+use Janisvepris\ZplBuilder\ZplCommand\FieldComment;
+use Janisvepris\ZplBuilder\ZplCommand\FieldData;
+use Janisvepris\ZplBuilder\ZplCommand\FieldHexIndicator;
+use Janisvepris\ZplBuilder\ZplCommand\FieldNumber;
+use Janisvepris\ZplBuilder\ZplCommand\FieldOrientation;
+use Janisvepris\ZplBuilder\ZplCommand\FieldOrigin;
+use Janisvepris\ZplBuilder\ZplCommand\FieldSeparator;
+use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
+use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
+use Janisvepris\ZplBuilder\ZplCommand\LabelLength;
+use Janisvepris\ZplBuilder\ZplCommand\LabelReversePrint;
+use Janisvepris\ZplBuilder\ZplCommand\MultipleFieldOrigin;
+use Janisvepris\ZplBuilder\ZplCommand\PrintOrientation;
+use Janisvepris\ZplBuilder\ZplCommand\PrintQuantity;
+use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
+use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
+use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
+use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(ZplBuilder::class)]
+#[UsesClass(BarcodeCode128::class)]
+#[UsesClass(BarcodeDefaults::class)]
+#[UsesClass(BarcodeDefaultSettings::class)]
+#[UsesClass(BoolToStr::class)]
+#[UsesClass(ChangeFont::class)]
+#[UsesClass(ChangeInternationalEncoding::class)]
+#[UsesClass(CharacterRemap::class)]
+#[UsesClass(Code128Mode::class)]
+#[UsesClass(DuplicateClockIndicatorException::class)]
+#[UsesClass(Encoding::class)]
+#[UsesClass(EndFormat::class)]
+#[UsesClass(FieldBlock::class)]
+#[UsesClass(FieldClock::class)]
+#[UsesClass(FieldComment::class)]
+#[UsesClass(FieldData::class)]
+#[UsesClass(FieldDataEncoder::class)]
+#[UsesClass(FieldHexIndicator::class)]
+#[UsesClass(FieldNumber::class)]
+#[UsesClass(FieldOrientation::class)]
+#[UsesClass(FieldOrigin::class)]
+#[UsesClass(FieldOriginLocation::class)]
+#[UsesClass(FieldSeparator::class)]
+#[UsesClass(FloatValueOutOfRangeException::class)]
+#[UsesClass(Font::class)]
+#[UsesClass(FontPreset::class)]
+#[UsesClass(FontPresetDoesNotExistException::class)]
+#[UsesClass(FontSettings::class)]
+#[UsesClass(GraphicBox::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(Justify::class)]
+#[UsesClass(LabelFlip::class)]
+#[UsesClass(LabelHome::class)]
+#[UsesClass(LabelLength::class)]
+#[UsesClass(LabelReversePrint::class)]
+#[UsesClass(LineColor::class)]
+#[UsesClass(MultipleFieldOrigin::class)]
+#[UsesClass(Orientation::class)]
+#[UsesClass(PrintOrientation::class)]
+#[UsesClass(PrintQuantity::class)]
+#[UsesClass(PrintWidth::class)]
+#[UsesClass(RawCommand::class)]
+#[UsesClass(RecallFormat::class)]
+#[UsesClass(StartFormat::class)]
+#[UsesClass(StorageDevice::class)]
+#[UsesClass(StringLengthOutOfRangeException::class)]
+#[UsesClass(StringValueContainsBannedValuesException::class)]
+#[UsesClass(TertiaryClockIndicatorWithoutSecondaryException::class)]
+#[UsesClass(ValueAssert::class)]
 class ZplBuilderTest extends UnitTestCase
 {
     public function testAddFontPresetInheritsDimensionsFromFontWhenOmitted(): void

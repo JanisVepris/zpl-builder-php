@@ -7,10 +7,15 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ValueObject;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(FontPreset::class)]
+#[UsesClass(Font::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class FontPresetTest extends UnitTestCase
 {
     public function testHeightAboveMaxThrows(): void

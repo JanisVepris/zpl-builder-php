@@ -7,9 +7,13 @@ namespace Janisvepris\ZplBuilder\Test\Unit;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\FieldOriginLocation;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(FieldOriginLocation::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(ValueAssert::class)]
 class FieldOriginLocationTest extends UnitTestCase
 {
     public function testAtRendersCoordinates(): void

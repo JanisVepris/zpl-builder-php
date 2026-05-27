@@ -7,10 +7,15 @@ namespace Janisvepris\ZplBuilder\Test\Unit\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
+use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(GraphicBox::class)]
+#[UsesClass(IntegerValueOutOfRangeException::class)]
+#[UsesClass(LineColor::class)]
+#[UsesClass(ValueAssert::class)]
 class GraphicBoxTest extends UnitTestCase
 {
     public function testHeightAboveMaxThrows(): void
