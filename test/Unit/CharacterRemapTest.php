@@ -16,19 +16,11 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(ValueAssert::class)]
 class CharacterRemapTest extends UnitTestCase
 {
-    public function testRendersSourceAndDestination(): void
+    public function testDestinationAboveMaxThrows(): void
     {
-        self::assertSame('64,100', (string) new CharacterRemap(64, 100));
-    }
+        $this->expectException(IntegerValueOutOfRangeException::class);
 
-    public function testRendersLowerBoundValues(): void
-    {
-        self::assertSame('0,0', (string) new CharacterRemap(0, 0));
-    }
-
-    public function testRendersUpperBoundValues(): void
-    {
-        self::assertSame('255,255', (string) new CharacterRemap(255, 255));
+        new CharacterRemap(0, 256);
     }
 
     public function testExposesSourceAndDestination(): void
@@ -39,20 +31,6 @@ class CharacterRemapTest extends UnitTestCase
         self::assertSame(100, $remap->destination);
     }
 
-    public function testNegativeSourceThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        new CharacterRemap(-1, 0);
-    }
-
-    public function testSourceAboveMaxThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        new CharacterRemap(256, 0);
-    }
-
     public function testNegativeDestinationThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
@@ -60,10 +38,32 @@ class CharacterRemapTest extends UnitTestCase
         new CharacterRemap(0, -1);
     }
 
-    public function testDestinationAboveMaxThrows(): void
+    public function testNegativeSourceThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
-        new CharacterRemap(0, 256);
+        new CharacterRemap(-1, 0);
+    }
+
+    public function testRendersLowerBoundValues(): void
+    {
+        self::assertSame('0,0', (string) new CharacterRemap(0, 0));
+    }
+
+    public function testRendersSourceAndDestination(): void
+    {
+        self::assertSame('64,100', (string) new CharacterRemap(64, 100));
+    }
+
+    public function testRendersUpperBoundValues(): void
+    {
+        self::assertSame('255,255', (string) new CharacterRemap(255, 255));
+    }
+
+    public function testSourceAboveMaxThrows(): void
+    {
+        $this->expectException(IntegerValueOutOfRangeException::class);
+
+        new CharacterRemap(256, 0);
     }
 }
