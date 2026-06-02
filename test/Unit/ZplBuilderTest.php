@@ -681,6 +681,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame((string) $builder, (string) $builder);
     }
 
+    public function testRenderReturnsEmptyStringWhenNoCommands(): void
+    {
+        // The protected constructor with no commands is reachable only via a subclass —
+        // `start()`/`reset()` always append `^XA`, so this guard is otherwise dead code.
+        $builder = new class extends ZplBuilder {
+            public function __construct()
+            {
+                parent::__construct();
+            }
+        };
+
+        self::assertSame('', $builder->render());
+    }
+
     public function testRenderWithoutEndOmitsEndFormat(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello');
