@@ -351,6 +351,19 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Position the next field at the given (x, y) coordinate in dots (`^FT`).
+     *
+     * Like `^FO`, but the typeset origin sits at the baseline of the last line of
+     * text, so increasing the font size grows the field upward rather than downward.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function fieldTypeset(int $x = 0, int $y = 0): self
+    {
+        return $this->addCommand(new Commands\FieldTypeset($x, $y));
+    }
+
+    /**
      * Return the list of commands accumulated so far. Useful for testing and external rendering.
      *
      * @return Commands[]
