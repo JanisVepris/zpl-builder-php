@@ -13,6 +13,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
@@ -42,6 +43,7 @@ use Janisvepris\ZplBuilder\ZplCommand\FieldHexIndicator;
 use Janisvepris\ZplBuilder\ZplCommand\FieldNumber;
 use Janisvepris\ZplBuilder\ZplCommand\FieldOrientation;
 use Janisvepris\ZplBuilder\ZplCommand\FieldOrigin;
+use Janisvepris\ZplBuilder\ZplCommand\FieldParameter;
 use Janisvepris\ZplBuilder\ZplCommand\FieldSeparator;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
@@ -79,6 +81,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(FieldOrientation::class)]
 #[UsesClass(FieldOrigin::class)]
 #[UsesClass(FieldOriginLocation::class)]
+#[UsesClass(FieldParameter::class)]
 #[UsesClass(FieldSeparator::class)]
 #[UsesClass(FloatValueOutOfRangeException::class)]
 #[UsesClass(Font::class)]
@@ -95,6 +98,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(LineColor::class)]
 #[UsesClass(MultipleFieldOrigin::class)]
 #[UsesClass(Orientation::class)]
+#[UsesClass(PrintDirection::class)]
 #[UsesClass(PrintOrientation::class)]
 #[UsesClass(PrintQuantity::class)]
 #[UsesClass(PrintWidth::class)]
@@ -505,6 +509,20 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^FM100,200,e,e,100,600', $output);
+    }
+
+    public function testFieldParameterDefaultsToHorizontalWithNoGap(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldParameter();
+
+        self::assertSame('^XA^FPH,0', $output);
+    }
+
+    public function testFieldParameterEmitsFp(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldParameter(PrintDirection::Vertical, 5);
+
+        self::assertSame('^XA^FPV,5', $output);
     }
 
     public function testGetCommandsReturnsAppendedCommands(): void

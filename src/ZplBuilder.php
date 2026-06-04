@@ -11,6 +11,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
@@ -320,6 +321,24 @@ class ZplBuilder implements Stringable
         }
 
         return $this->addCommand(new Commands\MultipleFieldOrigin(...$locations));
+    }
+
+    /**
+     * Set the print direction and additional inter-character gap for the next field (`^FP`).
+     * Used for vertical and reverse text, commonly when printing Asian fonts.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function fieldParameter(
+        PrintDirection $direction = PrintDirection::Horizontal,
+        int $gap = 0,
+    ): self {
+        return $this->addCommand(
+            new Commands\FieldParameter(
+                direction: $direction,
+                gap: $gap,
+            ),
+        );
     }
 
     /**

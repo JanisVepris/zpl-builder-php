@@ -16,7 +16,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^FM` — Multiple Field Origin Locations
 - [x] `^FN` — Field Number
 - [x] `^FO` — Field Origin
-- [ ] `^FP` — Field Parameter
+- [x] `^FP` — Field Parameter
 - [ ] `^FR` — Field Reverse Print
 - [x] `^FS` — Field Separator
 - [ ] `^FT` — Field Typeset
