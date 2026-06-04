@@ -625,6 +625,46 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testFontChainsWithFieldDataWithoutEmittingExtraSeparator(): void
+    {
+        // ^A is a field modifier: it selects the font but does not itself open or close a field.
+        // The ^FS comes only from the following fieldData() call.
+        $output = (string) ZplBuilder::start()
+            ->font(Font::Zero, height: 50, width: 50)
+            ->fieldData('Hello');
+
+        self::assertSame('^XA^A0N,50,50^FDHello^FS', $output);
+    }
+
+    public function testFontEmitsAWithAllArguments(): void
+    {
+        $output = (string) ZplBuilder::start()->font(Font::A, Orientation::Rotate90, 40, 20);
+
+        self::assertSame('^XA^AAR,40,20', $output);
+    }
+
+    public function testFontUsesDefaultOrientationAndDimensions(): void
+    {
+        // No orientation/height/width passed — defaults to normal orientation and the 10-dot minimum.
+        $output = (string) ZplBuilder::start()->font(Font::Zero);
+
+        self::assertSame('^XA^A0N,10,10', $output);
+    }
+
+    public function testFontValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->font(Font::Zero, height: 9);
+            self::fail('Expected IntegerValueOutOfRangeException on invalid height.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        // The failed call must not append a partial ^A command.
+        self::assertSame('^XA', (string) $builder);
+    }
+
     public function testGetCommandsReturnsAppendedCommands(): void
     {
         $commands = ZplBuilder::start()
