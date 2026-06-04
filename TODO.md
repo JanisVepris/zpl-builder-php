@@ -20,7 +20,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^FR` — Field Reverse Print
 - [x] `^FS` — Field Separator
 - [x] `^FT` — Field Typeset
-- [ ] `^FV` — Field Variable
+- [x] `^FV` — Field Variable
 - [x] `^FW` — Field Orientation
 - [x] `^FX` — Comment
 - [ ] `^KD` — Select Date and Time Format (for Real-Time Clock)

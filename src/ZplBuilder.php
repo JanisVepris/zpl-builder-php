@@ -255,17 +255,10 @@ class ZplBuilder implements Stringable
      */
     public function fieldData(string $data): self
     {
-        if (str_contains($data, '^') || str_contains($data, '~')) {
-            if ($this->pendingHexIndicator === null) {
-                $this->fieldHexIndicator();
-            }
-            $data = FieldDataEncoder::escape($data, $this->pendingHexIndicator ?? '_');
-        }
-
-        $this->addCommand(new Commands\FieldData($data));
-        $this->pendingHexIndicator = null;
-
-        return $this->addCommand(new Commands\FieldSeparator());
+        return $this->appendField(
+            $data,
+            static fn (string $escaped): Commands => new Commands\FieldData($escaped),
+        );
     }
 
     /**
@@ -361,6 +354,21 @@ class ZplBuilder implements Stringable
     public function fieldTypeset(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\FieldTypeset($x, $y));
+    }
+
+    /**
+     * Write variable text into the current field (`^FV ... ^FS`). Behaves like `fieldData()`,
+     * but the printer clears the field after the label prints — pair with `^MC` so high-throughput
+     * formats reformat only the fields that change. Auto-escapes `^` and `~` via `^FH_` if present.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function fieldVariable(string $data): self
+    {
+        return $this->appendField(
+            $data,
+            static fn (string $escaped): Commands => new Commands\FieldVariable($escaped),
+        );
     }
 
     /**
@@ -579,5 +587,28 @@ class ZplBuilder implements Stringable
     protected function fontSettingsFor(Font $font): FontSettings
     {
         return $this->fontSettings[$font->value] ??= new FontSettings();
+    }
+
+    /**
+     * Shared orchestration for the field-content commands (`^FD`, `^FV`): auto-escape `^` and `~`
+     * via `^FH` when present, append the field command built by `$makeField`, then close it with `^FS`.
+     *
+     * @param callable(string): Commands $makeField
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    private function appendField(string $data, callable $makeField): self
+    {
+        if (str_contains($data, '^') || str_contains($data, '~')) {
+            if ($this->pendingHexIndicator === null) {
+                $this->fieldHexIndicator();
+            }
+            $data = FieldDataEncoder::escape($data, $this->pendingHexIndicator ?? '_');
+        }
+
+        $this->addCommand($makeField($data));
+        $this->pendingHexIndicator = null;
+
+        return $this->addCommand(new Commands\FieldSeparator());
     }
 }
