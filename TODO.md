@@ -5,7 +5,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 ## Fonts, fields and text
 
 - [ ] `^A` — Scalable/Bitmapped Font (per-field)
-- [ ] `^A@` — Use Font Name to Call Font
+- [x] `^A@` — Use Font Name to Call Font
 - [x] `^CF` — Change Alphanumeric Default Font
 - [x] `^CI` — Change International Font/Encoding
 - [ ] `^CW` — Font Identifier
