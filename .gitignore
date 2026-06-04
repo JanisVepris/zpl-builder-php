@@ -3,6 +3,7 @@
 /.cache/
 .claude/
 tmp/
+.worktree/
 
 composer.lock
 composer.phar
