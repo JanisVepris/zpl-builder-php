@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
+use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -368,6 +369,62 @@ class ZplBuilder implements Stringable
         return $this->appendField(
             $data,
             static fn (string $escaped): Commands => new Commands\FieldVariable($escaped),
+        );
+    }
+
+    /**
+     * Select the font for the next field (`^A`). Unlike `changeFont()` (`^CF`, the default
+     * font), this applies to the upcoming `^FD`/`^FV` field only; the printer reverts to the
+     * `^CF` default afterwards. Height and width are in dots (scalable fonts: 10 to 32000).
+     * Chain `fieldData()` after this to emit the text.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function font(
+        Font $font,
+        Orientation $orientation = Orientation::Rotate0,
+        int $height = Commands\ScalableBitmappedFont::MIN_DIMENSION,
+        int $width = Commands\ScalableBitmappedFont::MIN_DIMENSION,
+    ): self {
+        return $this->addCommand(
+            new Commands\ScalableBitmappedFont(
+                font: $font,
+                orientation: $orientation,
+                height: $height,
+                width: $width,
+            ),
+        );
+    }
+
+    /**
+     * Select a downloaded/resident font by its file name for subsequent fields (`^A@`).
+     *
+     * Unlike `changeFont()` (`^CF`), which uses the single-character font designator, this
+     * references the font by its stored file name and extension. It is a per-field selector —
+     * it emits only the `^A@…` command and pairs with a following `^FD … ^FS` of your own.
+     * Height and width are in dots; the device defaults to `R:` (RAM) per the spec.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function fontByName(
+        string $name,
+        int $height,
+        int $width,
+        FontExtension $extension = FontExtension::Font,
+        StorageDevice $device = StorageDevice::Ram,
+        Orientation $orientation = Orientation::Rotate0,
+    ): self {
+        return $this->addCommand(
+            new Commands\FontName(
+                orientation: $orientation,
+                height: $height,
+                width: $width,
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
         );
     }
 
