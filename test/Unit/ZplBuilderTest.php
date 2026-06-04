@@ -58,6 +58,7 @@ use Janisvepris\ZplBuilder\ZplCommand\PrintQuantity;
 use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
 use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
+use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -110,6 +111,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(PrintWidth::class)]
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
+#[UsesClass(SerializationField::class)]
 #[UsesClass(StartFormat::class)]
 #[UsesClass(StorageDevice::class)]
 #[UsesClass(StringLengthOutOfRangeException::class)]
@@ -810,6 +812,49 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertCount(1, $commands);
         self::assertSame('^XA', (string) $commands[0]);
+    }
+
+    public function testSerializationFieldAutoEscapesStartValue(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationField('A^B', 'DDD', '1');
+
+        self::assertSame('^XA^FH_^FDA_5EB^SFDDD,1^FS', $output);
+    }
+
+    public function testSerializationFieldDefaultsIncrementToOne(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationField('12345678', 'DDDDDDDD');
+
+        self::assertSame('^XA^FD12345678^SFDDDDDDDD,1^FS', $output);
+    }
+
+    public function testSerializationFieldEmitsFdThenSfThenFieldSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationField('00-0', '%%%%%%%%%%%n', '1');
+
+        self::assertSame('^XA^FD00-0^SF%%%%%%%%%%%n,1^FS', $output);
+    }
+
+    public function testSerializationFieldUsesExplicitMultiCharIncrement(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationField('BL00', 'AADD', '11');
+
+        self::assertSame('^XA^FDBL00^SFAADD,11^FS', $output);
+    }
+
+    public function testSerializationFieldValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->serializationField('12345', 'DD,DD', '1');
+            self::fail('Expected StringValueContainsBannedValuesException');
+        } catch (StringValueContainsBannedValuesException) {
+            // expected — a comma in the mask would corrupt the two-parameter list.
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testStartEmitsStartFormat(): void

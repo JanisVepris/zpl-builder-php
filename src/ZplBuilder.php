@@ -564,6 +564,29 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
+    /**
+     * Serialize the next field: emit `^FD<startValue>` then `^SF<mask>,<increment>` then `^FS`,
+     * so the printer auto-increments the field on each successive label (`^SF`).
+     *
+     * `$startValue` is the field's starting value (auto-escaped via `^FH` if it contains `^` / `~`,
+     * like `fieldData()`). `$mask` defines the serialization scheme — one placeholder per character
+     * to serialize: `D`=decimal, `H`=hex, `O`=octal, `A`=alphabetic, `N`=alphanumeric, `%`=skip
+     * (each accepts upper or lower case). `$increment` is the value added per label and defaults to
+     * `1` (a decimal one). Mask and increment may not contain `^`, `~`, or `,`, and their combined
+     * length must not exceed `SerializationField::MAX_COMBINED_BYTES` (3072).
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function serializationField(string $startValue, string $mask, string $increment = '1'): self
+    {
+        return $this->appendField(
+            $startValue,
+            static fn (string $escaped): Commands => new Commands\FieldData($escaped),
+            [new Commands\SerializationField($mask, $increment)],
+        );
+    }
+
     /** Open a new ZPL format. Returns a builder with `^XA` already appended. */
     public static function start(): self
     {
@@ -591,13 +614,15 @@ class ZplBuilder implements Stringable
 
     /**
      * Shared orchestration for the field-content commands (`^FD`, `^FV`): auto-escape `^` and `~`
-     * via `^FH` when present, append the field command built by `$makeField`, then close it with `^FS`.
+     * via `^FH` when present, append the field command built by `$makeField`, optionally append
+     * any `$trailing` commands (e.g. `^SF`), then close it with `^FS`.
      *
      * @param callable(string): Commands $makeField
+     * @param Commands[]                 $trailing  commands inserted between the field data and `^FS`
      *
      * @throws StringLengthOutOfRangeException
      */
-    private function appendField(string $data, callable $makeField): self
+    private function appendField(string $data, callable $makeField, array $trailing = []): self
     {
         if (str_contains($data, '^') || str_contains($data, '~')) {
             if ($this->pendingHexIndicator === null) {
@@ -608,6 +633,10 @@ class ZplBuilder implements Stringable
 
         $this->addCommand($makeField($data));
         $this->pendingHexIndicator = null;
+
+        foreach ($trailing as $command) {
+            $this->addCommand($command);
+        }
 
         return $this->addCommand(new Commands\FieldSeparator());
     }

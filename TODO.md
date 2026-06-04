@@ -25,7 +25,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^FX` — Comment
 - [ ] `^KD` — Select Date and Time Format (for Real-Time Clock)
 - [ ] `^SE` — Select Encoding
-- [ ] `^SF` — Serialization Field
+- [x] `^SF` — Serialization Field
 - [ ] `^SL` — Set Mode and Language (for Real-Time Clock)
 - [ ] `^SN` — Serialization Data
 - [ ] `^SO` — Set Offset (for Real-Time Clock)
