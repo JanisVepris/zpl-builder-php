@@ -372,6 +372,30 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Select the font for the next field (`^A`). Unlike `changeFont()` (`^CF`, the default
+     * font), this applies to the upcoming `^FD`/`^FV` field only; the printer reverts to the
+     * `^CF` default afterwards. Height and width are in dots (scalable fonts: 10 to 32000).
+     * Chain `fieldData()` after this to emit the text.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function font(
+        Font $font,
+        Orientation $orientation = Orientation::Rotate0,
+        int $height = Commands\ScalableBitmappedFont::MIN_DIMENSION,
+        int $width = Commands\ScalableBitmappedFont::MIN_DIMENSION,
+    ): self {
+        return $this->addCommand(
+            new Commands\ScalableBitmappedFont(
+                font: $font,
+                orientation: $orientation,
+                height: $height,
+                width: $width,
+            ),
+        );
+    }
+
+    /**
      * Return the list of commands accumulated so far. Useful for testing and external rendering.
      *
      * @return Commands[]
