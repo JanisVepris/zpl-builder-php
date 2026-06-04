@@ -9,6 +9,7 @@ use Janisvepris\ZplBuilder\CharacterRemap;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
+use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -48,6 +49,7 @@ use Janisvepris\ZplBuilder\ZplCommand\FieldReversePrint;
 use Janisvepris\ZplBuilder\ZplCommand\FieldSeparator;
 use Janisvepris\ZplBuilder\ZplCommand\FieldTypeset;
 use Janisvepris\ZplBuilder\ZplCommand\FieldVariable;
+use Janisvepris\ZplBuilder\ZplCommand\FontName;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
 use Janisvepris\ZplBuilder\ZplCommand\LabelLength;
@@ -91,6 +93,8 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(FieldVariable::class)]
 #[UsesClass(FloatValueOutOfRangeException::class)]
 #[UsesClass(Font::class)]
+#[UsesClass(FontExtension::class)]
+#[UsesClass(FontName::class)]
 #[UsesClass(FontPreset::class)]
 #[UsesClass(FontPresetDoesNotExistException::class)]
 #[UsesClass(FontSettings::class)]
@@ -583,6 +587,42 @@ class ZplBuilderTest extends UnitTestCase
         // The explicit ^FH% is preserved and reused for escape encoding — no duplicate ^FH_,
         // and the data is escaped with % rather than the default _.
         self::assertSame('^XA^FH%^FVfoo%5Ebar^FS', $output);
+    }
+
+    public function testFontByNameEmitsAAtWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->fontByName('CYRI_UB', 50, 50);
+
+        // Defaults: extension .FNT, device R: (RAM), orientation N. No trailing ^FS — it is a selector.
+        self::assertSame('^XA^A@N,50,50,R:CYRI_UB.FNT', $output);
+    }
+
+    public function testFontByNameEmitsAAtWithExplicitArguments(): void
+    {
+        $output = (string) ZplBuilder::start()->fontByName(
+            name: 'ARI000',
+            height: 70,
+            width: 40,
+            extension: FontExtension::TrueType,
+            device: StorageDevice::Flash,
+            orientation: Orientation::Rotate90,
+        );
+
+        self::assertSame('^XA^A@R,70,40,E:ARI000.TTF', $output);
+    }
+
+    public function testFontByNameValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->fontByName('', 50, 50);
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testGetCommandsReturnsAppendedCommands(): void
