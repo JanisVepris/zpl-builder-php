@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
+use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -391,6 +392,38 @@ class ZplBuilder implements Stringable
                 orientation: $orientation,
                 height: $height,
                 width: $width,
+            ),
+          );
+    }
+
+    /**
+     * Select a downloaded/resident font by its file name for subsequent fields (`^A@`).
+     *
+     * Unlike `changeFont()` (`^CF`), which uses the single-character font designator, this
+     * references the font by its stored file name and extension. It is a per-field selector —
+     * it emits only the `^A@…` command and pairs with a following `^FD … ^FS` of your own.
+     * Height and width are in dots; the device defaults to `R:` (RAM) per the spec.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function fontByName(
+        string $name,
+        int $height,
+        int $width,
+        FontExtension $extension = FontExtension::Font,
+        StorageDevice $device = StorageDevice::Ram,
+        Orientation $orientation = Orientation::Rotate0,
+    ): self {
+        return $this->addCommand(
+            new Commands\FontName(
+                orientation: $orientation,
+                height: $height,
+                width: $width,
+                device: $device,
+                name: $name,
+                extension: $extension,
             ),
         );
     }
