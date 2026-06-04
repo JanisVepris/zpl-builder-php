@@ -44,6 +44,7 @@ use Janisvepris\ZplBuilder\ZplCommand\FieldNumber;
 use Janisvepris\ZplBuilder\ZplCommand\FieldOrientation;
 use Janisvepris\ZplBuilder\ZplCommand\FieldOrigin;
 use Janisvepris\ZplBuilder\ZplCommand\FieldParameter;
+use Janisvepris\ZplBuilder\ZplCommand\FieldReversePrint;
 use Janisvepris\ZplBuilder\ZplCommand\FieldSeparator;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
@@ -82,6 +83,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(FieldOrigin::class)]
 #[UsesClass(FieldOriginLocation::class)]
 #[UsesClass(FieldParameter::class)]
+#[UsesClass(FieldReversePrint::class)]
 #[UsesClass(FieldSeparator::class)]
 #[UsesClass(FloatValueOutOfRangeException::class)]
 #[UsesClass(Font::class)]
@@ -523,6 +525,13 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldParameter(PrintDirection::Vertical, 5);
 
         self::assertSame('^XA^FPV,5', $output);
+    }
+
+    public function testFieldReversePrintEmitsFr(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldReversePrint();
+
+        self::assertSame('^XA^FR', $output);
     }
 
     public function testGetCommandsReturnsAppendedCommands(): void

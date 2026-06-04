@@ -342,6 +342,15 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Reverse-print the next field — it renders in the inverse of its background (`^FR`).
+     * Applies to a single field; for whole-label reverse printing prefer `labelReversePrint()` (`^LR`).
+     */
+    public function fieldReversePrint(): self
+    {
+        return $this->addCommand(new Commands\FieldReversePrint());
+    }
+
+    /**
      * Return the list of commands accumulated so far. Useful for testing and external rendering.
      *
      * @return Commands[]
