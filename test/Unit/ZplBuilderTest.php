@@ -589,6 +589,42 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^FH%^FVfoo%5Ebar^FS', $output);
     }
 
+    public function testFontByNameEmitsAAtWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->fontByName('CYRI_UB', 50, 50);
+
+        // Defaults: extension .FNT, device R: (RAM), orientation N. No trailing ^FS — it is a selector.
+        self::assertSame('^XA^A@N,50,50,R:CYRI_UB.FNT', $output);
+    }
+
+    public function testFontByNameEmitsAAtWithExplicitArguments(): void
+    {
+        $output = (string) ZplBuilder::start()->fontByName(
+            name: 'ARI000',
+            height: 70,
+            width: 40,
+            extension: FontExtension::TrueType,
+            device: StorageDevice::Flash,
+            orientation: Orientation::Rotate90,
+        );
+
+        self::assertSame('^XA^A@R,70,40,E:ARI000.TTF', $output);
+    }
+
+    public function testFontByNameValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->fontByName('', 50, 50);
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testFontChainsWithFieldDataWithoutEmittingExtraSeparator(): void
     {
         // ^A is a field modifier: it selects the font but does not itself open or close a field.
@@ -627,42 +663,6 @@ class ZplBuilderTest extends UnitTestCase
 
         // The failed call must not append a partial ^A command.
         self::assertSame('^XA', (string) $builder);
-    }
-
-    public function testFontByNameEmitsAAtWithDefaults(): void
-    {
-        $output = (string) ZplBuilder::start()->fontByName('CYRI_UB', 50, 50);
-
-        // Defaults: extension .FNT, device R: (RAM), orientation N. No trailing ^FS — it is a selector.
-        self::assertSame('^XA^A@N,50,50,R:CYRI_UB.FNT', $output);
-    }
-
-    public function testFontByNameEmitsAAtWithExplicitArguments(): void
-    {
-        $output = (string) ZplBuilder::start()->fontByName(
-            name: 'ARI000',
-            height: 70,
-            width: 40,
-            extension: FontExtension::TrueType,
-            device: StorageDevice::Flash,
-            orientation: Orientation::Rotate90,
-        );
-
-        self::assertSame('^XA^A@R,70,40,E:ARI000.TTF', $output);
-    }
-
-    public function testFontByNameValidationFailureLeavesNoCommandAppended(): void
-    {
-        $builder = ZplBuilder::start();
-        $before = (string) $builder;
-
-        try {
-            $builder->fontByName('', 50, 50);
-            self::fail('Expected StringLengthOutOfRangeException');
-        } catch (StringLengthOutOfRangeException) {
-        }
-
-        self::assertSame($before, (string) $builder);
     }
 
     public function testGetCommandsReturnsAppendedCommands(): void

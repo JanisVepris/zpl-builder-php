@@ -393,7 +393,7 @@ class ZplBuilder implements Stringable
                 height: $height,
                 width: $width,
             ),
-          );
+        );
     }
 
     /**
