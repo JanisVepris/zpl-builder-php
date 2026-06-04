@@ -46,6 +46,7 @@ use Janisvepris\ZplBuilder\ZplCommand\FieldOrigin;
 use Janisvepris\ZplBuilder\ZplCommand\FieldParameter;
 use Janisvepris\ZplBuilder\ZplCommand\FieldReversePrint;
 use Janisvepris\ZplBuilder\ZplCommand\FieldSeparator;
+use Janisvepris\ZplBuilder\ZplCommand\FieldTypeset;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
 use Janisvepris\ZplBuilder\ZplCommand\LabelLength;
@@ -85,6 +86,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(FieldParameter::class)]
 #[UsesClass(FieldReversePrint::class)]
 #[UsesClass(FieldSeparator::class)]
+#[UsesClass(FieldTypeset::class)]
 #[UsesClass(FloatValueOutOfRangeException::class)]
 #[UsesClass(Font::class)]
 #[UsesClass(FontPreset::class)]
@@ -532,6 +534,20 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldReversePrint();
 
         self::assertSame('^XA^FR', $output);
+    }
+
+    public function testFieldTypesetDefaultsToZeroZero(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldTypeset();
+
+        self::assertSame('^XA^FT0,0', $output);
+    }
+
+    public function testFieldTypesetEmitsFt(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldTypeset(50, 100);
+
+        self::assertSame('^XA^FT50,100', $output);
     }
 
     public function testGetCommandsReturnsAppendedCommands(): void

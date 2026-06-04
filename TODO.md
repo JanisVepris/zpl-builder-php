@@ -19,7 +19,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^FP` — Field Parameter
 - [x] `^FR` — Field Reverse Print
 - [x] `^FS` — Field Separator
-- [ ] `^FT` — Field Typeset
+- [x] `^FT` — Field Typeset
 - [ ] `^FV` — Field Variable
 - [x] `^FW` — Field Orientation
 - [x] `^FX` — Comment
