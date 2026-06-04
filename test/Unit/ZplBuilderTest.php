@@ -47,6 +47,7 @@ use Janisvepris\ZplBuilder\ZplCommand\FieldParameter;
 use Janisvepris\ZplBuilder\ZplCommand\FieldReversePrint;
 use Janisvepris\ZplBuilder\ZplCommand\FieldSeparator;
 use Janisvepris\ZplBuilder\ZplCommand\FieldTypeset;
+use Janisvepris\ZplBuilder\ZplCommand\FieldVariable;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
 use Janisvepris\ZplBuilder\ZplCommand\LabelLength;
@@ -87,6 +88,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(FieldReversePrint::class)]
 #[UsesClass(FieldSeparator::class)]
 #[UsesClass(FieldTypeset::class)]
+#[UsesClass(FieldVariable::class)]
 #[UsesClass(FloatValueOutOfRangeException::class)]
 #[UsesClass(Font::class)]
 #[UsesClass(FontPreset::class)]
@@ -548,6 +550,39 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldTypeset(50, 100);
 
         self::assertSame('^XA^FT50,100', $output);
+    }
+
+    public function testFieldVariableAutoEscapesCaret(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldVariable('A^B');
+
+        self::assertSame('^XA^FH_^FVA_5EB^FS', $output);
+    }
+
+    public function testFieldVariableEmitsFvThenFieldSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldVariable('Hello');
+
+        self::assertSame('^XA^FVHello^FS', $output);
+    }
+
+    public function testFieldVariablePassesCleanInputThrough(): void
+    {
+        $output = (string) ZplBuilder::start()->fieldVariable('Hello World');
+
+        self::assertStringContainsString('^FVHello World^FS', $output);
+        self::assertStringNotContainsString('^FH', $output);
+    }
+
+    public function testFieldVariableReusesPendingHexIndicator(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->fieldHexIndicator('%')
+            ->fieldVariable('foo^bar');
+
+        // The explicit ^FH% is preserved and reused for escape encoding — no duplicate ^FH_,
+        // and the data is escaped with % rather than the default _.
+        self::assertSame('^XA^FH%^FVfoo%5Ebar^FS', $output);
     }
 
     public function testGetCommandsReturnsAppendedCommands(): void
