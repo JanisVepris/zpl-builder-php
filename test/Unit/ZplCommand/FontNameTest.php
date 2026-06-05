@@ -10,6 +10,7 @@ use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
+use Janisvepris\ZplBuilder\Exception\UnsupportedFontExtensionException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand\FontName;
@@ -23,6 +24,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(IntegerValueOutOfRangeException::class)]
 #[UsesClass(StringLengthOutOfRangeException::class)]
 #[UsesClass(StringValueContainsBannedValuesException::class)]
+#[UsesClass(UnsupportedFontExtensionException::class)]
 #[UsesClass(ValueAssert::class)]
 class FontNameTest extends UnitTestCase
 {
@@ -123,6 +125,21 @@ class FontNameTest extends UnitTestCase
                 'ARI000',
                 FontExtension::TrueType,
             ),
+        );
+    }
+
+    public function testTrueTypeExtensionThrows(): void
+    {
+        // ^A@ accepts only .FNT and .TTF; .TTE belongs to ^CW (fontIdentifier()).
+        $this->expectException(UnsupportedFontExtensionException::class);
+
+        new FontName(
+            Orientation::Rotate0,
+            50,
+            50,
+            StorageDevice::Flash,
+            'ARI000',
+            FontExtension::TrueTypeExtension,
         );
     }
 

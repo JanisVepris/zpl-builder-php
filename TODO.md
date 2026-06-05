@@ -8,7 +8,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^A@` — Use Font Name to Call Font
 - [x] `^CF` — Change Alphanumeric Default Font
 - [x] `^CI` — Change International Font/Encoding
-- [ ] `^CW` — Font Identifier
+- [x] `^CW` — Font Identifier
 - [x] `^FB` — Field Block
 - [x] `^FC` — Field Clock (Real-Time Clock data)
 - [x] `^FD` — Field Data

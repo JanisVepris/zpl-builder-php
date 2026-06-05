@@ -10,6 +10,7 @@ use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
+use Janisvepris\ZplBuilder\Exception\UnsupportedFontExtensionException;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ZplCommand;
 
@@ -21,6 +22,15 @@ readonly class FontName implements ZplCommand
     /** Maximum byte length of the font file name (printer object-name buffer). */
     public const int MAX_NAME_BYTES = 16;
 
+    /**
+     * Extensions `^A@` accepts: bitmapped (`.FNT`) and TrueType (`.TTF`). Scalable
+     * collection types such as `.TTE` are intentionally excluded — assign those an
+     * identifier with `^CW` (`ZplBuilder::fontIdentifier()`) instead.
+     *
+     * @var list<FontExtension>
+     */
+    public const array SUPPORTED_EXTENSIONS = [FontExtension::Font, FontExtension::TrueType];
+
     private int $height;
     private string $name;
     private int $width;
@@ -29,6 +39,7 @@ readonly class FontName implements ZplCommand
      * @throws IntegerValueOutOfRangeException
      * @throws StringLengthOutOfRangeException
      * @throws StringValueContainsBannedValuesException
+     * @throws UnsupportedFontExtensionException
      */
     public function __construct(
         private Orientation $orientation,
@@ -42,6 +53,10 @@ readonly class FontName implements ZplCommand
         ValueAssert::int($width);
         ValueAssert::stringLengthBytes($name, 1, self::MAX_NAME_BYTES);
         ValueAssert::stringNotContains($name, ['^', '~', ':', '.', ',']);
+
+        if (!in_array($extension, self::SUPPORTED_EXTENSIONS, true)) {
+            throw new UnsupportedFontExtensionException($extension, self::COMMAND);
+        }
 
         $this->height = $height;
         $this->width = $width;

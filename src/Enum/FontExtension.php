@@ -15,4 +15,9 @@ enum FontExtension: string
      * TrueType font (`.TTF`).
      */
     case TrueType = 'TTF';
+
+    /**
+     * TrueType extension/collection font (`.TTE`).
+     */
+    case TrueTypeExtension = 'TTE';
 }

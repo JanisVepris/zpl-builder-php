@@ -23,6 +23,7 @@ use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
+use Janisvepris\ZplBuilder\Exception\UnsupportedFontExtensionException;
 use Janisvepris\ZplBuilder\FieldOriginLocation;
 use Janisvepris\ZplBuilder\FontSettings;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
@@ -49,6 +50,7 @@ use Janisvepris\ZplBuilder\ZplCommand\FieldReversePrint;
 use Janisvepris\ZplBuilder\ZplCommand\FieldSeparator;
 use Janisvepris\ZplBuilder\ZplCommand\FieldTypeset;
 use Janisvepris\ZplBuilder\ZplCommand\FieldVariable;
+use Janisvepris\ZplBuilder\ZplCommand\FontIdentifier;
 use Janisvepris\ZplBuilder\ZplCommand\FontName;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
@@ -95,6 +97,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(FloatValueOutOfRangeException::class)]
 #[UsesClass(Font::class)]
 #[UsesClass(FontExtension::class)]
+#[UsesClass(FontIdentifier::class)]
 #[UsesClass(FontName::class)]
 #[UsesClass(FontPreset::class)]
 #[UsesClass(FontPresetDoesNotExistException::class)]
@@ -121,6 +124,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(StringLengthOutOfRangeException::class)]
 #[UsesClass(StringValueContainsBannedValuesException::class)]
 #[UsesClass(TertiaryClockIndicatorWithoutSecondaryException::class)]
+#[UsesClass(UnsupportedFontExtensionException::class)]
 #[UsesClass(ValueAssert::class)]
 class ZplBuilderTest extends UnitTestCase
 {
@@ -613,6 +617,21 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^A@R,70,40,E:ARI000.TTF', $output);
     }
 
+    public function testFontByNameRejectsTrueTypeExtension(): void
+    {
+        // ^A@ accepts only .FNT and .TTF; .TTE must go through fontIdentifier() (^CW).
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->fontByName('ARI000', 50, 50, FontExtension::TrueTypeExtension);
+            self::fail('Expected UnsupportedFontExtensionException');
+        } catch (UnsupportedFontExtensionException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testFontByNameValidationFailureLeavesNoCommandAppended(): void
     {
         $builder = ZplBuilder::start();
@@ -643,6 +662,40 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->font(Font::A, Orientation::Rotate90, 40, 20);
 
         self::assertSame('^XA^AAR,40,20', $output);
+    }
+
+    public function testFontIdentifierEmitsCwWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->fontIdentifier(Font::T, 'ARIAL');
+
+        // Defaults: extension .FNT, device R: (RAM). Standalone — no trailing ^FS.
+        self::assertSame('^XA^CWT,R:ARIAL.FNT', $output);
+    }
+
+    public function testFontIdentifierEmitsCwWithExplicitArguments(): void
+    {
+        $output = (string) ZplBuilder::start()->fontIdentifier(
+            font: Font::One,
+            name: 'ANMDS',
+            extension: FontExtension::TrueTypeExtension,
+            device: StorageDevice::Flash,
+        );
+
+        self::assertSame('^XA^CW1,E:ANMDS.TTE', $output);
+    }
+
+    public function testFontIdentifierValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->fontIdentifier(Font::T, '');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testFontUsesDefaultOrientationAndDimensions(): void
