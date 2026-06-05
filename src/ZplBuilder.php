@@ -21,6 +21,7 @@ use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
+use Janisvepris\ZplBuilder\Exception\UnsupportedFontExtensionException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
@@ -402,11 +403,14 @@ class ZplBuilder implements Stringable
      * Unlike `changeFont()` (`^CF`), which uses the single-character font designator, this
      * references the font by its stored file name and extension. It is a per-field selector —
      * it emits only the `^A@…` command and pairs with a following `^FD … ^FS` of your own.
-     * Height and width are in dots; the device defaults to `R:` (RAM) per the spec.
+     * Height and width are in dots; the device defaults to `R:` (RAM) per the spec. Only the
+     * `.FNT` and `.TTF` extensions are accepted (`FontName::SUPPORTED_EXTENSIONS`); for `.TTE`
+     * assign an identifier with `fontIdentifier()` (`^CW`) and reference it via `changeFont()`/`font()`.
      *
      * @throws IntegerValueOutOfRangeException
      * @throws StringLengthOutOfRangeException
      * @throws StringValueContainsBannedValuesException
+     * @throws UnsupportedFontExtensionException
      */
     public function fontByName(
         string $name,
@@ -421,6 +425,35 @@ class ZplBuilder implements Stringable
                 orientation: $orientation,
                 height: $height,
                 width: $width,
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
+    /**
+     * Assign a font identifier letter to a downloaded or resident font file (`^CW`).
+     *
+     * Maps a single-character font designator (the same vocabulary `^CF`/`^A` use) to a stored
+     * font file, so subsequent references to that letter print the downloaded font in place of —
+     * or, for an unused letter, in addition to — the built-in font. The mapping lasts only until
+     * power-off or until the same letter is remapped, so it must be re-sent each print job on
+     * volatile devices. Standalone command — it emits only `^CW…`, with no `^FD … ^FS`. The drive
+     * defaults to `R:` (RAM) and the extension to `.FNT`, matching `fontByName()`.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function fontIdentifier(
+        Font $font,
+        string $name,
+        FontExtension $extension = FontExtension::Font,
+        StorageDevice $device = StorageDevice::Ram,
+    ): self {
+        return $this->addCommand(
+            new Commands\FontIdentifier(
+                font: $font,
                 device: $device,
                 name: $name,
                 extension: $extension,
