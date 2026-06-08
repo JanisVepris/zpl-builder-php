@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit;
 
+use DateTimeImmutable;
 use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
+use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -71,6 +73,7 @@ use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationData;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
 use Janisvepris\ZplBuilder\ZplCommand\SetClockMode;
+use Janisvepris\ZplBuilder\ZplCommand\SetDateTime;
 use Janisvepris\ZplBuilder\ZplCommand\SetOffset;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -85,6 +88,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(ChangeInternationalEncoding::class)]
 #[UsesClass(CharacterRemap::class)]
 #[UsesClass(ClockSet::class)]
+#[UsesClass(ClockTimeFormat::class)]
 #[UsesClass(Code128Mode::class)]
 #[UsesClass(DateTimeFormat::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
@@ -134,6 +138,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(SerializationData::class)]
 #[UsesClass(SerializationField::class)]
 #[UsesClass(SetClockMode::class)]
+#[UsesClass(SetDateTime::class)]
 #[UsesClass(SetOffset::class)]
 #[UsesClass(StartFormat::class)]
 #[UsesClass(StorageDevice::class)]
@@ -1135,6 +1140,46 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testSetDateTimeDefaultsToCurrentTimeAndMilitaryFormat(): void
+    {
+        $now = new DateTimeImmutable();
+        $expected = sprintf(
+            '^XA^ST%02d,%02d,%04d,%02d,%02d,%02d,M',
+            (int) $now->format('n'),
+            (int) $now->format('j'),
+            (int) $now->format('Y'),
+            (int) $now->format('G'),
+            (int) $now->format('i'),
+            (int) $now->format('s'),
+        );
+
+        $output = (string) ZplBuilder::start()->setDateTime();
+
+        self::assertSame($expected, $output);
+    }
+
+    public function testSetDateTimeEmitsSt(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->setDateTime(3, 7, 2026, 9, 5, 1, ClockTimeFormat::Am);
+
+        self::assertSame('^XA^ST03,07,2026,09,05,01,A', $output);
+    }
+
+    public function testSetDateTimeValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setDateTime(13, 1, 2026, 0, 0, 0, ClockTimeFormat::Military24Hour);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testSetOffsetEmitsSo(): void

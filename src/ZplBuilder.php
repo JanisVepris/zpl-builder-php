@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
+use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -757,6 +758,36 @@ class ZplBuilder implements Stringable
                 mode: $toleranceSeconds === null ? $mode : null,
                 toleranceSeconds: $toleranceSeconds,
                 language: $language,
+            ),
+        );
+    }
+
+    /**
+     * Set the Real-Time Clock date and time (`^ST`). Each component defaults to the
+     * corresponding value of the current system time; the time format defaults to
+     * 24-hour military. Accepted ranges: month `1..12`, day `1..31`, year `1998..2097`,
+     * hour `0..23`, minute `0..59`, second `0..59`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setDateTime(
+        ?int $month = null,
+        ?int $day = null,
+        ?int $year = null,
+        ?int $hour = null,
+        ?int $minute = null,
+        ?int $second = null,
+        ClockTimeFormat $format = ClockTimeFormat::Military24Hour,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetDateTime(
+                month: $month ?? (int) date('n'),
+                day: $day ?? (int) date('j'),
+                year: $year ?? (int) date('Y'),
+                hour: $hour ?? (int) date('G'),
+                minute: $minute ?? (int) date('i'),
+                second: $second ?? (int) date('s'),
+                format: $format,
             ),
         );
     }

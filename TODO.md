@@ -29,7 +29,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^SL` — Set Mode and Language (for Real-Time Clock)
 - [x] `^SN` — Serialization Data
 - [x] `^SO` — Set Offset (for Real-Time Clock)
-- [ ] `^ST` — Set Date and Time (for Real-Time Clock)
+- [x] `^ST` — Set Date and Time (for Real-Time Clock)
 - [ ] `^TO` — Transfer Object
 
 ## Barcodes
