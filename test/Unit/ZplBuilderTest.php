@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder\Test\Unit;
 
+use DateTimeImmutable;
 use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
+use Janisvepris\ZplBuilder\Enum\ClockLanguage;
+use Janisvepris\ZplBuilder\Enum\ClockMode;
+use Janisvepris\ZplBuilder\Enum\ClockSet;
+use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -64,8 +69,14 @@ use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
 use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectDateTimeFormat;
+use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
+use Janisvepris\ZplBuilder\ZplCommand\SerializationData;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
+use Janisvepris\ZplBuilder\ZplCommand\SetClockMode;
+use Janisvepris\ZplBuilder\ZplCommand\SetDateTime;
+use Janisvepris\ZplBuilder\ZplCommand\SetOffset;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
+use Janisvepris\ZplBuilder\ZplCommand\TransferObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 
@@ -77,6 +88,8 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(ChangeFont::class)]
 #[UsesClass(ChangeInternationalEncoding::class)]
 #[UsesClass(CharacterRemap::class)]
+#[UsesClass(ClockSet::class)]
+#[UsesClass(ClockTimeFormat::class)]
 #[UsesClass(Code128Mode::class)]
 #[UsesClass(DateTimeFormat::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
@@ -122,12 +135,18 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
 #[UsesClass(SelectDateTimeFormat::class)]
+#[UsesClass(SelectEncoding::class)]
+#[UsesClass(SerializationData::class)]
 #[UsesClass(SerializationField::class)]
+#[UsesClass(SetClockMode::class)]
+#[UsesClass(SetDateTime::class)]
+#[UsesClass(SetOffset::class)]
 #[UsesClass(StartFormat::class)]
 #[UsesClass(StorageDevice::class)]
 #[UsesClass(StringLengthOutOfRangeException::class)]
 #[UsesClass(StringValueContainsBannedValuesException::class)]
 #[UsesClass(TertiaryClockIndicatorWithoutSecondaryException::class)]
+#[UsesClass(TransferObject::class)]
 #[UsesClass(UnsupportedFontExtensionException::class)]
 #[UsesClass(ValueAssert::class)]
 class ZplBuilderTest extends UnitTestCase
@@ -958,6 +977,77 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^KD3', $output);
     }
 
+    public function testSelectEncodingEmitsSe(): void
+    {
+        $output = (string) ZplBuilder::start()->selectEncoding('CP1252', StorageDevice::Flash);
+
+        self::assertSame('^XA^SEE:CP1252.DAT', $output);
+    }
+
+    public function testSelectEncodingUsesRamDeviceByDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->selectEncoding('UTF8');
+
+        self::assertSame('^XA^SER:UTF8.DAT', $output);
+    }
+
+    public function testSelectEncodingValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->selectEncoding('');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+            // expected
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testSerializationDataAutoEscapesStartValue(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('A^B', '1');
+
+        self::assertSame('^XA^FH_^SNA_5EB,1,N^FS', $output);
+    }
+
+    public function testSerializationDataDefaultsIncrementAndLeadingZeros(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('0001');
+
+        self::assertSame('^XA^SN0001,1,N^FS', $output);
+    }
+
+    public function testSerializationDataEmitsSnThenFieldSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('BL0000', '1', false);
+
+        self::assertSame('^XA^SNBL0000,1,N^FS', $output);
+    }
+
+    public function testSerializationDataUsesExplicitDecrementAndLeadingZeros(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('0100', '-5', true);
+
+        self::assertSame('^XA^SN0100,-5,Y^FS', $output);
+    }
+
+    public function testSerializationDataValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->serializationData('00,01', '1');
+            self::fail('Expected StringValueContainsBannedValuesException');
+        } catch (StringValueContainsBannedValuesException) {
+            // expected — a comma in the start value would corrupt the parameter list.
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSerializationFieldAutoEscapesStartValue(): void
     {
         $output = (string) ZplBuilder::start()->serializationField('A^B', 'DDD', '1');
@@ -1001,8 +1091,189 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testSetClockModeEmitsSlWithDefaultStartMode(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode();
+
+        self::assertSame('^XA^SLS', $output);
+    }
+
+    public function testSetClockModeEmitsSlWithLanguage(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(
+            language: ClockLanguage::German,
+        );
+
+        self::assertSame('^XA^SLS,4', $output);
+    }
+
+    public function testSetClockModeEmitsSlWithTimeNowMode(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(ClockMode::TimeNow);
+
+        self::assertSame('^XA^SLT', $output);
+    }
+
+    public function testSetClockModeEmitsSlWithTolerance(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(
+            toleranceSeconds: 30,
+            language: ClockLanguage::English,
+        );
+
+        self::assertSame('^XA^SL30,1', $output);
+    }
+
+    public function testSetClockModeToleranceTakesPrecedenceOverDefaultMode(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(toleranceSeconds: 60);
+
+        self::assertSame('^XA^SL60', $output);
+    }
+
+    public function testSetClockModeValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->setClockMode(toleranceSeconds: 1000);
+            self::fail('Expected IntegerValueOutOfRangeException was not thrown.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testSetDateTimeDefaultsToCurrentTimeAndMilitaryFormat(): void
+    {
+        $now = new DateTimeImmutable();
+        $expected = sprintf(
+            '^XA^ST%02d,%02d,%04d,%02d,%02d,%02d,M',
+            (int) $now->format('n'),
+            (int) $now->format('j'),
+            (int) $now->format('Y'),
+            (int) $now->format('G'),
+            (int) $now->format('i'),
+            (int) $now->format('s'),
+        );
+
+        $output = (string) ZplBuilder::start()->setDateTime();
+
+        self::assertSame($expected, $output);
+    }
+
+    public function testSetDateTimeEmitsSt(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->setDateTime(3, 7, 2026, 9, 5, 1, ClockTimeFormat::Am);
+
+        self::assertSame('^XA^ST03,07,2026,09,05,01,A', $output);
+    }
+
+    public function testSetDateTimeValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setDateTime(13, 1, 2026, 0, 0, 0, ClockTimeFormat::Military24Hour);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetOffsetEmitsSo(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->setOffset(ClockSet::Tertiary, 1, 2, 3, 4, 5, 6);
+
+        self::assertSame('^XA^SO3,1,2,3,4,5,6', $output);
+    }
+
+    public function testSetOffsetUsesZeroDefaultsForOmittedOffsets(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->setOffset(ClockSet::Secondary);
+
+        self::assertSame('^XA^SO2,0,0,0,0,0,0', $output);
+    }
+
+    public function testSetOffsetValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->setOffset(ClockSet::Secondary, 32001);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+            // expected
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
     public function testStartEmitsStartFormat(): void
     {
         self::assertSame('^XA', (string) ZplBuilder::start());
+    }
+
+    public function testTransferObjectEmitsToWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->transferObject(
+            StorageDevice::Ram,
+            StorageDevice::MemoryCardB,
+        );
+
+        // Names and extensions default to the `*` wildcard — copy every object, keep extensions.
+        // Standalone command — no trailing ^FS.
+        self::assertSame('^XA^TOR:*.*,B:*.*', $output);
+    }
+
+    public function testTransferObjectEmitsToWithExplicitArguments(): void
+    {
+        $output = (string) ZplBuilder::start()->transferObject(
+            sourceDevice: StorageDevice::Ram,
+            destinationDevice: StorageDevice::MemoryCardB,
+            sourceName: 'ZLOGO',
+            sourceExtension: 'GRF',
+            destinationName: 'ZLOGO1',
+            destinationExtension: 'GRF',
+        );
+
+        self::assertSame('^XA^TOR:ZLOGO.GRF,B:ZLOGO1.GRF', $output);
+    }
+
+    public function testTransferObjectEmitsToWithWildcardNames(): void
+    {
+        $output = (string) ZplBuilder::start()->transferObject(
+            sourceDevice: StorageDevice::Ram,
+            destinationDevice: StorageDevice::MemoryCardB,
+            sourceName: 'LOGO*',
+            sourceExtension: 'GRF',
+            destinationName: 'NEW*',
+            destinationExtension: 'GRF',
+        );
+
+        self::assertSame('^XA^TOR:LOGO*.GRF,B:NEW*.GRF', $output);
+    }
+
+    public function testTransferObjectValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->transferObject(
+                sourceDevice: StorageDevice::Ram,
+                destinationDevice: StorageDevice::MemoryCardB,
+                sourceName: '',
+            );
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 }

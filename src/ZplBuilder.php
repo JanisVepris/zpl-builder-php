@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\ClockLanguage;
+use Janisvepris\ZplBuilder\Enum\ClockMode;
+use Janisvepris\ZplBuilder\Enum\ClockSet;
+use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -15,6 +19,7 @@ use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
@@ -662,6 +667,56 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Select a stored encoding table (`^SE`). The table is a `<name>.DAT` file on the given
+     * storage device; the `.DAT` extension is fixed by the ZPL spec and applied automatically.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function selectEncoding(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+    ): self {
+        return $this->addCommand(
+            new Commands\SelectEncoding(
+                device: $device,
+                name: $name,
+            ),
+        );
+    }
+
+    /**
+     * Serialize the next field: emit `^SN<startValue>,<increment>,<leadingZeros>` then `^FS`,
+     * so the printer auto-increments (or decrements) the field on each successive label (`^SN`).
+     *
+     * Unlike `serializationField()` (`^SF`, a mask applied alongside a `^FD`), `^SN` *replaces*
+     * the `^FD` — the starting value is carried by the command itself. `$startValue` is the field's
+     * starting value (auto-escaped via `^FH` if it contains `^` / `~`, like `fieldData()`); the
+     * right-most run of up to 12 digits is the indexed portion. `$increment` is the value added per
+     * label and defaults to `1`; prefix it with `-` to decrement. `$leadingZeros` controls whether
+     * leading zeros are printed (`Y`) or suppressed (`N`, the default). Start value and increment may
+     * not contain `^`, `~`, or `,` (which would corrupt the parameter list) and must each be 1–3072
+     * bytes (`SerializationData::MAX_VALUE_BYTES`); out-of-spec inputs throw
+     * `StringValueContainsBannedValuesException` or `StringLengthOutOfRangeException`.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function serializationData(string $startValue, string $increment = '1', bool $leadingZeros = false): self
+    {
+        if (str_contains($startValue, '^') || str_contains($startValue, '~')) {
+            if ($this->pendingHexIndicator === null) {
+                $this->fieldHexIndicator();
+            }
+            $startValue = FieldDataEncoder::escape($startValue, $this->pendingHexIndicator ?? '_');
+        }
+
+        $this->addCommand(new Commands\SerializationData($startValue, $increment, $leadingZeros));
+        $this->pendingHexIndicator = null;
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    /**
      * Serialize the next field: emit `^FD<startValue>` then `^SF<mask>,<increment>` then `^FS`,
      * so the printer auto-increments the field on each successive label (`^SF`).
      *
@@ -684,12 +739,128 @@ class ZplBuilder implements Stringable
         );
     }
 
+    /**
+     * Set the Real-Time Clock's mode of operation and language for printing (`^SL`).
+     * Slot `a` takes either a `ClockMode` (default `StartTime`) or a numeric tolerance
+     * in seconds (0–999); supplying both throws. A null language omits slot `b`, leaving
+     * the language selected via `^KL` or the control panel. Must precede the first `^FO`.
+     *
+     * @throws ConflictingClockModeException
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setClockMode(
+        ClockMode $mode = ClockMode::StartTime,
+        ?int $toleranceSeconds = null,
+        ?ClockLanguage $language = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetClockMode(
+                mode: $toleranceSeconds === null ? $mode : null,
+                toleranceSeconds: $toleranceSeconds,
+                language: $language,
+            ),
+        );
+    }
+
+    /**
+     * Set the Real-Time Clock date and time (`^ST`). Each component defaults to the
+     * corresponding value of the current system time; the time format defaults to
+     * 24-hour military. Accepted ranges: month `1..12`, day `1..31`, year `1998..2097`,
+     * hour `0..23`, minute `0..59`, second `0..59`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setDateTime(
+        ?int $month = null,
+        ?int $day = null,
+        ?int $year = null,
+        ?int $hour = null,
+        ?int $minute = null,
+        ?int $second = null,
+        ClockTimeFormat $format = ClockTimeFormat::Military24Hour,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetDateTime(
+                month: $month ?? (int) date('n'),
+                day: $day ?? (int) date('j'),
+                year: $year ?? (int) date('Y'),
+                hour: $hour ?? (int) date('G'),
+                minute: $minute ?? (int) date('i'),
+                second: $second ?? (int) date('s'),
+                format: $format,
+            ),
+        );
+    }
+
+    /**
+     * Set the secondary or tertiary Real-Time Clock offset from the primary clock (`^SO`).
+     * Each offset (months, days, years, hours, minutes, seconds) defaults to 0 and accepts
+     * `-32000` to `32000`. Only one secondary (`SO2`) offset may be used per label; use a
+     * tertiary (`SO3`) offset when more than one is required.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setOffset(
+        ClockSet $clockSet,
+        int $monthsOffset = 0,
+        int $daysOffset = 0,
+        int $yearsOffset = 0,
+        int $hoursOffset = 0,
+        int $minutesOffset = 0,
+        int $secondsOffset = 0,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetOffset(
+                clockSet: $clockSet,
+                monthsOffset: $monthsOffset,
+                daysOffset: $daysOffset,
+                yearsOffset: $yearsOffset,
+                hoursOffset: $hoursOffset,
+                minutesOffset: $minutesOffset,
+                secondsOffset: $secondsOffset,
+            ),
+        );
+    }
+
     /** Open a new ZPL format. Returns a builder with `^XA` already appended. */
     public static function start(): self
     {
         $builder = new self();
 
         return $builder->addCommand(new Commands\StartFormat());
+    }
+
+    /**
+     * Copy an object (graphic, font, …) from one storage device to another (`^TO`).
+     *
+     * Mirrors the spec's `^TOs:o.x,d:o.x` wire format: a source `device:name.extension`
+     * and a destination `device:name.extension`. Standalone command — it emits only
+     * `^TO…`, with no `^FD … ^FS`. The `*` wildcard is accepted in any name/extension to
+     * transfer multiple objects (e.g. `LOGO*`/`*`); both names and extensions default to
+     * `*`, so omitting them copies every matching object and keeps its extension. Source
+     * and destination devices should differ — the printer ignores the command otherwise.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function transferObject(
+        StorageDevice $sourceDevice,
+        StorageDevice $destinationDevice,
+        string $sourceName = '*',
+        string $sourceExtension = '*',
+        string $destinationName = '*',
+        string $destinationExtension = '*',
+    ): self {
+        return $this->addCommand(
+            new Commands\TransferObject(
+                sourceDevice: $sourceDevice,
+                sourceName: $sourceName,
+                sourceExtension: $sourceExtension,
+                destinationDevice: $destinationDevice,
+                destinationName: $destinationName,
+                destinationExtension: $destinationExtension,
+            ),
+        );
     }
 
     /**
