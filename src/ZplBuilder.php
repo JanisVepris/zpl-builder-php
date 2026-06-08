@@ -683,6 +683,38 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Serialize the next field: emit `^SN<startValue>,<increment>,<leadingZeros>` then `^FS`,
+     * so the printer auto-increments (or decrements) the field on each successive label (`^SN`).
+     *
+     * Unlike `serializationField()` (`^SF`, a mask applied alongside a `^FD`), `^SN` *replaces*
+     * the `^FD` — the starting value is carried by the command itself. `$startValue` is the field's
+     * starting value (auto-escaped via `^FH` if it contains `^` / `~`, like `fieldData()`); the
+     * right-most run of up to 12 digits is the indexed portion. `$increment` is the value added per
+     * label and defaults to `1`; prefix it with `-` to decrement. `$leadingZeros` controls whether
+     * leading zeros are printed (`Y`) or suppressed (`N`, the default). Start value and increment may
+     * not contain `^`, `~`, or `,` (which would corrupt the parameter list) and must each be 1–3072
+     * bytes (`SerializationData::MAX_VALUE_BYTES`); out-of-spec inputs throw
+     * `StringValueContainsBannedValuesException` or `StringLengthOutOfRangeException`.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function serializationData(string $startValue, string $increment = '1', bool $leadingZeros = false): self
+    {
+        if (str_contains($startValue, '^') || str_contains($startValue, '~')) {
+            if ($this->pendingHexIndicator === null) {
+                $this->fieldHexIndicator();
+            }
+            $startValue = FieldDataEncoder::escape($startValue, $this->pendingHexIndicator ?? '_');
+        }
+
+        $this->addCommand(new Commands\SerializationData($startValue, $increment, $leadingZeros));
+        $this->pendingHexIndicator = null;
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    /**
      * Serialize the next field: emit `^FD<startValue>` then `^SF<mask>,<increment>` then `^FS`,
      * so the printer auto-increments the field on each successive label (`^SF`).
      *

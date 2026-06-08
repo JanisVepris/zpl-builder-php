@@ -67,6 +67,7 @@ use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectDateTimeFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
+use Janisvepris\ZplBuilder\ZplCommand\SerializationData;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
 use Janisvepris\ZplBuilder\ZplCommand\SetClockMode;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
@@ -127,6 +128,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(RecallFormat::class)]
 #[UsesClass(SelectDateTimeFormat::class)]
 #[UsesClass(SelectEncoding::class)]
+#[UsesClass(SerializationData::class)]
 #[UsesClass(SerializationField::class)]
 #[UsesClass(SetClockMode::class)]
 #[UsesClass(StartFormat::class)]
@@ -990,6 +992,49 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testSerializationDataAutoEscapesStartValue(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('A^B', '1');
+
+        self::assertSame('^XA^FH_^SNA_5EB,1,N^FS', $output);
+    }
+
+    public function testSerializationDataDefaultsIncrementAndLeadingZeros(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('0001');
+
+        self::assertSame('^XA^SN0001,1,N^FS', $output);
+    }
+
+    public function testSerializationDataEmitsSnThenFieldSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('BL0000', '1', false);
+
+        self::assertSame('^XA^SNBL0000,1,N^FS', $output);
+    }
+
+    public function testSerializationDataUsesExplicitDecrementAndLeadingZeros(): void
+    {
+        $output = (string) ZplBuilder::start()->serializationData('0100', '-5', true);
+
+        self::assertSame('^XA^SN0100,-5,Y^FS', $output);
+    }
+
+    public function testSerializationDataValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->serializationData('00,01', '1');
+            self::fail('Expected StringValueContainsBannedValuesException');
+        } catch (StringValueContainsBannedValuesException) {
+            // expected — a comma in the start value would corrupt the parameter list.
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testSerializationFieldAutoEscapesStartValue(): void
