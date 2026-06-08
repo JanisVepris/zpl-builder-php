@@ -831,6 +831,39 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Copy an object (graphic, font, …) from one storage device to another (`^TO`).
+     *
+     * Mirrors the spec's `^TOs:o.x,d:o.x` wire format: a source `device:name.extension`
+     * and a destination `device:name.extension`. Standalone command — it emits only
+     * `^TO…`, with no `^FD … ^FS`. The `*` wildcard is accepted in any name/extension to
+     * transfer multiple objects (e.g. `LOGO*`/`*`); both names and extensions default to
+     * `*`, so omitting them copies every matching object and keeps its extension. Source
+     * and destination devices should differ — the printer ignores the command otherwise.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function transferObject(
+        StorageDevice $sourceDevice,
+        StorageDevice $destinationDevice,
+        string $sourceName = '*',
+        string $sourceExtension = '*',
+        string $destinationName = '*',
+        string $destinationExtension = '*',
+    ): self {
+        return $this->addCommand(
+            new Commands\TransferObject(
+                sourceDevice: $sourceDevice,
+                sourceName: $sourceName,
+                sourceExtension: $sourceExtension,
+                destinationDevice: $destinationDevice,
+                destinationName: $destinationName,
+                destinationExtension: $destinationExtension,
+            ),
+        );
+    }
+
+    /**
      * Append a command to the internal list. All public mutation methods route through this,
      * and subclasses can call it to register their own `ZplCommand` implementations.
      */

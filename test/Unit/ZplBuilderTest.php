@@ -76,6 +76,7 @@ use Janisvepris\ZplBuilder\ZplCommand\SetClockMode;
 use Janisvepris\ZplBuilder\ZplCommand\SetDateTime;
 use Janisvepris\ZplBuilder\ZplCommand\SetOffset;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
+use Janisvepris\ZplBuilder\ZplCommand\TransferObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 
@@ -145,6 +146,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(StringLengthOutOfRangeException::class)]
 #[UsesClass(StringValueContainsBannedValuesException::class)]
 #[UsesClass(TertiaryClockIndicatorWithoutSecondaryException::class)]
+#[UsesClass(TransferObject::class)]
 #[UsesClass(UnsupportedFontExtensionException::class)]
 #[UsesClass(ValueAssert::class)]
 class ZplBuilderTest extends UnitTestCase
@@ -1215,5 +1217,63 @@ class ZplBuilderTest extends UnitTestCase
     public function testStartEmitsStartFormat(): void
     {
         self::assertSame('^XA', (string) ZplBuilder::start());
+    }
+
+    public function testTransferObjectEmitsToWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->transferObject(
+            StorageDevice::Ram,
+            StorageDevice::MemoryCardB,
+        );
+
+        // Names and extensions default to the `*` wildcard — copy every object, keep extensions.
+        // Standalone command — no trailing ^FS.
+        self::assertSame('^XA^TOR:*.*,B:*.*', $output);
+    }
+
+    public function testTransferObjectEmitsToWithExplicitArguments(): void
+    {
+        $output = (string) ZplBuilder::start()->transferObject(
+            sourceDevice: StorageDevice::Ram,
+            destinationDevice: StorageDevice::MemoryCardB,
+            sourceName: 'ZLOGO',
+            sourceExtension: 'GRF',
+            destinationName: 'ZLOGO1',
+            destinationExtension: 'GRF',
+        );
+
+        self::assertSame('^XA^TOR:ZLOGO.GRF,B:ZLOGO1.GRF', $output);
+    }
+
+    public function testTransferObjectEmitsToWithWildcardNames(): void
+    {
+        $output = (string) ZplBuilder::start()->transferObject(
+            sourceDevice: StorageDevice::Ram,
+            destinationDevice: StorageDevice::MemoryCardB,
+            sourceName: 'LOGO*',
+            sourceExtension: 'GRF',
+            destinationName: 'NEW*',
+            destinationExtension: 'GRF',
+        );
+
+        self::assertSame('^XA^TOR:LOGO*.GRF,B:NEW*.GRF', $output);
+    }
+
+    public function testTransferObjectValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->transferObject(
+                sourceDevice: StorageDevice::Ram,
+                destinationDevice: StorageDevice::MemoryCardB,
+                sourceName: '',
+            );
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 }
