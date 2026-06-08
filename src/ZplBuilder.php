@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\ClockLanguage;
+use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -15,6 +17,7 @@ use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
@@ -699,6 +702,29 @@ class ZplBuilder implements Stringable
             $startValue,
             static fn (string $escaped): Commands => new Commands\FieldData($escaped),
             [new Commands\SerializationField($mask, $increment)],
+        );
+    }
+
+    /**
+     * Set the Real-Time Clock's mode of operation and language for printing (`^SL`).
+     * Slot `a` takes either a `ClockMode` (default `StartTime`) or a numeric tolerance
+     * in seconds (0–999); supplying both throws. A null language omits slot `b`, leaving
+     * the language selected via `^KL` or the control panel. Must precede the first `^FO`.
+     *
+     * @throws ConflictingClockModeException
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setClockMode(
+        ClockMode $mode = ClockMode::StartTime,
+        ?int $toleranceSeconds = null,
+        ?ClockLanguage $language = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetClockMode(
+                mode: $toleranceSeconds === null ? $mode : null,
+                toleranceSeconds: $toleranceSeconds,
+                language: $language,
+            ),
         );
     }
 

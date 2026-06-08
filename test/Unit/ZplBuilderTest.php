@@ -6,6 +6,8 @@ namespace Janisvepris\ZplBuilder\Test\Unit;
 
 use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
+use Janisvepris\ZplBuilder\Enum\ClockLanguage;
+use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -66,6 +68,7 @@ use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectDateTimeFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
+use Janisvepris\ZplBuilder\ZplCommand\SetClockMode;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -125,6 +128,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(SelectDateTimeFormat::class)]
 #[UsesClass(SelectEncoding::class)]
 #[UsesClass(SerializationField::class)]
+#[UsesClass(SetClockMode::class)]
 #[UsesClass(StartFormat::class)]
 #[UsesClass(StorageDevice::class)]
 #[UsesClass(StringLengthOutOfRangeException::class)]
@@ -1029,6 +1033,59 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetClockModeEmitsSlWithDefaultStartMode(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode();
+
+        self::assertSame('^XA^SLS', $output);
+    }
+
+    public function testSetClockModeEmitsSlWithLanguage(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(
+            language: ClockLanguage::German,
+        );
+
+        self::assertSame('^XA^SLS,4', $output);
+    }
+
+    public function testSetClockModeEmitsSlWithTimeNowMode(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(ClockMode::TimeNow);
+
+        self::assertSame('^XA^SLT', $output);
+    }
+
+    public function testSetClockModeEmitsSlWithTolerance(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(
+            toleranceSeconds: 30,
+            language: ClockLanguage::English,
+        );
+
+        self::assertSame('^XA^SL30,1', $output);
+    }
+
+    public function testSetClockModeToleranceTakesPrecedenceOverDefaultMode(): void
+    {
+        $output = (string) ZplBuilder::start()->setClockMode(toleranceSeconds: 60);
+
+        self::assertSame('^XA^SL60', $output);
+    }
+
+    public function testSetClockModeValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->setClockMode(toleranceSeconds: 1000);
+            self::fail('Expected IntegerValueOutOfRangeException was not thrown.');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
     }
 
     public function testStartEmitsStartFormat(): void
