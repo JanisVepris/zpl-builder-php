@@ -8,6 +8,7 @@ use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
+use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -70,6 +71,7 @@ use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationData;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
 use Janisvepris\ZplBuilder\ZplCommand\SetClockMode;
+use Janisvepris\ZplBuilder\ZplCommand\SetOffset;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -82,6 +84,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(ChangeFont::class)]
 #[UsesClass(ChangeInternationalEncoding::class)]
 #[UsesClass(CharacterRemap::class)]
+#[UsesClass(ClockSet::class)]
 #[UsesClass(Code128Mode::class)]
 #[UsesClass(DateTimeFormat::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
@@ -131,6 +134,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(SerializationData::class)]
 #[UsesClass(SerializationField::class)]
 #[UsesClass(SetClockMode::class)]
+#[UsesClass(SetOffset::class)]
 #[UsesClass(StartFormat::class)]
 #[UsesClass(StorageDevice::class)]
 #[UsesClass(StringLengthOutOfRangeException::class)]
@@ -1128,6 +1132,36 @@ class ZplBuilderTest extends UnitTestCase
             $builder->setClockMode(toleranceSeconds: 1000);
             self::fail('Expected IntegerValueOutOfRangeException was not thrown.');
         } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testSetOffsetEmitsSo(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->setOffset(ClockSet::Tertiary, 1, 2, 3, 4, 5, 6);
+
+        self::assertSame('^XA^SO3,1,2,3,4,5,6', $output);
+    }
+
+    public function testSetOffsetUsesZeroDefaultsForOmittedOffsets(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->setOffset(ClockSet::Secondary);
+
+        self::assertSame('^XA^SO2,0,0,0,0,0,0', $output);
+    }
+
+    public function testSetOffsetValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->setOffset(ClockSet::Secondary, 32001);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+            // expected
         }
 
         self::assertSame('^XA', (string) $builder);

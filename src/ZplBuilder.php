@@ -6,6 +6,7 @@ namespace Janisvepris\ZplBuilder;
 
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
+use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -756,6 +757,36 @@ class ZplBuilder implements Stringable
                 mode: $toleranceSeconds === null ? $mode : null,
                 toleranceSeconds: $toleranceSeconds,
                 language: $language,
+            ),
+        );
+    }
+
+    /**
+     * Set the secondary or tertiary Real-Time Clock offset from the primary clock (`^SO`).
+     * Each offset (months, days, years, hours, minutes, seconds) defaults to 0 and accepts
+     * `-32000` to `32000`. Only one secondary (`SO2`) offset may be used per label; use a
+     * tertiary (`SO3`) offset when more than one is required.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setOffset(
+        ClockSet $clockSet,
+        int $monthsOffset = 0,
+        int $daysOffset = 0,
+        int $yearsOffset = 0,
+        int $hoursOffset = 0,
+        int $minutesOffset = 0,
+        int $secondsOffset = 0,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetOffset(
+                clockSet: $clockSet,
+                monthsOffset: $monthsOffset,
+                daysOffset: $daysOffset,
+                yearsOffset: $yearsOffset,
+                hoursOffset: $hoursOffset,
+                minutesOffset: $minutesOffset,
+                secondsOffset: $secondsOffset,
             ),
         );
     }
