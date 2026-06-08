@@ -64,6 +64,7 @@ use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
 use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectDateTimeFormat;
+use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -122,6 +123,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
 #[UsesClass(SelectDateTimeFormat::class)]
+#[UsesClass(SelectEncoding::class)]
 #[UsesClass(SerializationField::class)]
 #[UsesClass(StartFormat::class)]
 #[UsesClass(StorageDevice::class)]
@@ -956,6 +958,34 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->selectDateTimeFormat(DateTimeFormat::DayMonthYear24Hour);
 
         self::assertSame('^XA^KD3', $output);
+    }
+
+    public function testSelectEncodingEmitsSe(): void
+    {
+        $output = (string) ZplBuilder::start()->selectEncoding('CP1252', StorageDevice::Flash);
+
+        self::assertSame('^XA^SEE:CP1252.DAT', $output);
+    }
+
+    public function testSelectEncodingUsesRamDeviceByDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->selectEncoding('UTF8');
+
+        self::assertSame('^XA^SER:UTF8.DAT', $output);
+    }
+
+    public function testSelectEncodingValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+
+        try {
+            $builder->selectEncoding('');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+            // expected
+        }
+
+        self::assertSame('^XA', (string) $builder);
     }
 
     public function testSerializationFieldAutoEscapesStartValue(): void

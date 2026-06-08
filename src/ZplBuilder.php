@@ -662,6 +662,24 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Select a stored encoding table (`^SE`). The table is a `<name>.DAT` file on the given
+     * storage device; the `.DAT` extension is fixed by the ZPL spec and applied automatically.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function selectEncoding(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+    ): self {
+        return $this->addCommand(
+            new Commands\SelectEncoding(
+                device: $device,
+                name: $name,
+            ),
+        );
+    }
+
+    /**
      * Serialize the next field: emit `^FD<startValue>` then `^SF<mask>,<increment>` then `^FS`,
      * so the printer auto-increments the field on each successive label (`^SF`).
      *
