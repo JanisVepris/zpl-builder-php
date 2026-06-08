@@ -23,7 +23,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^FV` — Field Variable
 - [x] `^FW` — Field Orientation
 - [x] `^FX` — Comment
-- [ ] `^KD` — Select Date and Time Format (for Real-Time Clock)
+- [x] `^KD` — Select Date and Time Format (for Real-Time Clock)
 - [ ] `^SE` — Select Encoding
 - [x] `^SF` — Serialization Field
 - [ ] `^SL` — Set Mode and Language (for Real-Time Clock)

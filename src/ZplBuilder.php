@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Janisvepris\ZplBuilder;
 
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
+use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -652,6 +653,12 @@ class ZplBuilder implements Stringable
         $this->addCommand(new Commands\StartFormat());
 
         return $this;
+    }
+
+    /** Select the date and time format shown on the configuration label and control panel (`^KD`). */
+    public function selectDateTimeFormat(DateTimeFormat $format): self
+    {
+        return $this->addCommand(new Commands\SelectDateTimeFormat($format));
     }
 
     /**
