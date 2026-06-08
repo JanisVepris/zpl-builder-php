@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder\Test\Unit;
 use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
+use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -62,6 +63,7 @@ use Janisvepris\ZplBuilder\ZplCommand\PrintQuantity;
 use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
 use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
+use Janisvepris\ZplBuilder\ZplCommand\SelectDateTimeFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationField;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -76,6 +78,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(ChangeInternationalEncoding::class)]
 #[UsesClass(CharacterRemap::class)]
 #[UsesClass(Code128Mode::class)]
+#[UsesClass(DateTimeFormat::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
 #[UsesClass(Encoding::class)]
 #[UsesClass(EndFormat::class)]
@@ -118,6 +121,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(PrintWidth::class)]
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
+#[UsesClass(SelectDateTimeFormat::class)]
 #[UsesClass(SerializationField::class)]
 #[UsesClass(StartFormat::class)]
 #[UsesClass(StorageDevice::class)]
@@ -945,6 +949,13 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertCount(1, $commands);
         self::assertSame('^XA', (string) $commands[0]);
+    }
+
+    public function testSelectDateTimeFormatEmitsKd(): void
+    {
+        $output = (string) ZplBuilder::start()->selectDateTimeFormat(DateTimeFormat::DayMonthYear24Hour);
+
+        self::assertSame('^XA^KD3', $output);
     }
 
     public function testSerializationFieldAutoEscapesStartValue(): void
