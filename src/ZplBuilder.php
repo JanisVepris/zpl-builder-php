@@ -471,6 +471,32 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a Micro-PDF417 2D stacked barcode with the given data (`^BF` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height (per-row, in dots) when none is provided.
+     * `$mode` (`0..33`) selects the fixed row/column/error-correction combination from
+     * the spec's Micro-PDF417 mode table; the field data must fit the chosen mode.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeMicroPdf417(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        int $mode = 0,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeMicroPdf417(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                mode: $mode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a PDF417 2D stacked barcode with the given data (`^B7` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height (per-row, in dots) when none is provided.
      * `$securityLevel` (`0..8`) sets error detection/correction — `0` is detection only.

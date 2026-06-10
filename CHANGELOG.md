@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeMicroPdf417()` and `ZplCommand\BarcodeMicroPdf417` add support for `^BF` (Micro-PDF417 Bar Code)
 - `ZplBuilder::barcodeEan13()` and `ZplCommand\BarcodeEan13` add support for `^BE` (EAN-13 Bar Code)
 - `ZplBuilder::barcodeMaxiCode()` and `ZplCommand\BarcodeMaxiCode` add support for `^BD` (UPS MaxiCode Bar Code), with the `Enum\MaxiCodeMode` selecting the symbol mode
 - `ZplBuilder::barcodeCodablock()` and `ZplCommand\BarcodeCodablock` add support for `^BB` (CODABLOCK Bar Code), with the `Enum\CodablockMode` (`ModeA`/`ModeE`/`ModeF`) selecting the character set
