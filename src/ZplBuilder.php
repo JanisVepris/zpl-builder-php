@@ -148,6 +148,35 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a Code 11 (USD-8) barcode with the given data (`^B1` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$checkDigit`
+     * selects one check digit (`Y`) versus two (`N`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeCode11(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $checkDigit = false,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode11(
+                orientation: $orientation,
+                checkDigit: $checkDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a Code 128 barcode with the given data (`^BC` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided.
      *

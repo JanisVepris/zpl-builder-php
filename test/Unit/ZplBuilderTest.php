@@ -39,6 +39,7 @@ use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode11;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
@@ -84,6 +85,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(ZplBuilder::class)]
 #[UsesClass(BarcodeAztec::class)]
+#[UsesClass(BarcodeCode11::class)]
 #[UsesClass(BarcodeCode128::class)]
 #[UsesClass(BarcodeDefaults::class)]
 #[UsesClass(BarcodeDefaultSettings::class)]
@@ -202,6 +204,22 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^B0R,7,N,200,N,3,JOB42^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeCode11EmitsB1ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode11('123456', height: 150);
+
+        self::assertSame('^XA^B1N,N,150,Y,N^FD123456^FS', $output);
+    }
+
+    public function testBarcodeCode11InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode11('123456');
+
+        self::assertStringContainsString('^B1N,N,50,', $output);
     }
 
     public function testBarcodeCode128EmitsBcThenFieldData(): void

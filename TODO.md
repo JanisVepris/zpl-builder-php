@@ -35,7 +35,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 ## Barcodes
 
 - [x] `^B0` — Aztec
-- [ ] `^B1` — Code 11
+- [x] `^B1` — Code 11
 - [ ] `^B2` — Interleaved 2 of 5
 - [ ] `^B3` — Code 39
 - [ ] `^B4` — Code 49
