@@ -1,5 +1,5 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/janisvepris/zpl-builder-php/ci.yml?style=flat-square)
-[![codecov](https://codecov.io/gh/JanisVepris/zpl-builder-php/graph/badge.svg?token=NNNCK69OIU)](https://codecov.io/gh/JanisVepris/gs1-decoder)
+[![codecov](https://codecov.io/gh/JanisVepris/zpl-builder-php/graph/badge.svg?token=NNNCK69OIU)](https://codecov.io/gh/JanisVepris/zpl-builder-php)
 
 # zpl-builder-php
 A small PHP 8.3+ library that generates [ZPL II](https://docs.zebra.com/us/en/printers/software/zpl-pg/zpl-ii,-zbi-2,-set-get-do,-mirror,-wml-programming-guide.html) (Zebra Programming Language) label payloads via a fluent builder API. No runtime dependencies beyond PHP itself.
