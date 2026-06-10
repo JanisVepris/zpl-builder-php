@@ -40,7 +40,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^B3` — Code 39
 - [x] `^B4` — Code 49
 - [x] `^B5` — Planet Code
-- [ ] `^B7` — PDF417
+- [x] `^B7` — PDF417
 - [ ] `^B8` — EAN-8
 - [ ] `^B9` — UPC-E
 - [ ] `^BA` — Code 93

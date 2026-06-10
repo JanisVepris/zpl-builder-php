@@ -321,6 +321,40 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a PDF417 2D stacked barcode with the given data (`^B7` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height (per-row, in dots) when none is provided.
+     * `$securityLevel` (`0..8`) sets error detection/correction — `0` is detection only.
+     * `$columns` (`1..30`) and `$rows` (`3..90`) are optional; leave either `null` to let
+     * the printer derive it from the 1:2 aspect ratio. For structured-append printing
+     * across multiple symbols, position them with `fieldOrigins()` (`^FM`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodePdf417(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        int $securityLevel = 0,
+        ?int $columns = null,
+        ?int $rows = null,
+        bool $truncate = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePdf417(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                securityLevel: $securityLevel,
+                columns: $columns,
+                rows: $rows,
+                truncate: $truncate,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a Planet Code barcode with the given data (`^B5` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided. Accepted characters
      * are the digits `0`–`9`; bar height is capped at `BarcodePlanetCode::MAX_HEIGHT`
