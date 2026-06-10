@@ -753,6 +753,34 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a POSTNET barcode with the given data (`^BZ` + `^FD ... ^FS`). POSTNET
+     * automates U.S. mail handling and encodes the digits `0`–`9` as tall/short bars.
+     * Falls back to the `^BY` default height when none is provided. The interpretation
+     * line defaults to off per the spec.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodePostnet(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = false,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePostnet(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a QR Code 2D barcode with the given data (`^BQ` + `^FD ... ^FS`). QR Code
      * sizes itself by `$magnification` (`1..10`) and ignores `^FW`, so orientation is
      * always normal. `$errorCorrection` and `$maskValue` (`1..7`) are optional command

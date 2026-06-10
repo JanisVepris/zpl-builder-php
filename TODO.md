@@ -62,7 +62,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BU` — UPC-A
 - [x] `^BX` — Data Matrix
 - [x] `^BY` — Bar Code Field Default
-- [ ] `^BZ` — POSTNET
+- [x] `^BZ` — POSTNET
 
 ## Graphics and images
 
