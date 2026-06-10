@@ -8,6 +8,7 @@ use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
+use Janisvepris\ZplBuilder\Enum\CodabarCharacter;
 use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
@@ -147,6 +148,38 @@ class ZplBuilder implements Stringable
                 menuSymbol: $menuSymbol,
                 symbolCount: $symbolCount,
                 structuredAppendId: $structuredAppendId,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw an ANSI Codabar (USD-4 / NW-7 / 2 of 7) barcode with the given data
+     * (`^BK` + `^FD ... ^FS`). Falls back to the `^BY` default height when none is
+     * provided. `$startCharacter` and `$stopCharacter` are the Codabar control
+     * characters (`A`–`D`). The check-digit parameter is fixed to `N` by the spec.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeCodabar(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        CodabarCharacter $startCharacter = CodabarCharacter::A,
+        CodabarCharacter $stopCharacter = CodabarCharacter::A,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCodabar(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                startCharacter: $startCharacter,
+                stopCharacter: $stopCharacter,
             ),
         );
 

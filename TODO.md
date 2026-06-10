@@ -51,7 +51,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BF` — Micro-PDF417
 - [x] `^BI` — Industrial 2 of 5
 - [x] `^BJ` — Standard 2 of 5
-- [ ] `^BK` — ANSI Codabar
+- [x] `^BK` — ANSI Codabar
 - [ ] `^BL` — LOGMARS
 - [ ] `^BM` — MSI
 - [ ] `^BP` — Plessey

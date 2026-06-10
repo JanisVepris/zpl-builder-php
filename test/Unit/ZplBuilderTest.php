@@ -11,6 +11,7 @@ use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
+use Janisvepris\ZplBuilder\Enum\CodabarCharacter;
 use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
@@ -44,6 +45,7 @@ use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodabar;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodablock;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode11;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
@@ -105,6 +107,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[CoversClass(ZplBuilder::class)]
 #[UsesClass(AztecErrorControl::class)]
 #[UsesClass(BarcodeAztec::class)]
+#[UsesClass(BarcodeCodabar::class)]
 #[UsesClass(BarcodeCodablock::class)]
 #[UsesClass(BarcodeCode11::class)]
 #[UsesClass(BarcodeCode128::class)]
@@ -129,6 +132,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(CharacterRemap::class)]
 #[UsesClass(ClockSet::class)]
 #[UsesClass(ClockTimeFormat::class)]
+#[UsesClass(CodabarCharacter::class)]
 #[UsesClass(CodablockMode::class)]
 #[UsesClass(Code128Mode::class)]
 #[UsesClass(DateTimeFormat::class)]
@@ -240,6 +244,34 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^B0R,7,N,232,N,3,JOB42^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeCodabarEmitsBkThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodabar('12345', height: 100);
+
+        self::assertSame('^XA^BKN,N,100,Y,N,A,A^FD12345^FS', $output);
+    }
+
+    public function testBarcodeCodabarEmitsCustomStartStop(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodabar(
+            '12345',
+            height: 100,
+            startCharacter: CodabarCharacter::B,
+            stopCharacter: CodabarCharacter::C,
+        );
+
+        self::assertSame('^XA^BKN,N,100,Y,N,B,C^FD12345^FS', $output);
+    }
+
+    public function testBarcodeCodabarInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCodabar('12345');
+
+        self::assertStringContainsString('^BKN,N,50,', $output);
     }
 
     public function testBarcodeCodablockEmitsBbThenFieldData(): void

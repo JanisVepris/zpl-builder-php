@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeCodabar()` and `ZplCommand\BarcodeCodabar` add support for `^BK` (ANSI Codabar Bar Code), with the `Enum\CodabarCharacter` (`A`–`D`) selecting the start/stop characters
 - `ZplBuilder::barcodeStandard2of5()` and `ZplCommand\BarcodeStandard2of5` add support for `^BJ` (Standard 2 of 5 Bar Code)
 - `ZplBuilder::barcodeIndustrial2of5()` and `ZplCommand\BarcodeIndustrial2of5` add support for `^BI` (Industrial 2 of 5 Bar Code)
 - `ZplBuilder::barcodeMicroPdf417()` and `ZplCommand\BarcodeMicroPdf417` add support for `^BF` (Micro-PDF417 Bar Code)
