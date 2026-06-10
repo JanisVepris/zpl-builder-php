@@ -57,6 +57,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan13;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan8;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeIndustrial2of5;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeInterleaved2of5;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeLogmars;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeMaxiCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeMicroPdf417;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePdf417;
@@ -120,6 +121,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeEan8::class)]
 #[UsesClass(BarcodeIndustrial2of5::class)]
 #[UsesClass(BarcodeInterleaved2of5::class)]
+#[UsesClass(BarcodeLogmars::class)]
 #[UsesClass(BarcodeMaxiCode::class)]
 #[UsesClass(BarcodeMicroPdf417::class)]
 #[UsesClass(BarcodePdf417::class)]
@@ -501,6 +503,22 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeInterleaved2of5('123456');
 
         self::assertStringContainsString('^B2N,50,', $output);
+    }
+
+    public function testBarcodeLogmarsEmitsBlThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeLogmars('LOGMARS', height: 100);
+
+        self::assertSame('^XA^BLN,100,N^FDLOGMARS^FS', $output);
+    }
+
+    public function testBarcodeLogmarsInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeLogmars('LOGMARS');
+
+        self::assertStringContainsString('^BLN,50,', $output);
     }
 
     public function testBarcodeMaxiCodeEmitsBdThenFieldData(): void

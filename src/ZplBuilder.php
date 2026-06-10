@@ -505,6 +505,33 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a LOGMARS barcode with the given data (`^BL` + `^FD ... ^FS`). LOGMARS is a
+     * Code 39 variant used by the U.S. Department of Defense, so it has no
+     * print-interpretation-line toggle — only the above/below placement. Falls back to
+     * the `^BY` default height when none is provided. Lowercase data is upper-cased by
+     * the printer, and a Mod-43 check digit is always added.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeLogmars(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeLogmars(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a UPS MaxiCode 2D barcode with the given data (`^BD` + `^FD ... ^FS`).
      * MaxiCode has no interpretation line and ignores `^BY`; it sizes itself by `$mode`.
      * `$symbolNumber` (`1..8`) and `$totalSymbols` (`1..8`) place this symbol within a

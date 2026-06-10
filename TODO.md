@@ -52,7 +52,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BI` — Industrial 2 of 5
 - [x] `^BJ` — Standard 2 of 5
 - [x] `^BK` — ANSI Codabar
-- [ ] `^BL` — LOGMARS
+- [x] `^BL` — LOGMARS
 - [ ] `^BM` — MSI
 - [ ] `^BP` — Plessey
 - [ ] `^BQ` — QR Code
