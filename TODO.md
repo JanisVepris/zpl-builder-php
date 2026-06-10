@@ -46,7 +46,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BA` — Code 93
 - [x] `^BB` — CODABLOCK
 - [x] `^BC` — Code 128 (Subsets A, B, and C)
-- [ ] `^BD` — UPS MaxiCode
+- [x] `^BD` — UPS MaxiCode
 - [ ] `^BE` — EAN-13
 - [ ] `^BF` — Micro-PDF417
 - [ ] `^BI` — Industrial 2 of 5

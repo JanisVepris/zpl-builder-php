@@ -19,6 +19,7 @@ use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
+use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -408,6 +409,33 @@ class ZplBuilder implements Stringable
                 printInterpretation: $printInterpretation,
                 interpretationAboveCode: $printInterpretationAboveCode,
                 checkDigit: $checkDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw a UPS MaxiCode 2D barcode with the given data (`^BD` + `^FD ... ^FS`).
+     * MaxiCode has no interpretation line and ignores `^BY`; it sizes itself by `$mode`.
+     * `$symbolNumber` (`1..8`) and `$totalSymbols` (`1..8`) place this symbol within a
+     * structured-append sequence. Modes `2`/`3` expect the structured-carrier `^FD`
+     * layout (a high-priority message followed by a low-priority message).
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeMaxiCode(
+        string $data,
+        MaxiCodeMode $mode = MaxiCodeMode::StructuredCarrierNumeric,
+        int $symbolNumber = 1,
+        int $totalSymbols = 1,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeMaxiCode(
+                mode: $mode,
+                symbolNumber: $symbolNumber,
+                totalSymbols: $totalSymbols,
             ),
         );
 

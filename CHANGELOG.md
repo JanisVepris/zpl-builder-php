@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeMaxiCode()` and `ZplCommand\BarcodeMaxiCode` add support for `^BD` (UPS MaxiCode Bar Code), with the `Enum\MaxiCodeMode` selecting the symbol mode
 - `ZplBuilder::barcodeCodablock()` and `ZplCommand\BarcodeCodablock` add support for `^BB` (CODABLOCK Bar Code), with the `Enum\CodablockMode` (`ModeA`/`ModeE`/`ModeF`) selecting the character set
 - `ZplBuilder::barcodeCode93()` and `ZplCommand\BarcodeCode93` add support for `^BA` (Code 93 Bar Code)
 - `ZplBuilder::barcodeUpcE()` and `ZplCommand\BarcodeUpcE` add support for `^B9` (UPC-E Bar Code)

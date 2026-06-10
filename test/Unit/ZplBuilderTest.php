@@ -22,6 +22,7 @@ use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
+use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -420,6 +421,25 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeInterleaved2of5('123456');
 
         self::assertStringContainsString('^B2N,50,', $output);
+    }
+
+    public function testBarcodeMaxiCodeEmitsBdThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMaxiCode('123456123451234567');
+
+        self::assertSame('^XA^BD2,1,1^FD123456123451234567^FS', $output);
+    }
+
+    public function testBarcodeMaxiCodeEmitsStructuredAppend(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMaxiCode(
+            'DATA',
+            mode: MaxiCodeMode::StandardSymbol,
+            symbolNumber: 2,
+            totalSymbols: 4,
+        );
+
+        self::assertSame('^XA^BD4,2,4^FDDATA^FS', $output);
     }
 
     public function testBarcodePdf417EmitsB7ThenFieldData(): void
