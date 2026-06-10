@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeIndustrial2of5()` and `ZplCommand\BarcodeIndustrial2of5` add support for `^BI` (Industrial 2 of 5 Bar Code)
 - `ZplBuilder::barcodeMicroPdf417()` and `ZplCommand\BarcodeMicroPdf417` add support for `^BF` (Micro-PDF417 Bar Code)
 - `ZplBuilder::barcodeEan13()` and `ZplCommand\BarcodeEan13` add support for `^BE` (EAN-13 Bar Code)
 - `ZplBuilder::barcodeMaxiCode()` and `ZplCommand\BarcodeMaxiCode` add support for `^BD` (UPS MaxiCode Bar Code), with the `Enum\MaxiCodeMode` selecting the symbol mode

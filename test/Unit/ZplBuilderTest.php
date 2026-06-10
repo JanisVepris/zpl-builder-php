@@ -53,6 +53,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode93;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan13;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan8;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeIndustrial2of5;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeInterleaved2of5;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeMaxiCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeMicroPdf417;
@@ -113,6 +114,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeDefaultSettings::class)]
 #[UsesClass(BarcodeEan13::class)]
 #[UsesClass(BarcodeEan8::class)]
+#[UsesClass(BarcodeIndustrial2of5::class)]
 #[UsesClass(BarcodeInterleaved2of5::class)]
 #[UsesClass(BarcodeMaxiCode::class)]
 #[UsesClass(BarcodeMicroPdf417::class)]
@@ -433,6 +435,22 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeEan8('1234567');
 
         self::assertStringContainsString('^B8N,50,', $output);
+    }
+
+    public function testBarcodeIndustrial2of5EmitsBiThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeIndustrial2of5('123456', height: 150);
+
+        self::assertSame('^XA^BIN,150,Y,N^FD123456^FS', $output);
+    }
+
+    public function testBarcodeIndustrial2of5InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeIndustrial2of5('123456');
+
+        self::assertStringContainsString('^BIN,50,', $output);
     }
 
     public function testBarcodeInterleaved2of5EmitsB2ThenFieldData(): void
