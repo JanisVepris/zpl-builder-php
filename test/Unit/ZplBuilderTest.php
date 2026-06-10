@@ -16,6 +16,7 @@ use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
+use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
@@ -56,6 +57,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode39;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode49;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode93;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeDataMatrix;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan13;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan8;
@@ -126,6 +128,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeCode39::class)]
 #[UsesClass(BarcodeCode49::class)]
 #[UsesClass(BarcodeCode93::class)]
+#[UsesClass(BarcodeDataMatrix::class)]
 #[UsesClass(BarcodeDefaults::class)]
 #[UsesClass(BarcodeDefaultSettings::class)]
 #[UsesClass(BarcodeEan13::class)]
@@ -155,6 +158,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(CodabarCharacter::class)]
 #[UsesClass(CodablockMode::class)]
 #[UsesClass(Code128Mode::class)]
+#[UsesClass(DataMatrixQuality::class)]
 #[UsesClass(DateTimeFormat::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
 #[UsesClass(Encoding::class)]
@@ -419,6 +423,27 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeCode93('CODE93');
 
         self::assertStringContainsString('^BAN,50,', $output);
+    }
+
+    public function testBarcodeDataMatrixEmitsBxThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeDataMatrix('DATA');
+
+        self::assertSame('^XA^BXN,0,200^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeDataMatrixEmitsForcedSize(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeDataMatrix(
+            'DATA',
+            orientation: Orientation::Rotate90,
+            moduleHeight: 10,
+            quality: DataMatrixQuality::Ecc100,
+            columns: 16,
+            rows: 16,
+        );
+
+        self::assertSame('^XA^BXR,10,100,16,16^FDDATA^FS', $output);
     }
 
     public function testBarcodeDefaultsEmitsBy(): void

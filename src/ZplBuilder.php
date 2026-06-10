@@ -13,6 +13,7 @@ use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
+use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
@@ -365,6 +366,44 @@ class ZplBuilder implements Stringable
                 printInterpretation: $printInterpretation,
                 interpretationAboveCode: $printInterpretationAboveCode,
                 printCheckDigit: $printCheckDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw a Data Matrix 2D barcode with the given data (`^BX` + `^FD ... ^FS`).
+     * `$moduleHeight` is the dimension of an individual square element; leaving it `0`
+     * (the default) makes the printer derive the element size from the `^BY` symbol
+     * height. `$quality` selects the ECC level (`DataMatrixQuality`; `Ecc200` is
+     * recommended). `$columns` and `$rows` (`9..49`) optionally force the symbol size,
+     * `$formatId` (`1..6`) selects the field-data format for ECC 0–140, and
+     * `$escapeChar` overrides the default `~` escape character used with ECC 200. Each
+     * optional parameter is omitted from the output when left `null`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeDataMatrix(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $moduleHeight = 0,
+        DataMatrixQuality $quality = DataMatrixQuality::Ecc200,
+        ?int $columns = null,
+        ?int $rows = null,
+        ?int $formatId = null,
+        ?string $escapeChar = null,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeDataMatrix(
+                orientation: $orientation,
+                moduleHeight: $moduleHeight,
+                quality: $quality,
+                columns: $columns,
+                rows: $rows,
+                formatId: $formatId,
+                escapeChar: $escapeChar,
             ),
         );
 

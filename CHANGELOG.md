@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeDataMatrix()` and `ZplCommand\BarcodeDataMatrix` add support for `^BX` (Data Matrix Bar Code), with the `Enum\DataMatrixQuality` selecting the ECC level
 - `ZplBuilder::barcodeUpcA()` and `ZplCommand\BarcodeUpcA` add support for `^BU` (UPC-A Bar Code)
 - `ZplBuilder::barcodeTlc39()` and `ZplCommand\BarcodeTlc39` add support for `^BT` (TLC39 Bar Code)
 - `ZplBuilder::barcodeUpcEanExtensions()` and `ZplCommand\BarcodeUpcEanExtensions` add support for `^BS` (UPC/EAN Extensions Bar Code)

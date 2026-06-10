@@ -60,7 +60,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BS` — UPC/EAN Extensions
 - [x] `^BT` — TLC39
 - [x] `^BU` — UPC-A
-- [ ] `^BX` — Data Matrix
+- [x] `^BX` — Data Matrix
 - [x] `^BY` — Bar Code Field Default
 - [ ] `^BZ` — POSTNET
 
