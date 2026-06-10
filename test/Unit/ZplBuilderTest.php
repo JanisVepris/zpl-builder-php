@@ -44,13 +44,17 @@ use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodablock;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode11;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode39;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode49;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode93;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan13;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan8;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeInterleaved2of5;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeMaxiCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePdf417;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePlanetCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcE;
@@ -98,14 +102,18 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[CoversClass(ZplBuilder::class)]
 #[UsesClass(AztecErrorControl::class)]
 #[UsesClass(BarcodeAztec::class)]
+#[UsesClass(BarcodeCodablock::class)]
 #[UsesClass(BarcodeCode11::class)]
 #[UsesClass(BarcodeCode128::class)]
 #[UsesClass(BarcodeCode39::class)]
 #[UsesClass(BarcodeCode49::class)]
+#[UsesClass(BarcodeCode93::class)]
 #[UsesClass(BarcodeDefaults::class)]
 #[UsesClass(BarcodeDefaultSettings::class)]
+#[UsesClass(BarcodeEan13::class)]
 #[UsesClass(BarcodeEan8::class)]
 #[UsesClass(BarcodeInterleaved2of5::class)]
+#[UsesClass(BarcodeMaxiCode::class)]
 #[UsesClass(BarcodePdf417::class)]
 #[UsesClass(BarcodePlanetCode::class)]
 #[UsesClass(BarcodeUpcE::class)]
@@ -115,6 +123,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(CharacterRemap::class)]
 #[UsesClass(ClockSet::class)]
 #[UsesClass(ClockTimeFormat::class)]
+#[UsesClass(CodablockMode::class)]
 #[UsesClass(Code128Mode::class)]
 #[UsesClass(DateTimeFormat::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
@@ -151,6 +160,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(LabelLength::class)]
 #[UsesClass(LabelReversePrint::class)]
 #[UsesClass(LineColor::class)]
+#[UsesClass(MaxiCodeMode::class)]
 #[UsesClass(MultipleFieldOrigin::class)]
 #[UsesClass(Orientation::class)]
 #[UsesClass(PrintDirection::class)]
@@ -389,6 +399,22 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testBarcodeEan13EmitsBeThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeEan13('123456789012', height: 100);
+
+        self::assertSame('^XA^BEN,100,Y,N^FD123456789012^FS', $output);
+    }
+
+    public function testBarcodeEan13InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeEan13('123456789012');
+
+        self::assertStringContainsString('^BEN,50,', $output);
     }
 
     public function testBarcodeEan8EmitsB8ThenFieldData(): void

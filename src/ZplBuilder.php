@@ -359,6 +359,34 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw an EAN-13 barcode with the given data (`^BE` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. EAN-13 expects
+     * exactly twelve digits; the printer pads or truncates on the left with zeros and
+     * appends the Mod-10 check digit.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeEan13(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeEan13(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw an EAN-8 barcode with the given data (`^B8` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided. EAN-8 expects
      * exactly seven digits; the printer pads or truncates on the left with zeros.
