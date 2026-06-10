@@ -110,6 +110,44 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw an Aztec 2D barcode with the given data (`^B0` + `^FD ... ^FS`).
+     *
+     * Aztec sizes itself by magnification factor (`1..10`) rather than a `^BY` height. `$errorControl`
+     * follows the spec's encoding: `0` = default correction, `1..99` = minimum correction percentage,
+     * `101..104` = 1–4-layer compact symbol, `201..232` = 1–32-layer full-range symbol, `300` = Aztec
+     * "Rune". `$symbolCount` (`1..26`) and `$structuredAppendId` (≤24 bytes, optional) drive structured
+     * append; an empty ID is omitted from the output.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function barcodeAztec(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $magnification = 1,
+        bool $extendedChannelInterpretation = false,
+        int $errorControl = 0,
+        bool $menuSymbol = false,
+        int $symbolCount = 1,
+        string $structuredAppendId = '',
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeAztec(
+                orientation: $orientation,
+                magnification: $magnification,
+                extendedChannelInterpretation: $extendedChannelInterpretation,
+                errorControl: $errorControl,
+                menuSymbol: $menuSymbol,
+                symbolCount: $symbolCount,
+                structuredAppendId: $structuredAppendId,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a Code 128 barcode with the given data (`^BC` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided.
      *

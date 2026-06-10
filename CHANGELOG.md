@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 The public API is **unstable until 1.0** — minor versions may include breaking changes.
 
+## [Unreleased]
+
+### Added
+
+- `ZplBuilder::barcodeAztec()` and `ZplCommand\BarcodeAztec` add support for `^B0` (Aztec Bar Code), a two-dimensional matrix symbology. Like the other barcodes it pairs with `^FD … ^FS`, but it sizes itself by a magnification factor (`1..10`, `BarcodeAztec::MAX_MAGNIFICATION`) rather than a `^BY` height. Orientation reuses `Enum\Orientation` (default `N`); the extended-channel-interpretation and menu-symbol indicators are booleans (default `N`). `errorControl` follows the spec's combined error/size encoding — `0` = default correction, `1..99` = minimum correction percentage, `101..104` = 1–4-layer compact symbol, `201..232` = 1–32-layer full-range symbol, `300` = Aztec "Rune" — validated to `0..300` (`BarcodeAztec::MAX_ERROR_CONTROL`). Structured append is driven by `symbolCount` (`1..26`, `BarcodeAztec::MAX_SYMBOL_COUNT`) and an optional `structuredAppendId` (≤24 bytes, `BarcodeAztec::MAX_ID_BYTES`); an empty ID is omitted from the output. Out-of-range numbers throw `IntegerValueOutOfRangeException`, while an over-length ID or one containing `^`, `~`, or `,` (which would corrupt the parameter list) throws `StringLengthOutOfRangeException` or `StringValueContainsBannedValuesException`.
+
 ## [0.60.0] - 2026-06-10
 
 ### Added

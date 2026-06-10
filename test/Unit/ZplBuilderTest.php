@@ -38,6 +38,7 @@ use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
@@ -82,6 +83,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(ZplBuilder::class)]
+#[UsesClass(BarcodeAztec::class)]
 #[UsesClass(BarcodeCode128::class)]
 #[UsesClass(BarcodeDefaults::class)]
 #[UsesClass(BarcodeDefaultSettings::class)]
@@ -179,6 +181,27 @@ class ZplBuilderTest extends UnitTestCase
         $this->expectException(FontPresetDoesNotExistException::class);
 
         ZplBuilder::start()->applyFontPreset('does-not-exist');
+    }
+
+    public function testBarcodeAztecEmitsB0ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeAztec('DATA');
+
+        self::assertSame('^XA^B0N,1,N,0,N,1^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeAztecEmitsStructuredAppendId(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeAztec(
+            'DATA',
+            orientation: Orientation::Rotate90,
+            magnification: 7,
+            errorControl: 200,
+            symbolCount: 3,
+            structuredAppendId: 'JOB42',
+        );
+
+        self::assertSame('^XA^B0R,7,N,200,N,3,JOB42^FDDATA^FS', $output);
     }
 
     public function testBarcodeCode128EmitsBcThenFieldData(): void
