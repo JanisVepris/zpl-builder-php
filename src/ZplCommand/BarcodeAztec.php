@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder\ZplCommand;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
+use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ZplCommand;
 
 readonly class BarcodeAztec implements ZplCommand
@@ -14,13 +15,12 @@ readonly class BarcodeAztec implements ZplCommand
     public const string COMMAND = '^B0';
     public const string FORMAT = '%s,%d,%s,%d,%s,%d';
     public const string FORMAT_WITH_ID = '%s,%d,%s,%d,%s,%d,%s';
-    public const int MAX_ERROR_CONTROL = 300;
     public const int MAX_ID_BYTES = 24;
 
     public const int MAX_MAGNIFICATION = 10;
     public const int MAX_SYMBOL_COUNT = 26;
-    private int $errorControl;
 
+    private AztecErrorControl $errorControl;
     private bool $extendedChannelInterpretation;
     private int $magnification;
     private bool $menuSymbol;
@@ -32,13 +32,12 @@ readonly class BarcodeAztec implements ZplCommand
         Orientation $orientation,
         int $magnification,
         bool $extendedChannelInterpretation,
-        int $errorControl,
+        AztecErrorControl $errorControl,
         bool $menuSymbol,
         int $symbolCount,
         string $structuredAppendId,
     ) {
         ValueAssert::int($magnification, 1, self::MAX_MAGNIFICATION);
-        ValueAssert::int($errorControl, 0, self::MAX_ERROR_CONTROL);
         ValueAssert::int($symbolCount, 1, self::MAX_SYMBOL_COUNT);
         ValueAssert::stringLengthBytes($structuredAppendId, 0, self::MAX_ID_BYTES);
         ValueAssert::stringNotContains($structuredAppendId, ['^', '~', ',']);
@@ -60,7 +59,7 @@ readonly class BarcodeAztec implements ZplCommand
                 $this->orientation->value,
                 $this->magnification,
                 BoolToStr::conv($this->extendedChannelInterpretation),
-                $this->errorControl,
+                $this->errorControl->value(),
                 BoolToStr::conv($this->menuSymbol),
                 $this->symbolCount,
             );
@@ -71,7 +70,7 @@ readonly class BarcodeAztec implements ZplCommand
             $this->orientation->value,
             $this->magnification,
             BoolToStr::conv($this->extendedChannelInterpretation),
-            $this->errorControl,
+            $this->errorControl->value(),
             BoolToStr::conv($this->menuSymbol),
             $this->symbolCount,
             $this->structuredAppendId,

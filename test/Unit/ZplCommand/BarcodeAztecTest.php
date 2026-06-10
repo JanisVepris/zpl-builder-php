@@ -11,11 +11,13 @@ use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
+use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 
 #[CoversClass(BarcodeAztec::class)]
+#[UsesClass(AztecErrorControl::class)]
 #[UsesClass(BoolToStr::class)]
 #[UsesClass(IntegerValueOutOfRangeException::class)]
 #[UsesClass(Orientation::class)]
@@ -24,51 +26,52 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(ValueAssert::class)]
 class BarcodeAztecTest extends UnitTestCase
 {
-    public function testErrorControlAboveMaxThrows(): void
-    {
-        $this->expectException(IntegerValueOutOfRangeException::class);
-
-        new BarcodeAztec(Orientation::Rotate0, 1, false, 301, false, 1, '');
-    }
-
     public function testIdAboveMaxBytesThrows(): void
     {
         $this->expectException(StringLengthOutOfRangeException::class);
 
-        new BarcodeAztec(Orientation::Rotate0, 1, false, 0, false, 1, str_repeat('A', 25));
+        new BarcodeAztec(Orientation::Rotate0, 1, false, AztecErrorControl::defaultLevel(), false, 1, str_repeat('A', 25));
     }
 
     public function testIdContainingBannedCharacterThrows(): void
     {
         $this->expectException(StringValueContainsBannedValuesException::class);
 
-        new BarcodeAztec(Orientation::Rotate0, 1, false, 0, false, 1, 'A,B');
+        new BarcodeAztec(Orientation::Rotate0, 1, false, AztecErrorControl::defaultLevel(), false, 1, 'A,B');
     }
 
     public function testMagnificationAboveMaxThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
-        new BarcodeAztec(Orientation::Rotate0, 11, false, 0, false, 1, '');
+        new BarcodeAztec(Orientation::Rotate0, 11, false, AztecErrorControl::defaultLevel(), false, 1, '');
     }
 
     public function testMagnificationBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
-        new BarcodeAztec(Orientation::Rotate0, 0, false, 0, false, 1, '');
+        new BarcodeAztec(Orientation::Rotate0, 0, false, AztecErrorControl::defaultLevel(), false, 1, '');
     }
 
     public function testRendersWithDefaults(): void
     {
-        $command = new BarcodeAztec(Orientation::Rotate0, 1, false, 0, false, 1, '');
+        $command = new BarcodeAztec(Orientation::Rotate0, 1, false, AztecErrorControl::defaultLevel(), false, 1, '');
 
         self::assertSame('^B0N,1,N,0,N,1', (string) $command);
     }
 
     public function testRendersWithStructuredAppendId(): void
     {
-        $command = new BarcodeAztec(Orientation::Rotate90, 7, true, 232, true, 26, 'JOB42');
+        $command = new BarcodeAztec(
+            Orientation::Rotate90,
+            7,
+            true,
+            AztecErrorControl::fullRangeSymbol(32),
+            true,
+            26,
+            'JOB42',
+        );
 
         self::assertSame('^B0R,7,Y,232,Y,26,JOB42', (string) $command);
     }
@@ -77,13 +80,13 @@ class BarcodeAztecTest extends UnitTestCase
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
-        new BarcodeAztec(Orientation::Rotate0, 1, false, 0, false, 27, '');
+        new BarcodeAztec(Orientation::Rotate0, 1, false, AztecErrorControl::defaultLevel(), false, 27, '');
     }
 
     public function testSymbolCountBelowMinThrows(): void
     {
         $this->expectException(IntegerValueOutOfRangeException::class);
 
-        new BarcodeAztec(Orientation::Rotate0, 1, false, 0, false, 0, '');
+        new BarcodeAztec(Orientation::Rotate0, 1, false, AztecErrorControl::defaultLevel(), false, 0, '');
     }
 }

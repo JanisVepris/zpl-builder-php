@@ -31,6 +31,7 @@ use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
 use Janisvepris\ZplBuilder\Exception\UnsupportedFontExtensionException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
+use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
 use Stringable;
@@ -115,10 +116,11 @@ class ZplBuilder implements Stringable
      * Draw an Aztec 2D barcode with the given data (`^B0` + `^FD ... ^FS`).
      *
      * Aztec sizes itself by magnification factor (`1..10`) rather than a `^BY` height. `$errorControl`
-     * follows the spec's encoding: `0` = default correction, `1..99` = minimum correction percentage,
-     * `101..104` = 1–4-layer compact symbol, `201..232` = 1–32-layer full-range symbol, `300` = Aztec
-     * "Rune". `$symbolCount` (`1..26`) and `$structuredAppendId` (≤24 bytes, optional) drive structured
-     * append; an empty ID is omitted from the output.
+     * is an `AztecErrorControl` value object whose named constructors map to the spec's combined
+     * error/size field — `defaultLevel()`, `errorCorrectionPercentage()`, `compactSymbol()`,
+     * `fullRangeSymbol()`, `rune()` — defaulting to `defaultLevel()` when omitted. `$symbolCount`
+     * (`1..26`) and `$structuredAppendId` (≤24 bytes, optional) drive structured append; an empty
+     * ID is omitted from the output.
      *
      * @throws IntegerValueOutOfRangeException
      * @throws StringLengthOutOfRangeException
@@ -129,7 +131,7 @@ class ZplBuilder implements Stringable
         Orientation $orientation = Orientation::Rotate0,
         int $magnification = 1,
         bool $extendedChannelInterpretation = false,
-        int $errorControl = 0,
+        ?AztecErrorControl $errorControl = null,
         bool $menuSymbol = false,
         int $symbolCount = 1,
         string $structuredAppendId = '',
@@ -139,7 +141,7 @@ class ZplBuilder implements Stringable
                 orientation: $orientation,
                 magnification: $magnification,
                 extendedChannelInterpretation: $extendedChannelInterpretation,
-                errorControl: $errorControl,
+                errorControl: $errorControl ?? AztecErrorControl::defaultLevel(),
                 menuSymbol: $menuSymbol,
                 symbolCount: $symbolCount,
                 structuredAppendId: $structuredAppendId,
