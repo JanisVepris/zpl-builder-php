@@ -808,6 +808,42 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a TLC39 barcode with the given data (`^BT` + `^FD ... ^FS`). TLC39 is the
+     * TCIF CLEI standard for telecommunications equipment: a Code 39 ECI number followed
+     * by an optional Micro-PDF417 carrying the serial number and additional data.
+     * `$code39Width` (`1..10`), `$wideToNarrowRatio` (`2.0..3.0`) and `$code39Height`
+     * (`1..9999`) size the Code 39 portion; `$microPdfWidth` (`1..10`) and
+     * `$microPdfRowHeight` (`1..255`) size the Micro-PDF417 portion. The defaults match
+     * the TCIF-compliant 200/300 dpi values.
+     *
+     * @throws FloatValueOutOfRangeException
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeTlc39(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $code39Width = 2,
+        float $wideToNarrowRatio = 2.0,
+        int $code39Height = 40,
+        int $microPdfWidth = 2,
+        int $microPdfRowHeight = 4,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeTlc39(
+                orientation: $orientation,
+                code39Width: $code39Width,
+                wideToNarrowRatio: $wideToNarrowRatio,
+                code39Height: $code39Height,
+                microPdfWidth: $microPdfWidth,
+                microPdfRowHeight: $microPdfRowHeight,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a UPC-E barcode with the given data (`^B9` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided. `$printCheckDigit`
      * (default on) prints the check digit. UPC-E expects exactly ten characters — a

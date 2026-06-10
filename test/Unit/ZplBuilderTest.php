@@ -71,6 +71,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodePlessey;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeQrCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeRss;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeStandard2of5;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeTlc39;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcE;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcEanExtensions;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
@@ -140,6 +141,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeQrCode::class)]
 #[UsesClass(BarcodeRss::class)]
 #[UsesClass(BarcodeStandard2of5::class)]
+#[UsesClass(BarcodeTlc39::class)]
 #[UsesClass(BarcodeUpcE::class)]
 #[UsesClass(BarcodeUpcEanExtensions::class)]
 #[UsesClass(BoolToStr::class)]
@@ -706,6 +708,28 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeStandard2of5('123456');
 
         self::assertStringContainsString('^BJN,50,', $output);
+    }
+
+    public function testBarcodeTlc39EmitsBtThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeTlc39('123456,ABCd12345678901234');
+
+        self::assertSame('^XA^BTN,2,2.0,40,2,4^FD123456,ABCd12345678901234^FS', $output);
+    }
+
+    public function testBarcodeTlc39EmitsCustomParameters(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeTlc39(
+            '123456',
+            orientation: Orientation::Rotate90,
+            code39Width: 4,
+            wideToNarrowRatio: 3.0,
+            code39Height: 120,
+            microPdfWidth: 4,
+            microPdfRowHeight: 8,
+        );
+
+        self::assertSame('^XA^BTR,4,3.0,120,4,8^FD123456^FS', $output);
     }
 
     public function testBarcodeUpcEanExtensionsEmitsBsThenFieldData(): void
