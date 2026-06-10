@@ -844,6 +844,36 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a UPC-A barcode with the given data (`^BU` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$printCheckDigit`
+     * (default on) prints the Mod-10 check digit. UPC-A expects exactly eleven digits;
+     * the printer pads or truncates on the left with zeros.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeUpcA(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $printCheckDigit = true,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeUpcA(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                printCheckDigit: $printCheckDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a UPC-E barcode with the given data (`^B9` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided. `$printCheckDigit`
      * (default on) prints the check digit. UPC-E expects exactly ten characters — a

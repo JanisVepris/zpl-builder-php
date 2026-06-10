@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeUpcA()` and `ZplCommand\BarcodeUpcA` add support for `^BU` (UPC-A Bar Code)
 - `ZplBuilder::barcodeTlc39()` and `ZplCommand\BarcodeTlc39` add support for `^BT` (TLC39 Bar Code)
 - `ZplBuilder::barcodeUpcEanExtensions()` and `ZplCommand\BarcodeUpcEanExtensions` add support for `^BS` (UPC/EAN Extensions Bar Code)
 - `ZplBuilder::barcodeRss()` and `ZplCommand\BarcodeRss` add support for `^BR` (RSS / Reduced Space Symbology Bar Code), with the `Enum\RssSymbologyType` selecting the RSS-14-family member
