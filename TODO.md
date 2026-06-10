@@ -39,7 +39,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^B2` — Interleaved 2 of 5
 - [x] `^B3` — Code 39
 - [x] `^B4` — Code 49
-- [ ] `^B5` — Planet Code
+- [x] `^B5` — Planet Code
 - [ ] `^B7` — PDF417
 - [ ] `^B8` — EAN-8
 - [ ] `^B9` — UPC-E

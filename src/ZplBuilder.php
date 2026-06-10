@@ -321,6 +321,34 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a Planet Code barcode with the given data (`^B5` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. Accepted characters
+     * are the digits `0`–`9`; bar height is capped at `BarcodePlanetCode::MAX_HEIGHT`
+     * (9999) dots, narrower than most barcodes.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodePlanetCode(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = false,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePlanetCode(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Change the default font (`^CF`) and optionally its height and/or width.
      * Unspecified dimensions keep the last value set for that font.
      *
