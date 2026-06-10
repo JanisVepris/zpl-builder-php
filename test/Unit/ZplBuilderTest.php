@@ -27,6 +27,8 @@ use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
+use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
@@ -65,6 +67,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeMsi;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePdf417;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePlanetCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePlessey;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeQrCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeStandard2of5;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcE;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
@@ -131,6 +134,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodePdf417::class)]
 #[UsesClass(BarcodePlanetCode::class)]
 #[UsesClass(BarcodePlessey::class)]
+#[UsesClass(BarcodeQrCode::class)]
 #[UsesClass(BarcodeStandard2of5::class)]
 #[UsesClass(BarcodeUpcE::class)]
 #[UsesClass(BoolToStr::class)]
@@ -185,6 +189,8 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(PrintOrientation::class)]
 #[UsesClass(PrintQuantity::class)]
 #[UsesClass(PrintWidth::class)]
+#[UsesClass(QrErrorCorrection::class)]
+#[UsesClass(QrModel::class)]
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
 #[UsesClass(SelectDateTimeFormat::class)]
@@ -636,6 +642,26 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodePlessey('12345');
 
         self::assertStringContainsString('^BPN,N,50,', $output);
+    }
+
+    public function testBarcodeQrCodeEmitsBqThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeQrCode('QA,HELLO', magnification: 10);
+
+        self::assertSame('^XA^BQN,2,10^FDQA,HELLO^FS', $output);
+    }
+
+    public function testBarcodeQrCodeEmitsErrorCorrectionAndMask(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeQrCode(
+            'QA,HELLO',
+            model: QrModel::Model1,
+            magnification: 5,
+            errorCorrection: QrErrorCorrection::UltraHighReliability,
+            maskValue: 3,
+        );
+
+        self::assertSame('^XA^BQN,1,5,H,3^FDQA,HELLO^FS', $output);
     }
 
     public function testBarcodeStandard2of5EmitsBjThenFieldData(): void

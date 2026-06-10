@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeQrCode()` and `ZplCommand\BarcodeQrCode` add support for `^BQ` (QR Code Bar Code), with the `Enum\QrModel` and `Enum\QrErrorCorrection` enums selecting the model and (optional) error-correction level
 - `ZplBuilder::barcodePlessey()` and `ZplCommand\BarcodePlessey` add support for `^BP` (Plessey Bar Code)
 - `ZplBuilder::barcodeMsi()` and `ZplCommand\BarcodeMsi` add support for `^BM` (MSI Bar Code), with the `Enum\MsiCheckDigit` selecting the check-digit scheme
 - `ZplBuilder::barcodeLogmars()` and `ZplCommand\BarcodeLogmars` add support for `^BL` (LOGMARS Bar Code)

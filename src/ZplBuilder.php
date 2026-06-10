@@ -24,6 +24,8 @@ use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
+use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
@@ -704,6 +706,37 @@ class ZplBuilder implements Stringable
                 height: $height ?? $this->barcodeDefaultSettings->height(),
                 printInterpretation: $printInterpretation,
                 interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw a QR Code 2D barcode with the given data (`^BQ` + `^FD ... ^FS`). QR Code
+     * sizes itself by `$magnification` (`1..10`) and ignores `^FW`, so orientation is
+     * always normal. `$errorCorrection` and `$maskValue` (`1..7`) are optional command
+     * parameters; they are omitted from the output when left `null`. The error-correction
+     * level and input mode are normally carried by the `^FD` switches instead (for
+     * example `QA,<data>` for automatic input at the high-reliability level), so `$data`
+     * is passed through verbatim.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeQrCode(
+        string $data,
+        QrModel $model = QrModel::Model2,
+        int $magnification = 1,
+        ?QrErrorCorrection $errorCorrection = null,
+        ?int $maskValue = null,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeQrCode(
+                model: $model,
+                magnification: $magnification,
+                errorCorrection: $errorCorrection,
+                maskValue: $maskValue,
             ),
         );
 
