@@ -29,6 +29,7 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
@@ -68,6 +69,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodePdf417;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePlanetCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePlessey;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeQrCode;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeRss;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeStandard2of5;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcE;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
@@ -135,6 +137,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodePlanetCode::class)]
 #[UsesClass(BarcodePlessey::class)]
 #[UsesClass(BarcodeQrCode::class)]
+#[UsesClass(BarcodeRss::class)]
 #[UsesClass(BarcodeStandard2of5::class)]
 #[UsesClass(BarcodeUpcE::class)]
 #[UsesClass(BoolToStr::class)]
@@ -193,6 +196,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(QrModel::class)]
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
+#[UsesClass(RssSymbologyType::class)]
 #[UsesClass(SelectDateTimeFormat::class)]
 #[UsesClass(SelectEncoding::class)]
 #[UsesClass(SerializationData::class)]
@@ -662,6 +666,28 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^BQN,1,5,H,3^FDQA,HELLO^FS', $output);
+    }
+
+    public function testBarcodeRssEmitsBrThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeRss('12345678901');
+
+        self::assertSame('^XA^BRR,1,1,1,25,22^FD12345678901^FS', $output);
+    }
+
+    public function testBarcodeRssEmitsCustomParameters(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeRss(
+            '12345678901',
+            orientation: Orientation::Rotate0,
+            symbologyType: RssSymbologyType::UpcA,
+            magnification: 5,
+            separatorHeight: 2,
+            barcodeHeight: 100,
+            segmentWidth: 20,
+        );
+
+        self::assertSame('^XA^BRN,7,5,2,100,20^FD12345678901^FS', $output);
     }
 
     public function testBarcodeStandard2of5EmitsBjThenFieldData(): void

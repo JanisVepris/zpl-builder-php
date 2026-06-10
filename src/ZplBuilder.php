@@ -26,6 +26,7 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
@@ -737,6 +738,41 @@ class ZplBuilder implements Stringable
                 magnification: $magnification,
                 errorCorrection: $errorCorrection,
                 maskValue: $maskValue,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw an RSS (Reduced Space Symbology) barcode with the given data
+     * (`^BR` + `^FD ... ^FS`). `$symbologyType` selects the family member
+     * (`RssSymbologyType`); `$magnification` is `1..10`; `$separatorHeight` is `1` or
+     * `2`; `$barcodeHeight` (the linear-portion height, default `25`) only applies to the
+     * UCC/EAN composite types; and `$segmentWidth` (`2..22`, even values only, default
+     * `22`) applies to RSS Expanded. Note the orientation defaults to `Rotate90` per the
+     * spec.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeRss(
+        string $data,
+        Orientation $orientation = Orientation::Rotate90,
+        RssSymbologyType $symbologyType = RssSymbologyType::Rss14,
+        int $magnification = 1,
+        int $separatorHeight = 1,
+        int $barcodeHeight = 25,
+        int $segmentWidth = 22,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeRss(
+                orientation: $orientation,
+                symbologyType: $symbologyType,
+                magnification: $magnification,
+                separatorHeight: $separatorHeight,
+                barcodeHeight: $barcodeHeight,
+                segmentWidth: $segmentWidth,
             ),
         );
 
