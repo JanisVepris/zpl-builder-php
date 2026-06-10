@@ -68,6 +68,7 @@ use Janisvepris\ZplBuilder\ZplCommand\PrintQuantity;
 use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
 use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
+use Janisvepris\ZplBuilder\ZplCommand\ScalableBitmappedFont;
 use Janisvepris\ZplBuilder\ZplCommand\SelectDateTimeFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
 use Janisvepris\ZplBuilder\ZplCommand\SerializationData;
@@ -149,6 +150,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(TransferObject::class)]
 #[UsesClass(UnsupportedFontExtensionException::class)]
 #[UsesClass(ValueAssert::class)]
+#[UsesClass(ScalableBitmappedFont::class)]
 class ZplBuilderTest extends UnitTestCase
 {
     public function testAddFontPresetInheritsDimensionsFromFontWhenOmitted(): void
