@@ -231,6 +231,36 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw an Interleaved 2 of 5 barcode with the given data (`^B2` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$checkDigit`
+     * adds a Mod 10 check digit. The printer pads an odd number of digits with a
+     * leading zero, since Interleaved 2 of 5 encodes digit pairs.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeInterleaved2of5(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $checkDigit = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeInterleaved2of5(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                checkDigit: $checkDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Change the default font (`^CF`) and optionally its height and/or width.
      * Unspecified dimensions keep the last value set for that font.
      *

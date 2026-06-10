@@ -42,6 +42,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode11;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeInterleaved2of5;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeInternationalEncoding;
 use Janisvepris\ZplBuilder\ZplCommand\EndFormat;
@@ -89,6 +90,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeCode128::class)]
 #[UsesClass(BarcodeDefaults::class)]
 #[UsesClass(BarcodeDefaultSettings::class)]
+#[UsesClass(BarcodeInterleaved2of5::class)]
 #[UsesClass(BoolToStr::class)]
 #[UsesClass(ChangeFont::class)]
 #[UsesClass(ChangeInternationalEncoding::class)]
@@ -287,6 +289,22 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testBarcodeInterleaved2of5EmitsB2ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeInterleaved2of5('123456', height: 150);
+
+        self::assertSame('^XA^B2N,150,Y,N,N^FD123456^FS', $output);
+    }
+
+    public function testBarcodeInterleaved2of5InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeInterleaved2of5('123456');
+
+        self::assertStringContainsString('^B2N,50,', $output);
     }
 
     public function testChangeFontEmitsCfWithLetterFont(): void
