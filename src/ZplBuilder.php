@@ -207,6 +207,35 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a Code 39 (USD-3 / 3 of 9) barcode with the given data (`^B3` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$checkDigit`
+     * adds a Mod-43 check digit. Code 39 auto-generates the `*` start/stop character.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeCode39(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $checkDigit = false,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode39(
+                orientation: $orientation,
+                checkDigit: $checkDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Set defaults for subsequent barcodes — module width, wide-to-narrow ratio,
      * and bar height (`^BY`).
      *
