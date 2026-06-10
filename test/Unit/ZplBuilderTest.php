@@ -11,6 +11,7 @@ use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
+use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
@@ -222,6 +223,28 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^B0R,7,N,232,N,3,JOB42^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeCodablockEmitsBbThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodablock('DATA');
+
+        self::assertSame('^XA^BBN,8,Y,,,F^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeCodablockEmitsRowsAndColumns(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodablock(
+            'DATA',
+            orientation: Orientation::Rotate90,
+            rowHeight: 10,
+            security: false,
+            charactersPerRow: 30,
+            rows: 12,
+            mode: CodablockMode::ModeA,
+        );
+
+        self::assertSame('^XA^BBR,10,N,30,12,A^FDDATA^FS', $output);
     }
 
     public function testBarcodeCode11EmitsB1ThenFieldData(): void

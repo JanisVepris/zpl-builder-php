@@ -8,6 +8,7 @@ use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
+use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
 use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
@@ -145,6 +146,40 @@ class ZplBuilder implements Stringable
                 menuSymbol: $menuSymbol,
                 symbolCount: $symbolCount,
                 structuredAppendId: $structuredAppendId,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw a CODABLOCK stacked barcode with the given data (`^BB` + `^FD ... ^FS`).
+     * `$rowHeight` is the per-row bar height (its own default of `8` dots, not `^BY`).
+     * `$charactersPerRow` (`2..62`) and `$rows` are optional — omit both for a single
+     * row. The `$rows` range depends on `$mode`: `1..22` for `CodablockMode::ModeA`,
+     * `2..4` for `ModeE`/`ModeF`. `$security` adds row check-sums (it can only be
+     * disabled in `ModeA`; the printer forces it on for `ModeE`/`ModeF`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeCodablock(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $rowHeight = 8,
+        bool $security = true,
+        ?int $charactersPerRow = null,
+        ?int $rows = null,
+        CodablockMode $mode = CodablockMode::ModeF,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCodablock(
+                orientation: $orientation,
+                rowHeight: $rowHeight,
+                security: $security,
+                charactersPerRow: $charactersPerRow,
+                rows: $rows,
+                mode: $mode,
             ),
         );
 
