@@ -839,6 +839,35 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a UPC/EAN extension barcode with the given data (`^BS` + `^FD ... ^FS`).
+     * This is the two- or five-digit add-on used alongside a UPC-A (`^BU`) or UPC-E
+     * (`^B9`) symbol. Falls back to the `^BY` default height when none is provided.
+     * Field data is exactly two or five digits. Note the interpretation line defaults to
+     * printing above the code per the spec.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeUpcEanExtensions(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = true,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeUpcEanExtensions(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Change the default font (`^CF`) and optionally its height and/or width.
      * Unspecified dimensions keep the last value set for that font.
      *

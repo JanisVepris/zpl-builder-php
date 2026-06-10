@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeUpcEanExtensions()` and `ZplCommand\BarcodeUpcEanExtensions` add support for `^BS` (UPC/EAN Extensions Bar Code)
 - `ZplBuilder::barcodeRss()` and `ZplCommand\BarcodeRss` add support for `^BR` (RSS / Reduced Space Symbology Bar Code), with the `Enum\RssSymbologyType` selecting the RSS-14-family member
 - `ZplBuilder::barcodeQrCode()` and `ZplCommand\BarcodeQrCode` add support for `^BQ` (QR Code Bar Code), with the `Enum\QrModel` and `Enum\QrErrorCorrection` enums selecting the model and (optional) error-correction level
 - `ZplBuilder::barcodePlessey()` and `ZplCommand\BarcodePlessey` add support for `^BP` (Plessey Bar Code)

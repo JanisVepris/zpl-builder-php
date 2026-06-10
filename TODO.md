@@ -57,7 +57,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BP` — Plessey
 - [x] `^BQ` — QR Code
 - [x] `^BR` — RSS (Reduced Space Symbology)
-- [ ] `^BS` — UPC/EAN Extensions
+- [x] `^BS` — UPC/EAN Extensions
 - [ ] `^BT` — TLC39
 - [ ] `^BU` — UPC-A
 - [ ] `^BX` — Data Matrix
