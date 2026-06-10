@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeMsi()` and `ZplCommand\BarcodeMsi` add support for `^BM` (MSI Bar Code), with the `Enum\MsiCheckDigit` selecting the check-digit scheme
 - `ZplBuilder::barcodeLogmars()` and `ZplCommand\BarcodeLogmars` add support for `^BL` (LOGMARS Bar Code)
 - `ZplBuilder::barcodeCodabar()` and `ZplCommand\BarcodeCodabar` add support for `^BK` (ANSI Codabar Bar Code), with the `Enum\CodabarCharacter` (`A`–`D`) selecting the start/stop characters
 - `ZplBuilder::barcodeStandard2of5()` and `ZplCommand\BarcodeStandard2of5` add support for `^BJ` (Standard 2 of 5 Bar Code)

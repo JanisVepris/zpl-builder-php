@@ -24,6 +24,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -60,6 +61,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeInterleaved2of5;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeLogmars;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeMaxiCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeMicroPdf417;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeMsi;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePdf417;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePlanetCode;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeStandard2of5;
@@ -124,6 +126,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeLogmars::class)]
 #[UsesClass(BarcodeMaxiCode::class)]
 #[UsesClass(BarcodeMicroPdf417::class)]
+#[UsesClass(BarcodeMsi::class)]
 #[UsesClass(BarcodePdf417::class)]
 #[UsesClass(BarcodePlanetCode::class)]
 #[UsesClass(BarcodeStandard2of5::class)]
@@ -173,6 +176,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(LabelReversePrint::class)]
 #[UsesClass(LineColor::class)]
 #[UsesClass(MaxiCodeMode::class)]
+#[UsesClass(MsiCheckDigit::class)]
 #[UsesClass(MultipleFieldOrigin::class)]
 #[UsesClass(Orientation::class)]
 #[UsesClass(PrintDirection::class)]
@@ -554,6 +558,34 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeMicroPdf417('Zebra');
 
         self::assertStringContainsString('^BFN,50,0', $output);
+    }
+
+    public function testBarcodeMsiEmitsBmThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMsi('1234', height: 100);
+
+        self::assertSame('^XA^BMN,B,100,Y,N,N^FD1234^FS', $output);
+    }
+
+    public function testBarcodeMsiEmitsCheckDigitSelection(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMsi(
+            '1234',
+            checkDigit: MsiCheckDigit::TwoMod10,
+            height: 100,
+            insertCheckDigitInInterpretation: true,
+        );
+
+        self::assertSame('^XA^BMN,C,100,Y,N,Y^FD1234^FS', $output);
+    }
+
+    public function testBarcodeMsiInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeMsi('1234');
+
+        self::assertStringContainsString('^BMN,B,50,', $output);
     }
 
     public function testBarcodePdf417EmitsB7ThenFieldData(): void

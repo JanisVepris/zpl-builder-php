@@ -21,6 +21,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -578,6 +579,39 @@ class ZplBuilder implements Stringable
                 orientation: $orientation,
                 height: $height ?? $this->barcodeDefaultSettings->height(),
                 mode: $mode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw an MSI (modified Plessey) barcode with the given data (`^BM` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$checkDigit`
+     * selects the check-digit scheme (`MsiCheckDigit`), and
+     * `$insertCheckDigitInInterpretation` mirrors that check digit into the
+     * interpretation line.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeMsi(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        MsiCheckDigit $checkDigit = MsiCheckDigit::OneMod10,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $insertCheckDigitInInterpretation = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeMsi(
+                orientation: $orientation,
+                checkDigit: $checkDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                insertCheckDigitInInterpretation: $insertCheckDigitInInterpretation,
             ),
         );
 
