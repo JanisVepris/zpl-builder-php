@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::when()` conditionally applies a callback to the builder. The predicate is a `bool` or a `callable(): bool`; when it is truthy `$callback` runs, otherwise the optional third argument `$elseCallback` runs if provided. Each callback receives the builder and mutates it in place (its return value is ignored), and `when()` always returns the builder so chaining continues
 - `ZplBuilder::barcodePostnet()` and `ZplCommand\BarcodePostnet` add support for `^BZ` (POSTNET Bar Code)
 - `ZplBuilder::barcodeDataMatrix()` and `ZplCommand\BarcodeDataMatrix` add support for `^BX` (Data Matrix Bar Code), with the `Enum\DataMatrixQuality` selecting the ECC level
 - `ZplBuilder::barcodeUpcA()` and `ZplCommand\BarcodeUpcA` add support for `^BU` (UPC-A Bar Code)

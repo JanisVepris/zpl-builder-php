@@ -1855,4 +1855,60 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertSame($before, (string) $builder);
     }
+
+    public function testWhenAppliesCallbackWhenPredicateIsTrue(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(true, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XAYES', $output);
+    }
+
+    public function testWhenAppliesElseCallbackWhenPredicateIsFalse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(
+                false,
+                fn (ZplBuilder $builder) => $builder->raw('YES'),
+                fn (ZplBuilder $builder) => $builder->raw('NO'),
+            );
+
+        self::assertSame('^XANO', $output);
+    }
+
+    public function testWhenInvokesCallablePredicateAndAppliesCallbackWhenItReturnsTrue(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(fn (): bool => true, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XAYES', $output);
+    }
+
+    public function testWhenInvokesCallablePredicateAndSkipsCallbackWhenItReturnsFalse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(fn (): bool => false, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XA', $output);
+    }
+
+    public function testWhenSkipsCallbackWhenPredicateIsFalse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(false, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XA', $output);
+    }
+
+    public function testWhenSkipsElseCallbackWhenPredicateIsTrue(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(
+                true,
+                fn (ZplBuilder $builder) => $builder->raw('YES'),
+                fn (ZplBuilder $builder) => $builder->raw('NO'),
+            );
+
+        self::assertSame('^XAYES', $output);
+    }
 }

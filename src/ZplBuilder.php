@@ -1701,6 +1701,28 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Conditionally apply a callback to the builder. If `$predicate` is a boolean, `$callback`
+     * is applied when it is `true`; if it is a callable, `$callback` is applied when it returns
+     * `true` when invoked. When the predicate is falsy and `$elseCallback` is provided, that
+     * callback is applied instead. Each callback receives this builder as its only argument and
+     * mutates it in place; any value it returns is ignored. `when()` always returns this builder.
+     *
+     * @param bool|callable(): bool        $predicate
+     * @param callable(self): mixed        $callback
+     * @param null|(callable(self): mixed) $elseCallback
+     */
+    public function when(bool|callable $predicate, callable $callback, ?callable $elseCallback = null): self
+    {
+        if (is_callable($predicate) ? $predicate() : $predicate) {
+            $callback($this);
+        } elseif ($elseCallback !== null) {
+            $elseCallback($this);
+        }
+
+        return $this;
+    }
+
+    /**
      * Append a command to the internal list. All public mutation methods route through this,
      * and subclasses can call it to register their own `ZplCommand` implementations.
      */
