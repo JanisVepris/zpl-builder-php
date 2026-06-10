@@ -54,7 +54,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BK` — ANSI Codabar
 - [x] `^BL` — LOGMARS
 - [x] `^BM` — MSI
-- [ ] `^BP` — Plessey
+- [x] `^BP` — Plessey
 - [ ] `^BQ` — QR Code
 - [ ] `^BR` — RSS (Reduced Space Symbology)
 - [ ] `^BS` — UPC/EAN Extensions

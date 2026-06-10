@@ -681,6 +681,36 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a Plessey barcode with the given data (`^BP` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$printCheckDigit`
+     * appends the Plessey check digit. Plessey is a pulse-width-modulated, non-self-
+     * checking numeric symbology.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodePlessey(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        bool $printCheckDigit = false,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePlessey(
+                orientation: $orientation,
+                printCheckDigit: $printCheckDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a Standard 2 of 5 barcode with the given data (`^BJ` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided. Standard 2 of 5
      * is a discrete, self-checking numeric symbology whose data is carried entirely in

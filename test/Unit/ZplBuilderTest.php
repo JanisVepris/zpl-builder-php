@@ -64,6 +64,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeMicroPdf417;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeMsi;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePdf417;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodePlanetCode;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodePlessey;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeStandard2of5;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcE;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
@@ -129,6 +130,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeMsi::class)]
 #[UsesClass(BarcodePdf417::class)]
 #[UsesClass(BarcodePlanetCode::class)]
+#[UsesClass(BarcodePlessey::class)]
 #[UsesClass(BarcodeStandard2of5::class)]
 #[UsesClass(BarcodeUpcE::class)]
 #[UsesClass(BoolToStr::class)]
@@ -618,6 +620,22 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodePlanetCode('12345678901');
 
         self::assertStringContainsString('^B5N,50,', $output);
+    }
+
+    public function testBarcodePlesseyEmitsBpThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodePlessey('12345', height: 100);
+
+        self::assertSame('^XA^BPN,N,100,Y,N^FD12345^FS', $output);
+    }
+
+    public function testBarcodePlesseyInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodePlessey('12345');
+
+        self::assertStringContainsString('^BPN,N,50,', $output);
     }
 
     public function testBarcodeStandard2of5EmitsBjThenFieldData(): void
