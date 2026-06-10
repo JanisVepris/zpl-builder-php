@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilder::barcodeCode93()` and `ZplCommand\BarcodeCode93` add support for `^BA` (Code 93 Bar Code)
 - `ZplBuilder::barcodeUpcE()` and `ZplCommand\BarcodeUpcE` add support for `^B9` (UPC-E Bar Code)
 - `ZplBuilder::barcodeEan8()` and `ZplCommand\BarcodeEan8` add support for `^B8` (EAN-8 Bar Code)
 - `ZplBuilder::barcodePdf417()` and `ZplCommand\BarcodePdf417` add support for `^B7` (PDF417 Bar Code)

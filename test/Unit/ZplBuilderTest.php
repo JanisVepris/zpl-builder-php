@@ -309,6 +309,22 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^B4N,50,', $output);
     }
 
+    public function testBarcodeCode93EmitsBaThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode93('CODE93', height: 100);
+
+        self::assertSame('^XA^BAN,100,Y,N,N^FDCODE93^FS', $output);
+    }
+
+    public function testBarcodeCode93InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode93('CODE93');
+
+        self::assertStringContainsString('^BAN,50,', $output);
+    }
+
     public function testBarcodeDefaultsEmitsBy(): void
     {
         $output = (string) ZplBuilder::start()->barcodeDefaults(3, 2.5, 75);

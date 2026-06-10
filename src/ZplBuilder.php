@@ -269,6 +269,36 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a Code 93 (USS-93) barcode with the given data (`^BA` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$printCheckDigit`
+     * adds the two Mod-47 check characters. Code 93 encodes the full 128-character
+     * ASCII set via paired substitute characters.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeCode93(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $printCheckDigit = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode93(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                printCheckDigit: $printCheckDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Set defaults for subsequent barcodes — module width, wide-to-narrow ratio,
      * and bar height (`^BY`).
      *

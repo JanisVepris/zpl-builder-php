@@ -43,7 +43,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^B7` — PDF417
 - [x] `^B8` — EAN-8
 - [x] `^B9` — UPC-E
-- [ ] `^BA` — Code 93
+- [x] `^BA` — Code 93
 - [ ] `^BB` — CODABLOCK
 - [x] `^BC` — Code 128 (Subsets A, B, and C)
 - [ ] `^BD` — UPS MaxiCode
