@@ -42,7 +42,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^B5` — Planet Code
 - [x] `^B7` — PDF417
 - [x] `^B8` — EAN-8
-- [ ] `^B9` — UPC-E
+- [x] `^B9` — UPC-E
 - [ ] `^BA` — Code 93
 - [ ] `^BB` — CODABLOCK
 - [x] `^BC` — Code 128 (Subsets A, B, and C)

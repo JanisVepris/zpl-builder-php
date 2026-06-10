@@ -410,6 +410,37 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a UPC-E barcode with the given data (`^B9` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. `$printCheckDigit`
+     * (default on) prints the check digit. UPC-E expects exactly ten characters — a
+     * five-digit manufacturer code and five-digit product code — and the printer
+     * calculates the zero-suppressed form.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeUpcE(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $printCheckDigit = true,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeUpcE(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                printCheckDigit: $printCheckDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Change the default font (`^CF`) and optionally its height and/or width.
      * Unspecified dimensions keep the last value set for that font.
      *
