@@ -587,6 +587,34 @@ class ZplBuilder implements Stringable
     }
 
     /**
+     * Draw a Standard 2 of 5 barcode with the given data (`^BJ` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided. Standard 2 of 5
+     * is a discrete, self-checking numeric symbology whose data is carried entirely in
+     * the bars.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeStandard2of5(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeStandard2of5(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
      * Draw a UPC-E barcode with the given data (`^B9` + `^FD ... ^FS`).
      * Falls back to the `^BY` default height when none is provided. `$printCheckDigit`
      * (default on) prints the check digit. UPC-E expects exactly ten characters — a

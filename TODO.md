@@ -50,7 +50,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^BE` — EAN-13
 - [x] `^BF` — Micro-PDF417
 - [x] `^BI` — Industrial 2 of 5
-- [ ] `^BJ` — Standard 2 of 5
+- [x] `^BJ` — Standard 2 of 5
 - [ ] `^BK` — ANSI Codabar
 - [ ] `^BL` — LOGMARS
 - [ ] `^BM` — MSI
