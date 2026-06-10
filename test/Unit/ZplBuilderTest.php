@@ -12,6 +12,8 @@ use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
+use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
+use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
@@ -42,6 +44,7 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode11;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode39;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode49;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeInterleaved2of5;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
@@ -90,6 +93,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(BarcodeCode11::class)]
 #[UsesClass(BarcodeCode128::class)]
 #[UsesClass(BarcodeCode39::class)]
+#[UsesClass(BarcodeCode49::class)]
 #[UsesClass(BarcodeDefaults::class)]
 #[UsesClass(BarcodeDefaultSettings::class)]
 #[UsesClass(BarcodeInterleaved2of5::class)]
@@ -265,6 +269,34 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeCode39('123ABC');
 
         self::assertStringContainsString('^B3N,N,50,', $output);
+    }
+
+    public function testBarcodeCode49EmitsB4ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode49('12345ABCDE', height: 20);
+
+        self::assertSame('^XA^B4N,20,N,A^FD12345ABCDE^FS', $output);
+    }
+
+    public function testBarcodeCode49EmitsInterpretationLineAndMode(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode49(
+            '12345ABCDE',
+            height: 20,
+            interpretationLine: Code49InterpretationLine::Below,
+            mode: Code49Mode::RegularNumeric,
+        );
+
+        self::assertSame('^XA^B4N,20,B,2^FD12345ABCDE^FS', $output);
+    }
+
+    public function testBarcodeCode49InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode49('12345ABCDE');
+
+        self::assertStringContainsString('^B4N,50,', $output);
     }
 
     public function testBarcodeDefaultsEmitsBy(): void

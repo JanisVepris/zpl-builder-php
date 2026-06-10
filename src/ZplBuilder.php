@@ -9,6 +9,8 @@ use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
+use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
+use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
@@ -229,6 +231,35 @@ class ZplBuilder implements Stringable
                 height: $height ?? $this->barcodeDefaultSettings->height(),
                 printInterpretation: $printInterpretation,
                 interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    /**
+     * Draw a Code 49 multi-row barcode with the given data (`^B4` + `^FD ... ^FS`).
+     * Falls back to the `^BY` default height when none is provided — the height is a
+     * per-row multiplier of the module width. `$interpretationLine` chooses whether the
+     * interpretation line prints and where (`Code49InterpretationLine`); `$mode` selects
+     * the starting encoding mode (`Code49Mode`, default automatic).
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function barcodeCode49(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        Code49InterpretationLine $interpretationLine = Code49InterpretationLine::None,
+        Code49Mode $mode = Code49Mode::Automatic,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode49(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                interpretationLine: $interpretationLine,
+                mode: $mode,
             ),
         );
 
