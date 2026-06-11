@@ -1622,6 +1622,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^XFE:LABEL.ZPL', $output);
     }
 
+    public function testRecallGraphicEmitsXgAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->recallGraphic('SAMPLE', StorageDevice::Flash, 'GRF', 2, 3);
+
+        self::assertSame('^XA^XGE:SAMPLE.GRF,2,3^FS', $output);
+    }
+
+    public function testRecallGraphicUsesRamGrfAndUnitMagnificationDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->recallGraphic('LOGO');
+
+        self::assertSame('^XA^XGR:LOGO.GRF,1,1^FS', $output);
+    }
+
     public function testRemoveFontPresetDropsRegistration(): void
     {
         $builder = ZplBuilder::start()

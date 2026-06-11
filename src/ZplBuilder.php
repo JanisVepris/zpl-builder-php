@@ -1151,6 +1151,26 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function recallGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+        int $magnificationX = 1,
+        int $magnificationY = 1,
+    ): self {
+        $this->addCommand(
+            new Commands\RecallGraphic(
+                device: $device,
+                name: $name,
+                extension: $extension,
+                magnificationX: $magnificationX,
+                magnificationY: $magnificationY,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
     public function removeFontPreset(string $name): self
     {
         if (!isset($this->fontPresets[$name])) {

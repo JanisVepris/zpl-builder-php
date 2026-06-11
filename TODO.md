@@ -78,7 +78,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^IL` — Image Load
 - [x] `^IM` — Image Move
 - [x] `^IS` — Image Save
-- [ ] `^XG` — Recall Graphic
+- [x] `^XG` — Recall Graphic
 - [ ] `~DG` — Download Graphics
 - [ ] `~DN` — Abort Download Graphic
 - [ ] `~DY` — Download Graphics / Native TrueType or OpenType Font

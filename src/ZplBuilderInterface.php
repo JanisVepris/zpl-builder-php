@@ -1023,6 +1023,22 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Recall a stored graphic for printing at the current field origin, optionally magnified on
+     * each axis (`^XG ... ^FS`). `$magnificationX` and `$magnificationY` accept 1 to 10 and default
+     * to 1. The device defaults to `R:` (RAM) and the extension to `GRF`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function recallGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+        int $magnificationX = 1,
+        int $magnificationY = 1,
+    ): self;
+
+    /**
      * Drop a previously registered font preset.
      *
      * @throws FontPresetDoesNotExistException
