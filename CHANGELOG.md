@@ -10,6 +10,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
+- `ZplBuilderInterface` declares the full public contract of `ZplBuilder` — every public instance method except the static `start()` factory — so consumers can type-hint, dependency-inject, and mock against the interface instead of the concrete class. `ZplBuilder` implements it, and the authoritative method documentation now lives on the interface as the single source of truth (the implementation inherits it)
 - `ZplBuilder::when()` conditionally applies a callback to the builder. The predicate is a `bool` or a `callable(): bool`; when it is truthy `$callback` runs, otherwise the optional third argument `$elseCallback` runs if provided. Each callback receives the builder and mutates it in place (its return value is ignored), and `when()` always returns the builder so chaining continues
 - `ZplBuilder::barcodePostnet()` and `ZplCommand\BarcodePostnet` add support for `^BZ` (POSTNET Bar Code)
 - `ZplBuilder::barcodeDataMatrix()` and `ZplCommand\BarcodeDataMatrix` add support for `^BX` (Data Matrix Bar Code), with the `Enum\DataMatrixQuality` selecting the ECC level

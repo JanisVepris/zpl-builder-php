@@ -49,6 +49,7 @@ use Janisvepris\ZplBuilder\Util\ValueAssert;
 use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
+use Janisvepris\ZplBuilder\ZplBuilderInterface;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodabar;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodablock;
@@ -118,6 +119,8 @@ use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use Janisvepris\ZplBuilder\ZplCommand\TransferObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
+use ReflectionClass;
+use ReflectionMethod;
 
 #[CoversClass(ZplBuilder::class)]
 #[UsesClass(AztecErrorControl::class)]
@@ -1910,5 +1913,32 @@ class ZplBuilderTest extends UnitTestCase
             );
 
         self::assertSame('^XAYES', $output);
+    }
+
+    public function testZplBuilderImplementsZplBuilderInterface(): void
+    {
+        self::assertInstanceOf(ZplBuilderInterface::class, ZplBuilder::start());
+    }
+
+    public function testZplBuilderInterfaceDeclaresEveryPublicInstanceMethod(): void
+    {
+        $builder = new ReflectionClass(ZplBuilder::class);
+        $interface = new ReflectionClass(ZplBuilderInterface::class);
+
+        $missing = [];
+        foreach ($builder->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if ($method->isStatic()) {
+                continue;
+            }
+
+            if (!$interface->hasMethod($method->getName())) {
+                $missing[] = $method->getName();
+            }
+        }
+
+        self::assertSame([], $missing, sprintf(
+            'ZplBuilderInterface must declare every public instance method of ZplBuilder; missing: %s',
+            implode(', ', $missing),
+        ));
     }
 }
