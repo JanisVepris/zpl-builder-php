@@ -940,6 +940,20 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Save the current label format as a stored image rather than a ZPL script (`^IS ... ^FS`).
+     * `$printAfterStore` (default `true`) also prints the label after saving. The device defaults
+     * to `R:` (RAM) and the extension to `GRF` (`PNG` is also accepted).
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function imageSave(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+        bool $printAfterStore = true,
+    ): self;
+
+    /**
      * Move the label's home origin to the given (x, y) coordinate (`^LH`).
      *
      * @throws IntegerValueOutOfRangeException

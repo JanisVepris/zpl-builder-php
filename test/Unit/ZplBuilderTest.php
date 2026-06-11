@@ -1500,6 +1500,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^IMR:LOGO.GRF^FS', $output);
     }
 
+    public function testImageSaveEmitsIsAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->imageSave('SAMPLE', StorageDevice::Flash, 'PNG', false);
+
+        self::assertSame('^XA^ISE:SAMPLE.PNG,N^FS', $output);
+    }
+
+    public function testImageSaveUsesRamGrfAndPrintDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->imageSave('LOGO');
+
+        self::assertSame('^XA^ISR:LOGO.GRF,Y^FS', $output);
+    }
+
     public function testLabelHomeEmitsLh(): void
     {
         $output = (string) ZplBuilder::start()->labelHome(20, 30);
