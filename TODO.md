@@ -81,7 +81,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^XG` — Recall Graphic
 - [x] `~DG` — Download Graphics
 - [x] `~DN` — Abort Download Graphic
-- [ ] `~DY` — Download Graphics / Native TrueType or OpenType Font
+- [x] `~DY` — Download Graphics / Native TrueType or OpenType Font
 - [ ] `~EG` — Erase Download Graphics
 
 ## Label layout and format control

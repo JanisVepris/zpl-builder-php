@@ -19,6 +19,8 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DownloadExtension;
+use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -951,6 +953,42 @@ class ZplBuilderTest extends UnitTestCase
 
         try {
             $builder->downloadGraphics('', 16, 2, 'ABCD');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testDownloadObjectEmitsDy(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadObject(
+            'FONTFILE.TTF',
+            DownloadFormat::UncompressedBinary,
+            52010,
+            DownloadExtension::TrueType,
+            0,
+            '',
+            StorageDevice::Flash,
+        );
+
+        self::assertSame('^XA~DYE:FONTFILE.TTF,B,T,52010,0,', $output);
+    }
+
+    public function testDownloadObjectUsesGrfRamAndEmptyDataDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadObject('LOGO', DownloadFormat::UncompressedAscii, 8000);
+
+        self::assertSame('^XA~DYR:LOGO,A,G,8000,0,', $output);
+    }
+
+    public function testDownloadObjectValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->downloadObject('', DownloadFormat::UncompressedAscii, 8000);
             self::fail('Expected StringLengthOutOfRangeException');
         } catch (StringLengthOutOfRangeException) {
         }

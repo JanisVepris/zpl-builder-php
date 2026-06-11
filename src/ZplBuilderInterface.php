@@ -16,6 +16,8 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DownloadExtension;
+use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -653,6 +655,27 @@ interface ZplBuilderInterface extends Stringable
         string $data,
         StorageDevice $device = StorageDevice::Ram,
         string $extension = 'GRF',
+    ): self;
+
+    /**
+     * Download a graphic or native TrueType/OpenType font object into a printer storage device
+     * (`~DY`). `$format` selects how `$data` is encoded and `$extension` the stored object type;
+     * `$data` may be empty when the file is sent as a separate transmission. Standalone command —
+     * no `^FD … ^FS`. A caret or tilde in `$data` is rejected — either would abort the download.
+     * The device defaults to `R:` (RAM).
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function downloadObject(
+        string $name,
+        DownloadFormat $format,
+        int $totalBytes,
+        DownloadExtension $extension = DownloadExtension::Grf,
+        int $bytesPerRow = 0,
+        string $data = '',
+        StorageDevice $device = StorageDevice::Ram,
     ): self;
 
     /** Finalise the format by appending `^XZ`. */

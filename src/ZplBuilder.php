@@ -16,6 +16,8 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DownloadExtension;
+use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -744,6 +746,28 @@ class ZplBuilder implements ZplBuilderInterface
             new Commands\DownloadGraphics(
                 device: $device,
                 name: $name,
+                extension: $extension,
+                totalBytes: $totalBytes,
+                bytesPerRow: $bytesPerRow,
+                data: $data,
+            ),
+        );
+    }
+
+    public function downloadObject(
+        string $name,
+        DownloadFormat $format,
+        int $totalBytes,
+        DownloadExtension $extension = DownloadExtension::Grf,
+        int $bytesPerRow = 0,
+        string $data = '',
+        StorageDevice $device = StorageDevice::Ram,
+    ): self {
+        return $this->addCommand(
+            new Commands\DownloadObject(
+                device: $device,
+                name: $name,
+                format: $format,
                 extension: $extension,
                 totalBytes: $totalBytes,
                 bytesPerRow: $bytesPerRow,
