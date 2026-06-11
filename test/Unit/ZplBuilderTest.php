@@ -1430,6 +1430,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testGraphicSymbolDefaultsToNormalOrientation(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicSymbol('B', 27, 27);
+
+        self::assertSame('^XA^GSN,27,27^FDB^FS', $output);
+    }
+
+    public function testGraphicSymbolEmitsGsThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicSymbol('A', 50, 40, Orientation::Rotate90);
+
+        self::assertSame('^XA^GSR,50,40^FDA^FS', $output);
+    }
+
     public function testHasFontPresetReturnsFalseForUnknown(): void
     {
         $builder = ZplBuilder::start();

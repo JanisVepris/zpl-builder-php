@@ -883,6 +883,21 @@ interface ZplBuilderInterface extends Stringable
         GraphicFieldCompression $compression = GraphicFieldCompression::AsciiHex,
     ): self;
 
+    /**
+     * Emit a graphic symbol — registered trademark, copyright, and similar marks — at the given
+     * height and width and orientation (`^GS` then `^FD<symbol>^FS`). `$symbol` is the field-data
+     * character that selects which symbol the printer draws.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function graphicSymbol(
+        string $symbol,
+        int $height,
+        int $width,
+        Orientation $orientation = Orientation::Rotate0,
+    ): self;
+
     /** Whether a font preset with the given name has been registered. */
     public function hasFontPreset(string $name): bool;
 

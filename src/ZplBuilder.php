@@ -989,6 +989,23 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
+    public function graphicSymbol(
+        string $symbol,
+        int $height,
+        int $width,
+        Orientation $orientation = Orientation::Rotate0,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicSymbol(
+                orientation: $orientation,
+                height: $height,
+                width: $width,
+            ),
+        );
+
+        return $this->fieldData($symbol);
+    }
+
     public function hasFontPreset(string $name): bool
     {
         return isset($this->fontPresets[$name]);
