@@ -72,7 +72,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^GE` — Graphic Ellipse
 - [x] `^GF` — Graphic Field
 - [x] `^GS` — Graphic Symbol
-- [ ] `^HG` — Host Graphic
+- [x] `^HG` — Host Graphic
 - [ ] `^HY` — Upload Graphics
 - [ ] `^ID` — Object Delete
 - [ ] `^IL` — Image Load

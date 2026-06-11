@@ -1011,6 +1011,20 @@ class ZplBuilder implements ZplBuilderInterface
         return isset($this->fontPresets[$name]);
     }
 
+    public function hostGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        return $this->addCommand(
+            new Commands\HostGraphic(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
     public function labelHome(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\LabelHome($x, $y));

@@ -902,6 +902,18 @@ interface ZplBuilderInterface extends Stringable
     public function hasFontPreset(string $name): bool;
 
     /**
+     * Upload a stored graphic from the printer to the host (`^HG`). Standalone command — it emits
+     * only `^HG…`, with no `^FD … ^FS`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function hostGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
      * Move the label's home origin to the given (x, y) coordinate (`^LH`).
      *
      * @throws IntegerValueOutOfRangeException

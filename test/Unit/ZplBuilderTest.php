@@ -1458,6 +1458,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertTrue($builder->hasFontPreset('big'));
     }
 
+    public function testHostGraphicEmitsHg(): void
+    {
+        $output = (string) ZplBuilder::start()->hostGraphic('SAMPLE', StorageDevice::Flash);
+
+        self::assertSame('^XA^HGE:SAMPLE.GRF', $output);
+    }
+
+    public function testHostGraphicUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->hostGraphic('LOGO');
+
+        self::assertSame('^XA^HGR:LOGO.GRF', $output);
+    }
+
     public function testLabelHomeEmitsLh(): void
     {
         $output = (string) ZplBuilder::start()->labelHome(20, 30);
