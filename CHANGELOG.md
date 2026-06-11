@@ -22,6 +22,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::imageMove()` and `ZplCommand\ImageMove` add support for `^IM` (Image Move), moving a stored image into the bitmap at the current field origin (like `^XG` without magnification); the device defaults to `R:` (RAM) and the extension to `GRF`
 - `ZplBuilder::imageSave()` and `ZplCommand\ImageSave` add support for `^IS` (Image Save), saving the current label format as a stored image; `$printAfterStore` (default `true`) controls whether the label also prints, and the device defaults to `R:` (RAM) and the extension to `GRF`
 - `ZplBuilder::recallGraphic()` and `ZplCommand\RecallGraphic` add support for `^XG` (Recall Graphic), recalling a stored graphic for printing with optional per-axis magnification (1 to 10, default 1); the device defaults to `R:` (RAM) and the extension to `GRF`
+- `ZplBuilder::downloadGraphics()` and `ZplCommand\DownloadGraphics` add support for `~DG` (Download Graphics), downloading an ASCII-hex graphic image into a printer storage device; the device defaults to `R:` (RAM) and the extension to `GRF`
 
 ## [0.61.0] - 2026-06-11
 

@@ -923,6 +923,34 @@ class ZplBuilderTest extends UnitTestCase
         );
     }
 
+    public function testDownloadGraphicsEmitsDg(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadGraphics('SAMPLE', 8000, 80, 'FF00FF00', StorageDevice::Flash);
+
+        self::assertSame('^XA~DGE:SAMPLE.GRF,8000,80,FF00FF00', $output);
+    }
+
+    public function testDownloadGraphicsUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadGraphics('LOGO', 16, 2, 'ABCD');
+
+        self::assertSame('^XA~DGR:LOGO.GRF,16,2,ABCD', $output);
+    }
+
+    public function testDownloadGraphicsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->downloadGraphics('', 16, 2, 'ABCD');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testEndAppendsEndFormatEveryTimeItsCalled(): void
     {
         $output = (string) ZplBuilder::start()->end()->end();

@@ -631,6 +631,25 @@ interface ZplBuilderInterface extends Stringable
      */
     public function comment(string $text): self;
 
+    /**
+     * Download an ASCII-hex graphic image into a printer storage device (`~DG`). `$totalBytes` and
+     * `$bytesPerRow` are the totals the caller computes for the image. Standalone command — no
+     * `^FD … ^FS`. A caret or tilde in `$data` is rejected — either would abort the download. The
+     * device defaults to `R:` (RAM) and the extension to `GRF`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function downloadGraphics(
+        string $name,
+        int $totalBytes,
+        int $bytesPerRow,
+        string $data,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
     /** Finalise the format by appending `^XZ`. */
     public function end(): self;
 
