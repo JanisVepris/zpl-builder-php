@@ -22,6 +22,7 @@ use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
+use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -1398,6 +1399,35 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->graphicEllipse(300, 200);
 
         self::assertSame('^XA^GE300,200,1,B^FS', $output);
+    }
+
+    public function testGraphicFieldDefaultsToAsciiCompression(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicField(4, 4, 2, 'FF00');
+
+        self::assertSame('^XA^GFA,4,4,2,FF00^FS', $output);
+    }
+
+    public function testGraphicFieldEmitsGfAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->graphicField(8000, 8000, 80, 'FF00FF00', GraphicFieldCompression::Binary);
+
+        self::assertSame('^XA^GFB,8000,8000,80,FF00FF00^FS', $output);
+    }
+
+    public function testGraphicFieldValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->graphicField(0, 4, 2, 'FF00');
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testHasFontPresetReturnsFalseForUnknown(): void

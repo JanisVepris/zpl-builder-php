@@ -19,6 +19,7 @@ use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
+use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -863,6 +864,23 @@ interface ZplBuilderInterface extends Stringable
         int $height,
         int $thickness = 1,
         LineColor $color = LineColor::Black,
+    ): self;
+
+    /**
+     * Download a graphic image directly into the printer's bitmap storage at the current field
+     * origin (`^GF ... ^FS`). `$byteCount`, `$fieldCount`, and `$bytesPerRow` are the totals the
+     * caller computes for the image; `$compression` selects how `$data` is encoded. A caret or
+     * tilde in `$data` is rejected — either would abort the printer's download.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function graphicField(
+        int $byteCount,
+        int $fieldCount,
+        int $bytesPerRow,
+        string $data,
+        GraphicFieldCompression $compression = GraphicFieldCompression::AsciiHex,
     ): self;
 
     /** Whether a font preset with the given name has been registered. */

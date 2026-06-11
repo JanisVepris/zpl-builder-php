@@ -13,6 +13,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::graphicCircle()` and `ZplCommand\GraphicCircle` add support for `^GC` (Graphic Circle). The border thickness accepts a minimum of 1 dot — the value the spec documents as the default when the parameter is omitted — rather than the parameter table's stated minimum of 2
 - `ZplBuilder::graphicDiagonalLine()` and `ZplCommand\GraphicDiagonalLine` add support for `^GD` (Graphic Diagonal Line), with the `Enum\DiagonalOrientation` selecting the line's lean direction (`R`/`L`)
 - `ZplBuilder::graphicEllipse()` and `ZplCommand\GraphicEllipse` add support for `^GE` (Graphic Ellipse). As with `^GC`, the border thickness accepts a minimum of 1 dot — the spec's documented default — rather than the parameter table's stated minimum of 2
+- `ZplBuilder::graphicField()` and `ZplCommand\GraphicField` add support for `^GF` (Graphic Field), downloading a bitmap directly into the printer at the current field origin, with the `Enum\GraphicFieldCompression` selecting the data encoding (`A`/`B`/`C`)
 
 ## [0.61.0] - 2026-06-11
 

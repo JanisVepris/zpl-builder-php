@@ -19,6 +19,7 @@ use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
+use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -962,6 +963,26 @@ class ZplBuilder implements ZplBuilderInterface
                 height: $height,
                 thickness: $thickness,
                 color: $color,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function graphicField(
+        int $byteCount,
+        int $fieldCount,
+        int $bytesPerRow,
+        string $data,
+        GraphicFieldCompression $compression = GraphicFieldCompression::AsciiHex,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicField(
+                compression: $compression,
+                byteCount: $byteCount,
+                fieldCount: $fieldCount,
+                bytesPerRow: $bytesPerRow,
+                data: $data,
             ),
         );
 
