@@ -950,6 +950,24 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
+    public function graphicEllipse(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicEllipse(
+                width: $width,
+                height: $height,
+                thickness: $thickness,
+                color: $color,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
     public function hasFontPreset(string $name): bool
     {
         return isset($this->fontPresets[$name]);

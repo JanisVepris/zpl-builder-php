@@ -852,6 +852,19 @@ interface ZplBuilderInterface extends Stringable
         DiagonalOrientation $orientation = DiagonalOrientation::RightLeaning,
     ): self;
 
+    /**
+     * Draw an ellipse of the given width × height with the chosen border thickness and color
+     * (`^GE ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function graphicEllipse(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self;
+
     /** Whether a font preset with the given name has been registered. */
     public function hasFontPreset(string $name): bool;
 

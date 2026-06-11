@@ -1386,6 +1386,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^GD100,100,1,B,R^FS', $output);
     }
 
+    public function testGraphicEllipseEmitsGeAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicEllipse(300, 200, 4, LineColor::White);
+
+        self::assertSame('^XA^GE300,200,4,W^FS', $output);
+    }
+
+    public function testGraphicEllipseEmitsGeWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicEllipse(300, 200);
+
+        self::assertSame('^XA^GE300,200,1,B^FS', $output);
+    }
+
     public function testHasFontPresetReturnsFalseForUnknown(): void
     {
         $builder = ZplBuilder::start();
