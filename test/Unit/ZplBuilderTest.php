@@ -1508,6 +1508,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^FDHello^FS^XZ', $output);
     }
 
+    public function testObjectDeleteEmitsIdAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->objectDelete('SAMPLE', StorageDevice::Flash, 'ZPL');
+
+        self::assertSame('^XA^IDE:SAMPLE.ZPL^FS', $output);
+    }
+
+    public function testObjectDeleteUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->objectDelete('*');
+
+        self::assertSame('^XA^IDR:*.GRF^FS', $output);
+    }
+
     public function testPrintNewlinesSeparatesCommandsWithEol(): void
     {
         $output = (string) ZplBuilder::start()->printNewlines()->fieldData('Hi')->end();

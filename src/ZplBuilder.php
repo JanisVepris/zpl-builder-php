@@ -1040,6 +1040,22 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
     }
 
+    public function objectDelete(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        $this->addCommand(
+            new Commands\ObjectDelete(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
     public function printNewlines(bool $toggle = true): self
     {
         $this->printNewlines = $toggle;

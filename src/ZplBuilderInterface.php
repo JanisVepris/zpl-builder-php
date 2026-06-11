@@ -930,6 +930,20 @@ interface ZplBuilderInterface extends Stringable
     /** Toggle reverse-print — fields render white-on-black instead of black-on-white (`^LR`). */
     public function labelReversePrint(bool $reversePrint = true): self;
 
+    /**
+     * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
+     * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
+     * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension
+     * to `GRF`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function objectDelete(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
     /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
     public function printNewlines(bool $toggle = true): self;
 
