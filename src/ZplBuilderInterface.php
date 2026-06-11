@@ -927,6 +927,19 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Move a stored image directly into the bitmap at the current field origin (`^IM ... ^FS`).
+     * Like `^XG` but without magnification. The device defaults to `R:` (RAM) and the extension to
+     * `GRF`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function imageMove(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
      * Move the label's home origin to the given (x, y) coordinate (`^LH`).
      *
      * @throws IntegerValueOutOfRangeException

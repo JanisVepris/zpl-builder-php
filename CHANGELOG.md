@@ -19,6 +19,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::uploadGraphics()` and `ZplCommand\UploadGraphics` add support for `^HY` (Upload Graphics), uploading a stored graphic object to the host in any supported format (`GRF` raw bitmap or `PNG` compressed); the device defaults to `R:` (RAM) and the extension to `GRF`
 - `ZplBuilder::objectDelete()` and `ZplCommand\ObjectDelete` add support for `^ID` (Object Delete), deleting stored objects from a printer storage device; the `*` wildcard is accepted in the name and extension to delete groups of objects
 - `ZplBuilder::imageLoad()` and `ZplCommand\ImageLoad` add support for `^IL` (Image Load), loading a stored image at the origin and merging it with the label's field data; the device defaults to `R:` (RAM) and the extension to `GRF`
+- `ZplBuilder::imageMove()` and `ZplCommand\ImageMove` add support for `^IM` (Image Move), moving a stored image into the bitmap at the current field origin (like `^XG` without magnification); the device defaults to `R:` (RAM) and the extension to `GRF`
 
 ## [0.61.0] - 2026-06-11
 
