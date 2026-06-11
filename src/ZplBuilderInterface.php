@@ -15,6 +15,7 @@ use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
+use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -835,6 +836,20 @@ interface ZplBuilderInterface extends Stringable
         int $diameter,
         int $thickness = 1,
         LineColor $color = LineColor::Black,
+    ): self;
+
+    /**
+     * Draw a straight diagonal line across a bounding box of the given width × height, with the
+     * chosen thickness, color, and lean direction (`^GD ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function graphicDiagonalLine(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+        DiagonalOrientation $orientation = DiagonalOrientation::RightLeaning,
     ): self;
 
     /** Whether a font preset with the given name has been registered. */

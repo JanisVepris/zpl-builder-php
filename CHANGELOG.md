@@ -11,6 +11,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 ### Added
 
 - `ZplBuilder::graphicCircle()` and `ZplCommand\GraphicCircle` add support for `^GC` (Graphic Circle). The border thickness accepts a minimum of 1 dot — the value the spec documents as the default when the parameter is omitted — rather than the parameter table's stated minimum of 2
+- `ZplBuilder::graphicDiagonalLine()` and `ZplCommand\GraphicDiagonalLine` add support for `^GD` (Graphic Diagonal Line), with the `Enum\DiagonalOrientation` selecting the line's lean direction (`R`/`L`)
 
 ## [0.61.0] - 2026-06-11
 

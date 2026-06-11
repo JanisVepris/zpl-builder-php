@@ -68,7 +68,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 
 - [x] `^GB` — Graphic Box
 - [x] `^GC` — Graphic Circle
-- [ ] `^GD` — Graphic Diagonal Line
+- [x] `^GD` — Graphic Diagonal Line
 - [ ] `^GE` — Graphic Ellipse
 - [ ] `^GF` — Graphic Field
 - [ ] `^GS` — Graphic Symbol

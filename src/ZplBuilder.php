@@ -15,6 +15,7 @@ use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
+use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -923,6 +924,26 @@ class ZplBuilder implements ZplBuilderInterface
                 diameter: $diameter,
                 thickness: $thickness,
                 color: $color,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function graphicDiagonalLine(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+        DiagonalOrientation $orientation = DiagonalOrientation::RightLeaning,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicDiagonalLine(
+                width: $width,
+                height: $height,
+                thickness: $thickness,
+                color: $color,
+                orientation: $orientation,
             ),
         );
 

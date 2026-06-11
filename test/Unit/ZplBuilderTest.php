@@ -18,6 +18,7 @@ use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
+use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
@@ -1368,6 +1369,21 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->graphicCircle(100);
 
         self::assertSame('^XA^GC100,1,B^FS', $output);
+    }
+
+    public function testGraphicDiagonalLineEmitsGdAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->graphicDiagonalLine(300, 200, 3, LineColor::White, DiagonalOrientation::LeftLeaning);
+
+        self::assertSame('^XA^GD300,200,3,W,L^FS', $output);
+    }
+
+    public function testGraphicDiagonalLineEmitsGdWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicDiagonalLine(100, 100);
+
+        self::assertSame('^XA^GD100,100,1,B,R^FS', $output);
     }
 
     public function testHasFontPresetReturnsFalseForUnknown(): void
