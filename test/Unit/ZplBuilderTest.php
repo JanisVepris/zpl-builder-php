@@ -1010,6 +1010,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^FDHello^FS^XZ', $output);
     }
 
+    public function testEraseDownloadGraphicsEmitsEg(): void
+    {
+        $output = (string) ZplBuilder::start()->eraseDownloadGraphics();
+
+        self::assertSame('^XA~EG', $output);
+    }
+
     public function testFieldBlockEmitsFb(): void
     {
         $output = (string) ZplBuilder::start()->fieldBlock(400, 3, 5, Justify::Center, 10);

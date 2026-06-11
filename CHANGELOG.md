@@ -25,6 +25,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::downloadGraphics()` and `ZplCommand\DownloadGraphics` add support for `~DG` (Download Graphics), downloading an ASCII-hex graphic image into a printer storage device; the device defaults to `R:` (RAM) and the extension to `GRF`
 - `ZplBuilder::abortDownloadGraphic()` and `ZplCommand\AbortDownloadGraphic` add support for `~DN` (Abort Download Graphic), aborting an in-progress graphic download and returning the printer to normal print mode
 - `ZplBuilder::downloadObject()` and `ZplCommand\DownloadObject` add support for `~DY` (Download Graphics / Native TrueType or OpenType Font), with the `Enum\DownloadFormat` selecting the data encoding and `Enum\DownloadExtension` the stored object type; the data may be empty when the file is sent as a separate transmission
+- `ZplBuilder::eraseDownloadGraphics()` and `ZplCommand\EraseDownloadGraphics` add support for `~EG` (Erase Download Graphics), erasing all downloaded graphics from the printer's storage
 
 ## [0.61.0] - 2026-06-11
 

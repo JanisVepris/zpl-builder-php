@@ -682,6 +682,11 @@ interface ZplBuilderInterface extends Stringable
     public function end(): self;
 
     /**
+     * Erase all downloaded graphics from the printer's storage (`~EG`).
+     */
+    public function eraseDownloadGraphics(): self;
+
+    /**
      * Format the next field as a multi-line text block with the given width,
      * maximum line count, line spacing, justification, and hanging indent (`^FB`).
      *

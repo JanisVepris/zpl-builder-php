@@ -781,6 +781,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\EndFormat());
     }
 
+    public function eraseDownloadGraphics(): self
+    {
+        return $this->addCommand(new Commands\EraseDownloadGraphics());
+    }
+
     public function fieldBlock(
         int $width = 0,
         int $maxLines = 1,
