@@ -34,35 +34,35 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 
 ## Barcodes
 
-- [ ] `^B0` — Aztec
-- [ ] `^B1` — Code 11
-- [ ] `^B2` — Interleaved 2 of 5
-- [ ] `^B3` — Code 39
-- [ ] `^B4` — Code 49
-- [ ] `^B5` — Planet Code
-- [ ] `^B7` — PDF417
-- [ ] `^B8` — EAN-8
-- [ ] `^B9` — UPC-E
-- [ ] `^BA` — Code 93
-- [ ] `^BB` — CODABLOCK
+- [x] `^B0` — Aztec
+- [x] `^B1` — Code 11
+- [x] `^B2` — Interleaved 2 of 5
+- [x] `^B3` — Code 39
+- [x] `^B4` — Code 49
+- [x] `^B5` — Planet Code
+- [x] `^B7` — PDF417
+- [x] `^B8` — EAN-8
+- [x] `^B9` — UPC-E
+- [x] `^BA` — Code 93
+- [x] `^BB` — CODABLOCK
 - [x] `^BC` — Code 128 (Subsets A, B, and C)
-- [ ] `^BD` — UPS MaxiCode
-- [ ] `^BE` — EAN-13
-- [ ] `^BF` — Micro-PDF417
-- [ ] `^BI` — Industrial 2 of 5
-- [ ] `^BJ` — Standard 2 of 5
-- [ ] `^BK` — ANSI Codabar
-- [ ] `^BL` — LOGMARS
-- [ ] `^BM` — MSI
-- [ ] `^BP` — Plessey
-- [ ] `^BQ` — QR Code
-- [ ] `^BR` — RSS (Reduced Space Symbology)
-- [ ] `^BS` — UPC/EAN Extensions
-- [ ] `^BT` — TLC39
-- [ ] `^BU` — UPC-A
-- [ ] `^BX` — Data Matrix
+- [x] `^BD` — UPS MaxiCode
+- [x] `^BE` — EAN-13
+- [x] `^BF` — Micro-PDF417
+- [x] `^BI` — Industrial 2 of 5
+- [x] `^BJ` — Standard 2 of 5
+- [x] `^BK` — ANSI Codabar
+- [x] `^BL` — LOGMARS
+- [x] `^BM` — MSI
+- [x] `^BP` — Plessey
+- [x] `^BQ` — QR Code
+- [x] `^BR` — RSS (Reduced Space Symbology)
+- [x] `^BS` — UPC/EAN Extensions
+- [x] `^BT` — TLC39
+- [x] `^BU` — UPC-A
+- [x] `^BX` — Data Matrix
 - [x] `^BY` — Bar Code Field Default
-- [ ] `^BZ` — POSTNET
+- [x] `^BZ` — POSTNET
 
 ## Graphics and images
 

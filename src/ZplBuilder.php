@@ -8,7 +8,12 @@ use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
+use Janisvepris\ZplBuilder\Enum\CodabarCharacter;
+use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
+use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
+use Janisvepris\ZplBuilder\Enum\Code49Mode;
+use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
@@ -16,24 +21,22 @@ use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
+use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
+use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
-use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
-use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
-use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
-use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
-use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
-use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
-use Janisvepris\ZplBuilder\Exception\UnsupportedFontExtensionException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
+use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplCommand as Commands;
-use Stringable;
 
-class ZplBuilder implements Stringable
+class ZplBuilder implements ZplBuilderInterface
 {
     private BarcodeDefaultSettings $barcodeDefaultSettings;
 
@@ -65,10 +68,6 @@ class ZplBuilder implements Stringable
         return $this->render();
     }
 
-    /**
-     * Register a named font preset that can later be applied via `applyFontPreset()`.
-     * Unspecified dimensions inherit from the font's current settings.
-     */
     public function addFontPreset(
         string $name,
         Font $font,
@@ -86,12 +85,6 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /**
-     * Apply a previously registered font preset, emitting `^CF` with its stored dimensions.
-     *
-     * @throws FontPresetDoesNotExistException
-     * @throws IntegerValueOutOfRangeException
-     */
     public function applyFontPreset(string $name): self
     {
         if (!isset($this->fontPresets[$name])) {
@@ -109,13 +102,98 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /**
-     * Draw a Code 128 barcode with the given data (`^BC` + `^FD ... ^FS`).
-     * Falls back to the `^BY` default height when none is provided.
-     *
-     * @throws IntegerValueOutOfRangeException
-     * @throws StringLengthOutOfRangeException
-     */
+    public function barcodeAztec(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $magnification = 1,
+        bool $extendedChannelInterpretation = false,
+        ?AztecErrorControl $errorControl = null,
+        bool $menuSymbol = false,
+        int $symbolCount = 1,
+        string $structuredAppendId = '',
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeAztec(
+                orientation: $orientation,
+                magnification: $magnification,
+                extendedChannelInterpretation: $extendedChannelInterpretation,
+                errorControl: $errorControl ?? AztecErrorControl::defaultLevel(),
+                menuSymbol: $menuSymbol,
+                symbolCount: $symbolCount,
+                structuredAppendId: $structuredAppendId,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeCodabar(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        CodabarCharacter $startCharacter = CodabarCharacter::A,
+        CodabarCharacter $stopCharacter = CodabarCharacter::A,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCodabar(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                startCharacter: $startCharacter,
+                stopCharacter: $stopCharacter,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeCodablock(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $rowHeight = 8,
+        bool $security = true,
+        ?int $charactersPerRow = null,
+        ?int $rows = null,
+        CodablockMode $mode = CodablockMode::ModeF,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCodablock(
+                orientation: $orientation,
+                rowHeight: $rowHeight,
+                security: $security,
+                charactersPerRow: $charactersPerRow,
+                rows: $rows,
+                mode: $mode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeCode11(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $checkDigit = false,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode11(
+                orientation: $orientation,
+                checkDigit: $checkDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
     public function barcodeCode128(
         string $data,
         Orientation $orientation = Orientation::Rotate0,
@@ -139,13 +217,92 @@ class ZplBuilder implements Stringable
         return $this->fieldData($data);
     }
 
-    /**
-     * Set defaults for subsequent barcodes — module width, wide-to-narrow ratio,
-     * and bar height (`^BY`).
-     *
-     * @throws FloatValueOutOfRangeException
-     * @throws IntegerValueOutOfRangeException
-     */
+    public function barcodeCode39(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $checkDigit = false,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode39(
+                orientation: $orientation,
+                checkDigit: $checkDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeCode49(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        Code49InterpretationLine $interpretationLine = Code49InterpretationLine::None,
+        Code49Mode $mode = Code49Mode::Automatic,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode49(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                interpretationLine: $interpretationLine,
+                mode: $mode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeCode93(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $printCheckDigit = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeCode93(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                printCheckDigit: $printCheckDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeDataMatrix(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $moduleHeight = 0,
+        DataMatrixQuality $quality = DataMatrixQuality::Ecc200,
+        ?int $columns = null,
+        ?int $rows = null,
+        ?int $formatId = null,
+        ?string $escapeChar = null,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeDataMatrix(
+                orientation: $orientation,
+                moduleHeight: $moduleHeight,
+                quality: $quality,
+                columns: $columns,
+                rows: $rows,
+                formatId: $formatId,
+                escapeChar: $escapeChar,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
     public function barcodeDefaults(
         int $moduleWidth = 2,
         float $wideToNarrowRatio = 3.0,
@@ -163,12 +320,385 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Change the default font (`^CF`) and optionally its height and/or width.
-     * Unspecified dimensions keep the last value set for that font.
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
+    public function barcodeEan13(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeEan13(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeEan8(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeEan8(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeIndustrial2of5(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeIndustrial2of5(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeInterleaved2of5(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $checkDigit = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeInterleaved2of5(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                checkDigit: $checkDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeLogmars(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeLogmars(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeMaxiCode(
+        string $data,
+        MaxiCodeMode $mode = MaxiCodeMode::StructuredCarrierNumeric,
+        int $symbolNumber = 1,
+        int $totalSymbols = 1,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeMaxiCode(
+                mode: $mode,
+                symbolNumber: $symbolNumber,
+                totalSymbols: $totalSymbols,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeMicroPdf417(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        int $mode = 0,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeMicroPdf417(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                mode: $mode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeMsi(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        MsiCheckDigit $checkDigit = MsiCheckDigit::OneMod10,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $insertCheckDigitInInterpretation = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeMsi(
+                orientation: $orientation,
+                checkDigit: $checkDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                insertCheckDigitInInterpretation: $insertCheckDigitInInterpretation,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodePdf417(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        int $securityLevel = 0,
+        ?int $columns = null,
+        ?int $rows = null,
+        bool $truncate = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePdf417(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                securityLevel: $securityLevel,
+                columns: $columns,
+                rows: $rows,
+                truncate: $truncate,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodePlanetCode(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = false,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePlanetCode(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodePlessey(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        bool $printCheckDigit = false,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePlessey(
+                orientation: $orientation,
+                printCheckDigit: $printCheckDigit,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodePostnet(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = false,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodePostnet(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeQrCode(
+        string $data,
+        QrModel $model = QrModel::Model2,
+        int $magnification = 1,
+        ?QrErrorCorrection $errorCorrection = null,
+        ?int $maskValue = null,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeQrCode(
+                model: $model,
+                magnification: $magnification,
+                errorCorrection: $errorCorrection,
+                maskValue: $maskValue,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeRss(
+        string $data,
+        Orientation $orientation = Orientation::Rotate90,
+        RssSymbologyType $symbologyType = RssSymbologyType::Rss14,
+        int $magnification = 1,
+        int $separatorHeight = 1,
+        int $barcodeHeight = 25,
+        int $segmentWidth = 22,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeRss(
+                orientation: $orientation,
+                symbologyType: $symbologyType,
+                magnification: $magnification,
+                separatorHeight: $separatorHeight,
+                barcodeHeight: $barcodeHeight,
+                segmentWidth: $segmentWidth,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeStandard2of5(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeStandard2of5(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeTlc39(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        int $code39Width = 2,
+        float $wideToNarrowRatio = 2.0,
+        int $code39Height = 40,
+        int $microPdfWidth = 2,
+        int $microPdfRowHeight = 4,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeTlc39(
+                orientation: $orientation,
+                code39Width: $code39Width,
+                wideToNarrowRatio: $wideToNarrowRatio,
+                code39Height: $code39Height,
+                microPdfWidth: $microPdfWidth,
+                microPdfRowHeight: $microPdfRowHeight,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeUpcA(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $printCheckDigit = true,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeUpcA(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                printCheckDigit: $printCheckDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeUpcE(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = false,
+        bool $printCheckDigit = true,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeUpcE(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+                printCheckDigit: $printCheckDigit,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
+    public function barcodeUpcEanExtensions(
+        string $data,
+        Orientation $orientation = Orientation::Rotate0,
+        ?int $height = null,
+        bool $printInterpretation = true,
+        bool $printInterpretationAboveCode = true,
+    ): self {
+        $this->addCommand(
+            new Commands\BarcodeUpcEanExtensions(
+                orientation: $orientation,
+                height: $height ?? $this->barcodeDefaultSettings->height(),
+                printInterpretation: $printInterpretation,
+                interpretationAboveCode: $printInterpretationAboveCode,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
         $current = $this->fontSettingsFor($font);
@@ -183,7 +713,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /** Set the printer's character encoding (`^CI`), with optional character remaps. */
     public function changeInternationalEncoding(Encoding $encoding, CharacterRemap ...$characterRemaps): self
     {
         return $this->addCommand(
@@ -191,29 +720,16 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging.
-     *
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     */
     public function comment(string $text): self
     {
         return $this->addCommand(new Commands\FieldComment($text));
     }
 
-    /** Finalise the format by appending `^XZ`. */
     public function end(): self
     {
         return $this->addCommand(new Commands\EndFormat());
     }
 
-    /**
-     * Format the next field as a multi-line text block with the given width,
-     * maximum line count, line spacing, justification, and hanging indent (`^FB`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function fieldBlock(
         int $width = 0,
         int $maxLines = 1,
@@ -232,15 +748,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Set the Real-Time Clock indicators that the next `^FD` will substitute (`^FC`).
-     * Secondary and tertiary indicators are optional; tertiary requires secondary.
-     *
-     * @throws DuplicateClockIndicatorException
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     * @throws TertiaryClockIndicatorWithoutSecondaryException
-     */
     public function fieldClock(
         string $primary = '%',
         ?string $secondary = null,
@@ -255,12 +762,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Write text into the current field (`^FD ... ^FS`). Auto-escapes `^` and `~`
-     * via `^FH_` if present, since the printer would otherwise treat them as command starts.
-     *
-     * @throws StringLengthOutOfRangeException
-     */
     public function fieldData(string $data): self
     {
         return $this->appendField(
@@ -269,12 +770,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Declare the hex-escape character used by the next `^FD` (`^FH`).
-     *
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     */
     public function fieldHexIndicator(string $indicator = '_'): self
     {
         $this->pendingHexIndicator = $indicator;
@@ -282,39 +777,21 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldHexIndicator($indicator));
     }
 
-    /**
-     * Tag the next field with a number, for use with stored formats (`^FN`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function fieldNumber(int $number): self
     {
         return $this->addCommand(new Commands\FieldNumber($number));
     }
 
-    /** Set the orientation applied to subsequent fields (`^FW`). */
     public function fieldOrientation(Orientation $orientation): self
     {
         return $this->addCommand(new Commands\FieldOrientation($orientation));
     }
 
-    /**
-     * Position the next field at the given (x, y) coordinate in dots (`^FO`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function fieldOrigin(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\FieldOrigin($x, $y));
     }
 
-    /**
-     * Set multiple field origin locations for PDF417 (`^B7`) / MicroPDF417 (`^BF`)
-     * structured-append printing (`^FM`). Up to 60 locations; printer ignores `^FM`
-     * for other commands. Empty input is a no-op.
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function fieldOrigins(FieldOriginLocation ...$locations): self
     {
         if ($locations === []) {
@@ -324,12 +801,6 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\MultipleFieldOrigin(...$locations));
     }
 
-    /**
-     * Set the print direction and additional inter-character gap for the next field (`^FP`).
-     * Used for vertical and reverse text, commonly when printing Asian fonts.
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function fieldParameter(
         PrintDirection $direction = PrintDirection::Horizontal,
         int $gap = 0,
@@ -342,35 +813,16 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Reverse-print the next field — it renders in the inverse of its background (`^FR`).
-     * Applies to a single field; for whole-label reverse printing prefer `labelReversePrint()` (`^LR`).
-     */
     public function fieldReversePrint(): self
     {
         return $this->addCommand(new Commands\FieldReversePrint());
     }
 
-    /**
-     * Position the next field at the given (x, y) coordinate in dots (`^FT`).
-     *
-     * Like `^FO`, but the typeset origin sits at the baseline of the last line of
-     * text, so increasing the font size grows the field upward rather than downward.
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function fieldTypeset(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\FieldTypeset($x, $y));
     }
 
-    /**
-     * Write variable text into the current field (`^FV ... ^FS`). Behaves like `fieldData()`,
-     * but the printer clears the field after the label prints — pair with `^MC` so high-throughput
-     * formats reformat only the fields that change. Auto-escapes `^` and `~` via `^FH_` if present.
-     *
-     * @throws StringLengthOutOfRangeException
-     */
     public function fieldVariable(string $data): self
     {
         return $this->appendField(
@@ -379,14 +831,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Select the font for the next field (`^A`). Unlike `changeFont()` (`^CF`, the default
-     * font), this applies to the upcoming `^FD`/`^FV` field only; the printer reverts to the
-     * `^CF` default afterwards. Height and width are in dots (scalable fonts: 10 to 32000).
-     * Chain `fieldData()` after this to emit the text.
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function font(
         Font $font,
         Orientation $orientation = Orientation::Rotate0,
@@ -403,21 +847,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Select a downloaded/resident font by its file name for subsequent fields (`^A@`).
-     *
-     * Unlike `changeFont()` (`^CF`), which uses the single-character font designator, this
-     * references the font by its stored file name and extension. It is a per-field selector —
-     * it emits only the `^A@…` command and pairs with a following `^FD … ^FS` of your own.
-     * Height and width are in dots; the device defaults to `R:` (RAM) per the spec. Only the
-     * `.FNT` and `.TTF` extensions are accepted (`FontName::SUPPORTED_EXTENSIONS`); for `.TTE`
-     * assign an identifier with `fontIdentifier()` (`^CW`) and reference it via `changeFont()`/`font()`.
-     *
-     * @throws IntegerValueOutOfRangeException
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     * @throws UnsupportedFontExtensionException
-     */
     public function fontByName(
         string $name,
         int $height,
@@ -438,19 +867,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Assign a font identifier letter to a downloaded or resident font file (`^CW`).
-     *
-     * Maps a single-character font designator (the same vocabulary `^CF`/`^A` use) to a stored
-     * font file, so subsequent references to that letter print the downloaded font in place of —
-     * or, for an unused letter, in addition to — the built-in font. The mapping lasts only until
-     * power-off or until the same letter is remapped, so it must be re-sent each print job on
-     * volatile devices. Standalone command — it emits only `^CW…`, with no `^FD … ^FS`. The drive
-     * defaults to `R:` (RAM) and the extension to `.FNT`, matching `fontByName()`.
-     *
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     */
     public function fontIdentifier(
         Font $font,
         string $name,
@@ -467,32 +883,16 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Return the list of commands accumulated so far. Useful for testing and external rendering.
-     *
-     * @return Commands[]
-     */
     public function getCommands(): array
     {
         return $this->commands;
     }
 
-    /**
-     * Return all currently registered font presets, keyed by name.
-     *
-     * @return array<string, FontPreset>
-     */
     public function getFontPresets(): array
     {
         return $this->fontPresets;
     }
 
-    /**
-     * Draw a rectangle or line of the given width × height with the chosen thickness,
-     * color, and corner rounding (`^GB ... ^FS`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function graphicBox(
         int $width,
         int $height,
@@ -513,39 +913,26 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
-    /** Whether a font preset with the given name has been registered. */
     public function hasFontPreset(string $name): bool
     {
         return isset($this->fontPresets[$name]);
     }
 
-    /**
-     * Move the label's home origin to the given (x, y) coordinate (`^LH`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function labelHome(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\LabelHome($x, $y));
     }
 
-    /**
-     * Set the label's length in dots (`^LL`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function labelLength(int $length): self
     {
         return $this->addCommand(new Commands\LabelLength($length));
     }
 
-    /** Toggle reverse-print — fields render white-on-black instead of black-on-white (`^LR`). */
     public function labelReversePrint(bool $reversePrint = true): self
     {
         return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
     }
 
-    /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
     public function printNewlines(bool $toggle = true): self
     {
         $this->printNewlines = $toggle;
@@ -553,37 +940,21 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /** Flip the label between normal and inverted (`^PO`). */
     public function printOrientation(LabelFlip $orientation): self
     {
         return $this->addCommand(new Commands\PrintOrientation($orientation));
     }
 
-    /**
-     * Set how many labels to print (`^PQ`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function printQuantity(int $quantity): self
     {
         return $this->addCommand(new Commands\PrintQuantity($quantity));
     }
 
-    /**
-     * Set the label's print width in dots (`^PW`).
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function printWidth(int $width): self
     {
         return $this->addCommand(new Commands\PrintWidth($width));
     }
 
-    /**
-     * Append a literal ZPL fragment without content validation. Use for commands the
-     * builder does not yet have a dedicated method for. Empty input is a no-op —
-     * nothing is appended to the command list.
-     */
     public function raw(string $zpl): self
     {
         if ($zpl === '') {
@@ -593,11 +964,6 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\RawCommand($zpl));
     }
 
-    /**
-     * Invoke a stored format from the printer's memory (`^XF`).
-     *
-     * @throws StringLengthOutOfRangeException
-     */
     public function recallFormat(
         string $name,
         StorageDevice $device = StorageDevice::Ram,
@@ -612,11 +978,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Drop a previously registered font preset.
-     *
-     * @throws FontPresetDoesNotExistException
-     */
     public function removeFontPreset(string $name): self
     {
         if (!isset($this->fontPresets[$name])) {
@@ -628,10 +989,6 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /**
-     * Render the accumulated commands as a ZPL string.
-     * Pure — does not finalise the format. Call `end()` first if you want `^XZ`.
-     */
     public function render(): string
     {
         if ($this->commands === []) {
@@ -643,10 +1000,6 @@ class ZplBuilder implements Stringable
         return implode($separator, array_map('strval', $this->commands)) . $separator;
     }
 
-    /**
-     * Discard all state and re-emit `^XA`. Clears the command list, font settings,
-     * presets, barcode defaults, and the newline preference.
-     */
     public function reset(): self
     {
         $this->commands = [];
@@ -660,18 +1013,11 @@ class ZplBuilder implements Stringable
         return $this;
     }
 
-    /** Select the date and time format shown on the configuration label and control panel (`^KD`). */
     public function selectDateTimeFormat(DateTimeFormat $format): self
     {
         return $this->addCommand(new Commands\SelectDateTimeFormat($format));
     }
 
-    /**
-     * Select a stored encoding table (`^SE`). The table is a `<name>.DAT` file on the given
-     * storage device; the `.DAT` extension is fixed by the ZPL spec and applied automatically.
-     *
-     * @throws StringLengthOutOfRangeException
-     */
     public function selectEncoding(
         string $name,
         StorageDevice $device = StorageDevice::Ram,
@@ -684,23 +1030,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Serialize the next field: emit `^SN<startValue>,<increment>,<leadingZeros>` then `^FS`,
-     * so the printer auto-increments (or decrements) the field on each successive label (`^SN`).
-     *
-     * Unlike `serializationField()` (`^SF`, a mask applied alongside a `^FD`), `^SN` *replaces*
-     * the `^FD` — the starting value is carried by the command itself. `$startValue` is the field's
-     * starting value (auto-escaped via `^FH` if it contains `^` / `~`, like `fieldData()`); the
-     * right-most run of up to 12 digits is the indexed portion. `$increment` is the value added per
-     * label and defaults to `1`; prefix it with `-` to decrement. `$leadingZeros` controls whether
-     * leading zeros are printed (`Y`) or suppressed (`N`, the default). Start value and increment may
-     * not contain `^`, `~`, or `,` (which would corrupt the parameter list) and must each be 1–3072
-     * bytes (`SerializationData::MAX_VALUE_BYTES`); out-of-spec inputs throw
-     * `StringValueContainsBannedValuesException` or `StringLengthOutOfRangeException`.
-     *
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     */
     public function serializationData(string $startValue, string $increment = '1', bool $leadingZeros = false): self
     {
         if (str_contains($startValue, '^') || str_contains($startValue, '~')) {
@@ -716,20 +1045,6 @@ class ZplBuilder implements Stringable
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
-    /**
-     * Serialize the next field: emit `^FD<startValue>` then `^SF<mask>,<increment>` then `^FS`,
-     * so the printer auto-increments the field on each successive label (`^SF`).
-     *
-     * `$startValue` is the field's starting value (auto-escaped via `^FH` if it contains `^` / `~`,
-     * like `fieldData()`). `$mask` defines the serialization scheme — one placeholder per character
-     * to serialize: `D`=decimal, `H`=hex, `O`=octal, `A`=alphabetic, `N`=alphanumeric, `%`=skip
-     * (each accepts upper or lower case). `$increment` is the value added per label and defaults to
-     * `1` (a decimal one). Mask and increment may not contain `^`, `~`, or `,`, and their combined
-     * length must not exceed `SerializationField::MAX_COMBINED_BYTES` (3072).
-     *
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     */
     public function serializationField(string $startValue, string $mask, string $increment = '1'): self
     {
         return $this->appendField(
@@ -739,15 +1054,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Set the Real-Time Clock's mode of operation and language for printing (`^SL`).
-     * Slot `a` takes either a `ClockMode` (default `StartTime`) or a numeric tolerance
-     * in seconds (0–999); supplying both throws. A null language omits slot `b`, leaving
-     * the language selected via `^KL` or the control panel. Must precede the first `^FO`.
-     *
-     * @throws ConflictingClockModeException
-     * @throws IntegerValueOutOfRangeException
-     */
     public function setClockMode(
         ClockMode $mode = ClockMode::StartTime,
         ?int $toleranceSeconds = null,
@@ -762,14 +1068,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Set the Real-Time Clock date and time (`^ST`). Each component defaults to the
-     * corresponding value of the current system time; the time format defaults to
-     * 24-hour military. Accepted ranges: month `1..12`, day `1..31`, year `1998..2097`,
-     * hour `0..23`, minute `0..59`, second `0..59`.
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function setDateTime(
         ?int $month = null,
         ?int $day = null,
@@ -792,14 +1090,6 @@ class ZplBuilder implements Stringable
         );
     }
 
-    /**
-     * Set the secondary or tertiary Real-Time Clock offset from the primary clock (`^SO`).
-     * Each offset (months, days, years, hours, minutes, seconds) defaults to 0 and accepts
-     * `-32000` to `32000`. Only one secondary (`SO2`) offset may be used per label; use a
-     * tertiary (`SO3`) offset when more than one is required.
-     *
-     * @throws IntegerValueOutOfRangeException
-     */
     public function setOffset(
         ClockSet $clockSet,
         int $monthsOffset = 0,
@@ -830,19 +1120,6 @@ class ZplBuilder implements Stringable
         return $builder->addCommand(new Commands\StartFormat());
     }
 
-    /**
-     * Copy an object (graphic, font, …) from one storage device to another (`^TO`).
-     *
-     * Mirrors the spec's `^TOs:o.x,d:o.x` wire format: a source `device:name.extension`
-     * and a destination `device:name.extension`. Standalone command — it emits only
-     * `^TO…`, with no `^FD … ^FS`. The `*` wildcard is accepted in any name/extension to
-     * transfer multiple objects (e.g. `LOGO*`/`*`); both names and extensions default to
-     * `*`, so omitting them copies every matching object and keeps its extension. Source
-     * and destination devices should differ — the printer ignores the command otherwise.
-     *
-     * @throws StringLengthOutOfRangeException
-     * @throws StringValueContainsBannedValuesException
-     */
     public function transferObject(
         StorageDevice $sourceDevice,
         StorageDevice $destinationDevice,
@@ -861,6 +1138,17 @@ class ZplBuilder implements Stringable
                 destinationExtension: $destinationExtension,
             ),
         );
+    }
+
+    public function when(bool|callable $predicate, callable $callback, ?callable $elseCallback = null): self
+    {
+        if (is_callable($predicate) ? $predicate() : $predicate) {
+            $callback($this);
+        } elseif ($elseCallback !== null) {
+            $elseCallback($this);
+        }
+
+        return $this;
     }
 
     /**

@@ -11,7 +11,12 @@ use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
 use Janisvepris\ZplBuilder\Enum\ClockTimeFormat;
+use Janisvepris\ZplBuilder\Enum\CodabarCharacter;
+use Janisvepris\ZplBuilder\Enum\CodablockMode;
 use Janisvepris\ZplBuilder\Enum\Code128Mode;
+use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
+use Janisvepris\ZplBuilder\Enum\Code49Mode;
+use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
@@ -19,8 +24,13 @@ use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
+use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
+use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
@@ -36,10 +46,39 @@ use Janisvepris\ZplBuilder\Test\UnitTestCase;
 use Janisvepris\ZplBuilder\Util\BoolToStr;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
 use Janisvepris\ZplBuilder\Util\ValueAssert;
+use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
+use Janisvepris\ZplBuilder\ZplBuilderInterface;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodabar;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodablock;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode11;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode128;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode39;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode49;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeCode93;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeDataMatrix;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeDefaults;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan13;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeEan8;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeIndustrial2of5;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeInterleaved2of5;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeLogmars;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeMaxiCode;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeMicroPdf417;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeMsi;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodePdf417;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodePlanetCode;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodePlessey;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodePostnet;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeQrCode;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeRss;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeStandard2of5;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeTlc39;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcA;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcE;
+use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcEanExtensions;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeInternationalEncoding;
 use Janisvepris\ZplBuilder\ZplCommand\EndFormat;
@@ -80,18 +119,51 @@ use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use Janisvepris\ZplBuilder\ZplCommand\TransferObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
+use ReflectionClass;
+use ReflectionMethod;
 
 #[CoversClass(ZplBuilder::class)]
+#[UsesClass(AztecErrorControl::class)]
+#[UsesClass(BarcodeAztec::class)]
+#[UsesClass(BarcodeCodabar::class)]
+#[UsesClass(BarcodeCodablock::class)]
+#[UsesClass(BarcodeCode11::class)]
 #[UsesClass(BarcodeCode128::class)]
+#[UsesClass(BarcodeCode39::class)]
+#[UsesClass(BarcodeCode49::class)]
+#[UsesClass(BarcodeCode93::class)]
+#[UsesClass(BarcodeDataMatrix::class)]
 #[UsesClass(BarcodeDefaults::class)]
 #[UsesClass(BarcodeDefaultSettings::class)]
+#[UsesClass(BarcodeEan13::class)]
+#[UsesClass(BarcodeEan8::class)]
+#[UsesClass(BarcodeIndustrial2of5::class)]
+#[UsesClass(BarcodeInterleaved2of5::class)]
+#[UsesClass(BarcodeLogmars::class)]
+#[UsesClass(BarcodeMaxiCode::class)]
+#[UsesClass(BarcodeMicroPdf417::class)]
+#[UsesClass(BarcodeMsi::class)]
+#[UsesClass(BarcodePdf417::class)]
+#[UsesClass(BarcodePlanetCode::class)]
+#[UsesClass(BarcodePlessey::class)]
+#[UsesClass(BarcodePostnet::class)]
+#[UsesClass(BarcodeQrCode::class)]
+#[UsesClass(BarcodeRss::class)]
+#[UsesClass(BarcodeStandard2of5::class)]
+#[UsesClass(BarcodeTlc39::class)]
+#[UsesClass(BarcodeUpcA::class)]
+#[UsesClass(BarcodeUpcE::class)]
+#[UsesClass(BarcodeUpcEanExtensions::class)]
 #[UsesClass(BoolToStr::class)]
 #[UsesClass(ChangeFont::class)]
 #[UsesClass(ChangeInternationalEncoding::class)]
 #[UsesClass(CharacterRemap::class)]
 #[UsesClass(ClockSet::class)]
 #[UsesClass(ClockTimeFormat::class)]
+#[UsesClass(CodabarCharacter::class)]
+#[UsesClass(CodablockMode::class)]
 #[UsesClass(Code128Mode::class)]
+#[UsesClass(DataMatrixQuality::class)]
 #[UsesClass(DateTimeFormat::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
 #[UsesClass(Encoding::class)]
@@ -127,14 +199,19 @@ use PHPUnit\Framework\Attributes\UsesClass;
 #[UsesClass(LabelLength::class)]
 #[UsesClass(LabelReversePrint::class)]
 #[UsesClass(LineColor::class)]
+#[UsesClass(MaxiCodeMode::class)]
+#[UsesClass(MsiCheckDigit::class)]
 #[UsesClass(MultipleFieldOrigin::class)]
 #[UsesClass(Orientation::class)]
 #[UsesClass(PrintDirection::class)]
 #[UsesClass(PrintOrientation::class)]
 #[UsesClass(PrintQuantity::class)]
 #[UsesClass(PrintWidth::class)]
+#[UsesClass(QrErrorCorrection::class)]
+#[UsesClass(QrModel::class)]
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
+#[UsesClass(RssSymbologyType::class)]
 #[UsesClass(SelectDateTimeFormat::class)]
 #[UsesClass(SelectEncoding::class)]
 #[UsesClass(SerializationData::class)]
@@ -181,6 +258,93 @@ class ZplBuilderTest extends UnitTestCase
         ZplBuilder::start()->applyFontPreset('does-not-exist');
     }
 
+    public function testBarcodeAztecEmitsB0ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeAztec('DATA');
+
+        self::assertSame('^XA^B0N,1,N,0,N,1^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeAztecEmitsStructuredAppendId(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeAztec(
+            'DATA',
+            orientation: Orientation::Rotate90,
+            magnification: 7,
+            errorControl: AztecErrorControl::fullRangeSymbol(32),
+            symbolCount: 3,
+            structuredAppendId: 'JOB42',
+        );
+
+        self::assertSame('^XA^B0R,7,N,232,N,3,JOB42^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeCodabarEmitsBkThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodabar('12345', height: 100);
+
+        self::assertSame('^XA^BKN,N,100,Y,N,A,A^FD12345^FS', $output);
+    }
+
+    public function testBarcodeCodabarEmitsCustomStartStop(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodabar(
+            '12345',
+            height: 100,
+            startCharacter: CodabarCharacter::B,
+            stopCharacter: CodabarCharacter::C,
+        );
+
+        self::assertSame('^XA^BKN,N,100,Y,N,B,C^FD12345^FS', $output);
+    }
+
+    public function testBarcodeCodabarInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCodabar('12345');
+
+        self::assertStringContainsString('^BKN,N,50,', $output);
+    }
+
+    public function testBarcodeCodablockEmitsBbThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodablock('DATA');
+
+        self::assertSame('^XA^BBN,8,Y,,,F^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeCodablockEmitsRowsAndColumns(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCodablock(
+            'DATA',
+            orientation: Orientation::Rotate90,
+            rowHeight: 10,
+            security: false,
+            charactersPerRow: 30,
+            rows: 12,
+            mode: CodablockMode::ModeA,
+        );
+
+        self::assertSame('^XA^BBR,10,N,30,12,A^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeCode11EmitsB1ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode11('123456', height: 150);
+
+        self::assertSame('^XA^B1N,N,150,Y,N^FD123456^FS', $output);
+    }
+
+    public function testBarcodeCode11InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode11('123456');
+
+        self::assertStringContainsString('^B1N,N,50,', $output);
+    }
+
     public function testBarcodeCode128EmitsBcThenFieldData(): void
     {
         $output = (string) ZplBuilder::start()->barcodeCode128('ABC', height: 75);
@@ -204,6 +368,87 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeCode128('ABC', height: 120);
 
         self::assertStringContainsString('^BCN,120,', $output);
+    }
+
+    public function testBarcodeCode39EmitsB3ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode39('123ABC', height: 100);
+
+        self::assertSame('^XA^B3N,N,100,Y,N^FD123ABC^FS', $output);
+    }
+
+    public function testBarcodeCode39InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode39('123ABC');
+
+        self::assertStringContainsString('^B3N,N,50,', $output);
+    }
+
+    public function testBarcodeCode49EmitsB4ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode49('12345ABCDE', height: 20);
+
+        self::assertSame('^XA^B4N,20,N,A^FD12345ABCDE^FS', $output);
+    }
+
+    public function testBarcodeCode49EmitsInterpretationLineAndMode(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode49(
+            '12345ABCDE',
+            height: 20,
+            interpretationLine: Code49InterpretationLine::Below,
+            mode: Code49Mode::RegularNumeric,
+        );
+
+        self::assertSame('^XA^B4N,20,B,2^FD12345ABCDE^FS', $output);
+    }
+
+    public function testBarcodeCode49InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode49('12345ABCDE');
+
+        self::assertStringContainsString('^B4N,50,', $output);
+    }
+
+    public function testBarcodeCode93EmitsBaThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeCode93('CODE93', height: 100);
+
+        self::assertSame('^XA^BAN,100,Y,N,N^FDCODE93^FS', $output);
+    }
+
+    public function testBarcodeCode93InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeCode93('CODE93');
+
+        self::assertStringContainsString('^BAN,50,', $output);
+    }
+
+    public function testBarcodeDataMatrixEmitsBxThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeDataMatrix('DATA');
+
+        self::assertSame('^XA^BXN,0,200^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeDataMatrixEmitsForcedSize(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeDataMatrix(
+            'DATA',
+            orientation: Orientation::Rotate90,
+            moduleHeight: 10,
+            quality: DataMatrixQuality::Ecc100,
+            columns: 16,
+            rows: 16,
+        );
+
+        self::assertSame('^XA^BXR,10,100,16,16^FDDATA^FS', $output);
     }
 
     public function testBarcodeDefaultsEmitsBy(): void
@@ -246,6 +491,341 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testBarcodeEan13EmitsBeThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeEan13('123456789012', height: 100);
+
+        self::assertSame('^XA^BEN,100,Y,N^FD123456789012^FS', $output);
+    }
+
+    public function testBarcodeEan13InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeEan13('123456789012');
+
+        self::assertStringContainsString('^BEN,50,', $output);
+    }
+
+    public function testBarcodeEan8EmitsB8ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeEan8('1234567', height: 100);
+
+        self::assertSame('^XA^B8N,100,Y,N^FD1234567^FS', $output);
+    }
+
+    public function testBarcodeEan8InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeEan8('1234567');
+
+        self::assertStringContainsString('^B8N,50,', $output);
+    }
+
+    public function testBarcodeIndustrial2of5EmitsBiThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeIndustrial2of5('123456', height: 150);
+
+        self::assertSame('^XA^BIN,150,Y,N^FD123456^FS', $output);
+    }
+
+    public function testBarcodeIndustrial2of5InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeIndustrial2of5('123456');
+
+        self::assertStringContainsString('^BIN,50,', $output);
+    }
+
+    public function testBarcodeInterleaved2of5EmitsB2ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeInterleaved2of5('123456', height: 150);
+
+        self::assertSame('^XA^B2N,150,Y,N,N^FD123456^FS', $output);
+    }
+
+    public function testBarcodeInterleaved2of5InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeInterleaved2of5('123456');
+
+        self::assertStringContainsString('^B2N,50,', $output);
+    }
+
+    public function testBarcodeLogmarsEmitsBlThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeLogmars('LOGMARS', height: 100);
+
+        self::assertSame('^XA^BLN,100,N^FDLOGMARS^FS', $output);
+    }
+
+    public function testBarcodeLogmarsInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeLogmars('LOGMARS');
+
+        self::assertStringContainsString('^BLN,50,', $output);
+    }
+
+    public function testBarcodeMaxiCodeEmitsBdThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMaxiCode('123456123451234567');
+
+        self::assertSame('^XA^BD2,1,1^FD123456123451234567^FS', $output);
+    }
+
+    public function testBarcodeMaxiCodeEmitsStructuredAppend(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMaxiCode(
+            'DATA',
+            mode: MaxiCodeMode::StandardSymbol,
+            symbolNumber: 2,
+            totalSymbols: 4,
+        );
+
+        self::assertSame('^XA^BD4,2,4^FDDATA^FS', $output);
+    }
+
+    public function testBarcodeMicroPdf417EmitsBfThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMicroPdf417('Zebra', height: 20, mode: 5);
+
+        self::assertSame('^XA^BFN,20,5^FDZebra^FS', $output);
+    }
+
+    public function testBarcodeMicroPdf417InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeMicroPdf417('Zebra');
+
+        self::assertStringContainsString('^BFN,50,0', $output);
+    }
+
+    public function testBarcodeMsiEmitsBmThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMsi('1234', height: 100);
+
+        self::assertSame('^XA^BMN,B,100,Y,N,N^FD1234^FS', $output);
+    }
+
+    public function testBarcodeMsiEmitsCheckDigitSelection(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeMsi(
+            '1234',
+            checkDigit: MsiCheckDigit::TwoMod10,
+            height: 100,
+            insertCheckDigitInInterpretation: true,
+        );
+
+        self::assertSame('^XA^BMN,C,100,Y,N,Y^FD1234^FS', $output);
+    }
+
+    public function testBarcodeMsiInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeMsi('1234');
+
+        self::assertStringContainsString('^BMN,B,50,', $output);
+    }
+
+    public function testBarcodePdf417EmitsB7ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodePdf417('Zebra', height: 5, securityLevel: 5, rows: 83);
+
+        self::assertSame('^XA^B7N,5,5,,83,N^FDZebra^FS', $output);
+    }
+
+    public function testBarcodePdf417InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodePdf417('Zebra');
+
+        self::assertStringContainsString('^B7N,50,0,,,N', $output);
+    }
+
+    public function testBarcodePlanetCodeEmitsB5ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodePlanetCode('12345678901', height: 100);
+
+        self::assertSame('^XA^B5N,100,N,N^FD12345678901^FS', $output);
+    }
+
+    public function testBarcodePlanetCodeInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodePlanetCode('12345678901');
+
+        self::assertStringContainsString('^B5N,50,', $output);
+    }
+
+    public function testBarcodePlesseyEmitsBpThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodePlessey('12345', height: 100);
+
+        self::assertSame('^XA^BPN,N,100,Y,N^FD12345^FS', $output);
+    }
+
+    public function testBarcodePlesseyInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodePlessey('12345');
+
+        self::assertStringContainsString('^BPN,N,50,', $output);
+    }
+
+    public function testBarcodePostnetEmitsBzThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodePostnet('12345', height: 100);
+
+        self::assertSame('^XA^BZN,100,N,N^FD12345^FS', $output);
+    }
+
+    public function testBarcodePostnetInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodePostnet('12345');
+
+        self::assertStringContainsString('^BZN,50,', $output);
+    }
+
+    public function testBarcodeQrCodeEmitsBqThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeQrCode('QA,HELLO', magnification: 10);
+
+        self::assertSame('^XA^BQN,2,10^FDQA,HELLO^FS', $output);
+    }
+
+    public function testBarcodeQrCodeEmitsErrorCorrectionAndMask(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeQrCode(
+            'QA,HELLO',
+            model: QrModel::Model1,
+            magnification: 5,
+            errorCorrection: QrErrorCorrection::UltraHighReliability,
+            maskValue: 3,
+        );
+
+        self::assertSame('^XA^BQN,1,5,H,3^FDQA,HELLO^FS', $output);
+    }
+
+    public function testBarcodeRssEmitsBrThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeRss('12345678901');
+
+        self::assertSame('^XA^BRR,1,1,1,25,22^FD12345678901^FS', $output);
+    }
+
+    public function testBarcodeRssEmitsCustomParameters(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeRss(
+            '12345678901',
+            orientation: Orientation::Rotate0,
+            symbologyType: RssSymbologyType::UpcA,
+            magnification: 5,
+            separatorHeight: 2,
+            barcodeHeight: 100,
+            segmentWidth: 20,
+        );
+
+        self::assertSame('^XA^BRN,7,5,2,100,20^FD12345678901^FS', $output);
+    }
+
+    public function testBarcodeStandard2of5EmitsBjThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeStandard2of5('123456', height: 150);
+
+        self::assertSame('^XA^BJN,150,Y,N^FD123456^FS', $output);
+    }
+
+    public function testBarcodeStandard2of5InheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeStandard2of5('123456');
+
+        self::assertStringContainsString('^BJN,50,', $output);
+    }
+
+    public function testBarcodeTlc39EmitsBtThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeTlc39('123456,ABCd12345678901234');
+
+        self::assertSame('^XA^BTN,2,2.0,40,2,4^FD123456,ABCd12345678901234^FS', $output);
+    }
+
+    public function testBarcodeTlc39EmitsCustomParameters(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeTlc39(
+            '123456',
+            orientation: Orientation::Rotate90,
+            code39Width: 4,
+            wideToNarrowRatio: 3.0,
+            code39Height: 120,
+            microPdfWidth: 4,
+            microPdfRowHeight: 8,
+        );
+
+        self::assertSame('^XA^BTR,4,3.0,120,4,8^FD123456^FS', $output);
+    }
+
+    public function testBarcodeUpcAEmitsBuThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeUpcA('12345678901', height: 100);
+
+        self::assertSame('^XA^BUN,100,Y,N,Y^FD12345678901^FS', $output);
+    }
+
+    public function testBarcodeUpcAInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeUpcA('12345678901');
+
+        self::assertStringContainsString('^BUN,50,', $output);
+    }
+
+    public function testBarcodeUpcEanExtensionsEmitsBsThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeUpcEanExtensions('12345', height: 100);
+
+        self::assertSame('^XA^BSN,100,Y,Y^FD12345^FS', $output);
+    }
+
+    public function testBarcodeUpcEanExtensionsInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeUpcEanExtensions('12');
+
+        self::assertStringContainsString('^BSN,50,', $output);
+    }
+
+    public function testBarcodeUpcEEmitsB9ThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->barcodeUpcE('1230000045', height: 100);
+
+        self::assertSame('^XA^B9N,100,Y,N,Y^FD1230000045^FS', $output);
+    }
+
+    public function testBarcodeUpcEInheritsHeightFromBarcodeDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->barcodeDefaults(2, 3.0, 50)
+            ->barcodeUpcE('1230000045');
+
+        self::assertStringContainsString('^B9N,50,', $output);
     }
 
     public function testChangeFontEmitsCfWithLetterFont(): void
@@ -1277,5 +1857,88 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testWhenAppliesCallbackWhenPredicateIsTrue(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(true, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XAYES', $output);
+    }
+
+    public function testWhenAppliesElseCallbackWhenPredicateIsFalse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(
+                false,
+                fn (ZplBuilder $builder) => $builder->raw('YES'),
+                fn (ZplBuilder $builder) => $builder->raw('NO'),
+            );
+
+        self::assertSame('^XANO', $output);
+    }
+
+    public function testWhenInvokesCallablePredicateAndAppliesCallbackWhenItReturnsTrue(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(fn (): bool => true, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XAYES', $output);
+    }
+
+    public function testWhenInvokesCallablePredicateAndSkipsCallbackWhenItReturnsFalse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(fn (): bool => false, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XA', $output);
+    }
+
+    public function testWhenSkipsCallbackWhenPredicateIsFalse(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(false, fn (ZplBuilder $builder) => $builder->raw('YES'));
+
+        self::assertSame('^XA', $output);
+    }
+
+    public function testWhenSkipsElseCallbackWhenPredicateIsTrue(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->when(
+                true,
+                fn (ZplBuilder $builder) => $builder->raw('YES'),
+                fn (ZplBuilder $builder) => $builder->raw('NO'),
+            );
+
+        self::assertSame('^XAYES', $output);
+    }
+
+    public function testZplBuilderImplementsZplBuilderInterface(): void
+    {
+        self::assertInstanceOf(ZplBuilderInterface::class, ZplBuilder::start());
+    }
+
+    public function testZplBuilderInterfaceDeclaresEveryPublicInstanceMethod(): void
+    {
+        $builder = new ReflectionClass(ZplBuilder::class);
+        $interface = new ReflectionClass(ZplBuilderInterface::class);
+
+        $missing = [];
+        foreach ($builder->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if ($method->isStatic()) {
+                continue;
+            }
+
+            if (!$interface->hasMethod($method->getName())) {
+                $missing[] = $method->getName();
+            }
+        }
+
+        self::assertSame([], $missing, sprintf(
+            'ZplBuilderInterface must declare every public instance method of ZplBuilder; missing: %s',
+            implode(', ', $missing),
+        ));
     }
 }
