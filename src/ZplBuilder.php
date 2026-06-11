@@ -913,6 +913,22 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
+    public function graphicCircle(
+        int $diameter,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicCircle(
+                diameter: $diameter,
+                thickness: $thickness,
+                color: $color,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
     public function hasFontPreset(string $name): bool
     {
         return isset($this->fontPresets[$name]);

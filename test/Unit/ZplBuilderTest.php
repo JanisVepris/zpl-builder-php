@@ -1356,6 +1356,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^GB100,50,2,B,0^FS', $output);
     }
 
+    public function testGraphicCircleEmitsGcAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicCircle(100, 2, LineColor::White);
+
+        self::assertSame('^XA^GC100,2,W^FS', $output);
+    }
+
+    public function testGraphicCircleEmitsGcWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicCircle(100);
+
+        self::assertSame('^XA^GC100,1,B^FS', $output);
+    }
+
     public function testHasFontPresetReturnsFalseForUnknown(): void
     {
         $builder = ZplBuilder::start();

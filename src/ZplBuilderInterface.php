@@ -826,6 +826,17 @@ interface ZplBuilderInterface extends Stringable
         int $rounding = 0,
     ): self;
 
+    /**
+     * Draw a circle of the given diameter with the chosen border thickness and color (`^GC ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function graphicCircle(
+        int $diameter,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self;
+
     /** Whether a font preset with the given name has been registered. */
     public function hasFontPreset(string $name): bool;
 
