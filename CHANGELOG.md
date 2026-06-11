@@ -6,39 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 The public API is **unstable until 1.0** — minor versions may include breaking changes.
 
-## [Unreleased]
+## [0.61.0] - 2026-06-11
 
 ### Added
 
-- `ZplBuilderInterface` declares the full public contract of `ZplBuilder` — every public instance method except the static `start()` factory — so consumers can type-hint, dependency-inject, and mock against the interface instead of the concrete class. `ZplBuilder` implements it, and the authoritative method documentation now lives on the interface as the single source of truth (the implementation inherits it)
-- `ZplBuilder::when()` conditionally applies a callback to the builder. The predicate is a `bool` or a `callable(): bool`; when it is truthy `$callback` runs, otherwise the optional third argument `$elseCallback` runs if provided. Each callback receives the builder and mutates it in place (its return value is ignored), and `when()` always returns the builder so chaining continues
-- `ZplBuilder::barcodePostnet()` and `ZplCommand\BarcodePostnet` add support for `^BZ` (POSTNET Bar Code)
-- `ZplBuilder::barcodeDataMatrix()` and `ZplCommand\BarcodeDataMatrix` add support for `^BX` (Data Matrix Bar Code), with the `Enum\DataMatrixQuality` selecting the ECC level
-- `ZplBuilder::barcodeUpcA()` and `ZplCommand\BarcodeUpcA` add support for `^BU` (UPC-A Bar Code)
-- `ZplBuilder::barcodeTlc39()` and `ZplCommand\BarcodeTlc39` add support for `^BT` (TLC39 Bar Code)
-- `ZplBuilder::barcodeUpcEanExtensions()` and `ZplCommand\BarcodeUpcEanExtensions` add support for `^BS` (UPC/EAN Extensions Bar Code)
-- `ZplBuilder::barcodeRss()` and `ZplCommand\BarcodeRss` add support for `^BR` (RSS / Reduced Space Symbology Bar Code), with the `Enum\RssSymbologyType` selecting the RSS-14-family member
-- `ZplBuilder::barcodeQrCode()` and `ZplCommand\BarcodeQrCode` add support for `^BQ` (QR Code Bar Code), with the `Enum\QrModel` and `Enum\QrErrorCorrection` enums selecting the model and (optional) error-correction level
-- `ZplBuilder::barcodePlessey()` and `ZplCommand\BarcodePlessey` add support for `^BP` (Plessey Bar Code)
-- `ZplBuilder::barcodeMsi()` and `ZplCommand\BarcodeMsi` add support for `^BM` (MSI Bar Code), with the `Enum\MsiCheckDigit` selecting the check-digit scheme
-- `ZplBuilder::barcodeLogmars()` and `ZplCommand\BarcodeLogmars` add support for `^BL` (LOGMARS Bar Code)
-- `ZplBuilder::barcodeCodabar()` and `ZplCommand\BarcodeCodabar` add support for `^BK` (ANSI Codabar Bar Code), with the `Enum\CodabarCharacter` (`A`–`D`) selecting the start/stop characters
-- `ZplBuilder::barcodeStandard2of5()` and `ZplCommand\BarcodeStandard2of5` add support for `^BJ` (Standard 2 of 5 Bar Code)
-- `ZplBuilder::barcodeIndustrial2of5()` and `ZplCommand\BarcodeIndustrial2of5` add support for `^BI` (Industrial 2 of 5 Bar Code)
-- `ZplBuilder::barcodeMicroPdf417()` and `ZplCommand\BarcodeMicroPdf417` add support for `^BF` (Micro-PDF417 Bar Code)
-- `ZplBuilder::barcodeEan13()` and `ZplCommand\BarcodeEan13` add support for `^BE` (EAN-13 Bar Code)
-- `ZplBuilder::barcodeMaxiCode()` and `ZplCommand\BarcodeMaxiCode` add support for `^BD` (UPS MaxiCode Bar Code), with the `Enum\MaxiCodeMode` selecting the symbol mode
-- `ZplBuilder::barcodeCodablock()` and `ZplCommand\BarcodeCodablock` add support for `^BB` (CODABLOCK Bar Code), with the `Enum\CodablockMode` (`ModeA`/`ModeE`/`ModeF`) selecting the character set
-- `ZplBuilder::barcodeCode93()` and `ZplCommand\BarcodeCode93` add support for `^BA` (Code 93 Bar Code)
-- `ZplBuilder::barcodeUpcE()` and `ZplCommand\BarcodeUpcE` add support for `^B9` (UPC-E Bar Code)
-- `ZplBuilder::barcodeEan8()` and `ZplCommand\BarcodeEan8` add support for `^B8` (EAN-8 Bar Code)
-- `ZplBuilder::barcodePdf417()` and `ZplCommand\BarcodePdf417` add support for `^B7` (PDF417 Bar Code)
-- `ZplBuilder::barcodePlanetCode()` and `ZplCommand\BarcodePlanetCode` add support for `^B5` (Planet Code Bar Code)
-- `ZplBuilder::barcodeCode49()` and `ZplCommand\BarcodeCode49` add support for `^B4` (Code 49 Bar Code)
-- `ZplBuilder::barcodeCode39()` and `ZplCommand\BarcodeCode39` add support for `^B3` (Code 39 / USD-3 / 3 of 9 Bar Code)
-- `ZplBuilder::barcodeInterleaved2of5()` and `ZplCommand\BarcodeInterleaved2of5` add support for `^B2` (Interleaved 2 of 5 Bar Code)
-- `ZplBuilder::barcodeCode11()` and `ZplCommand\BarcodeCode11` add support for `^B1` (Code 11 / USD-8 Bar Code)
-- `ZplBuilder::barcodeAztec()` and `ZplCommand\BarcodeAztec` add support for `^B0` (Aztec Bar Code)
+- `ZplBuilderInterface` declares the full public contract of `ZplBuilder` — every public instance method except the static `start()` factory — so consumers can type-hint, dependency-inject, and mock against the interface instead of the concrete class. `ZplBuilder` implements it, and the authoritative method documentation now lives on the interface as the single source of truth (the implementation inherits it) ([`f5a3d20`](https://github.com/JanisVepris/zpl-builder-php/commit/f5a3d20))
+- `ZplBuilder::when()` conditionally applies a callback to the builder. The predicate is a `bool` or a `callable(): bool`; when it is truthy `$callback` runs, otherwise the optional third argument `$elseCallback` runs if provided. Each callback receives the builder and mutates it in place (its return value is ignored), and `when()` always returns the builder so chaining continues ([`8b9f208`](https://github.com/JanisVepris/zpl-builder-php/commit/8b9f208))
+- `ZplBuilder::barcodePostnet()` and `ZplCommand\BarcodePostnet` add support for `^BZ` (POSTNET Bar Code) ([`d193c26`](https://github.com/JanisVepris/zpl-builder-php/commit/d193c26))
+- `ZplBuilder::barcodeDataMatrix()` and `ZplCommand\BarcodeDataMatrix` add support for `^BX` (Data Matrix Bar Code), with the `Enum\DataMatrixQuality` selecting the ECC level ([`7bae34e`](https://github.com/JanisVepris/zpl-builder-php/commit/7bae34e))
+- `ZplBuilder::barcodeUpcA()` and `ZplCommand\BarcodeUpcA` add support for `^BU` (UPC-A Bar Code) ([`c02c0c8`](https://github.com/JanisVepris/zpl-builder-php/commit/c02c0c8))
+- `ZplBuilder::barcodeTlc39()` and `ZplCommand\BarcodeTlc39` add support for `^BT` (TLC39 Bar Code) ([`f1d5eda`](https://github.com/JanisVepris/zpl-builder-php/commit/f1d5eda))
+- `ZplBuilder::barcodeUpcEanExtensions()` and `ZplCommand\BarcodeUpcEanExtensions` add support for `^BS` (UPC/EAN Extensions Bar Code) ([`3731d58`](https://github.com/JanisVepris/zpl-builder-php/commit/3731d58))
+- `ZplBuilder::barcodeRss()` and `ZplCommand\BarcodeRss` add support for `^BR` (RSS / Reduced Space Symbology Bar Code), with the `Enum\RssSymbologyType` selecting the RSS-14-family member ([`fb64baf`](https://github.com/JanisVepris/zpl-builder-php/commit/fb64baf))
+- `ZplBuilder::barcodeQrCode()` and `ZplCommand\BarcodeQrCode` add support for `^BQ` (QR Code Bar Code), with the `Enum\QrModel` and `Enum\QrErrorCorrection` enums selecting the model and (optional) error-correction level ([`dd393d5`](https://github.com/JanisVepris/zpl-builder-php/commit/dd393d5))
+- `ZplBuilder::barcodePlessey()` and `ZplCommand\BarcodePlessey` add support for `^BP` (Plessey Bar Code) ([`c830fb5`](https://github.com/JanisVepris/zpl-builder-php/commit/c830fb5))
+- `ZplBuilder::barcodeMsi()` and `ZplCommand\BarcodeMsi` add support for `^BM` (MSI Bar Code), with the `Enum\MsiCheckDigit` selecting the check-digit scheme ([`348ffcd`](https://github.com/JanisVepris/zpl-builder-php/commit/348ffcd))
+- `ZplBuilder::barcodeLogmars()` and `ZplCommand\BarcodeLogmars` add support for `^BL` (LOGMARS Bar Code) ([`98c8183`](https://github.com/JanisVepris/zpl-builder-php/commit/98c8183))
+- `ZplBuilder::barcodeCodabar()` and `ZplCommand\BarcodeCodabar` add support for `^BK` (ANSI Codabar Bar Code), with the `Enum\CodabarCharacter` (`A`–`D`) selecting the start/stop characters ([`ac89753`](https://github.com/JanisVepris/zpl-builder-php/commit/ac89753))
+- `ZplBuilder::barcodeStandard2of5()` and `ZplCommand\BarcodeStandard2of5` add support for `^BJ` (Standard 2 of 5 Bar Code) ([`971eba5`](https://github.com/JanisVepris/zpl-builder-php/commit/971eba5))
+- `ZplBuilder::barcodeIndustrial2of5()` and `ZplCommand\BarcodeIndustrial2of5` add support for `^BI` (Industrial 2 of 5 Bar Code) ([`2b6df93`](https://github.com/JanisVepris/zpl-builder-php/commit/2b6df93))
+- `ZplBuilder::barcodeMicroPdf417()` and `ZplCommand\BarcodeMicroPdf417` add support for `^BF` (Micro-PDF417 Bar Code) ([`4f21fce`](https://github.com/JanisVepris/zpl-builder-php/commit/4f21fce))
+- `ZplBuilder::barcodeEan13()` and `ZplCommand\BarcodeEan13` add support for `^BE` (EAN-13 Bar Code) ([`713b327`](https://github.com/JanisVepris/zpl-builder-php/commit/713b327))
+- `ZplBuilder::barcodeMaxiCode()` and `ZplCommand\BarcodeMaxiCode` add support for `^BD` (UPS MaxiCode Bar Code), with the `Enum\MaxiCodeMode` selecting the symbol mode ([`d0fb445`](https://github.com/JanisVepris/zpl-builder-php/commit/d0fb445))
+- `ZplBuilder::barcodeCodablock()` and `ZplCommand\BarcodeCodablock` add support for `^BB` (CODABLOCK Bar Code), with the `Enum\CodablockMode` (`ModeA`/`ModeE`/`ModeF`) selecting the character set ([`ea3ddb6`](https://github.com/JanisVepris/zpl-builder-php/commit/ea3ddb6))
+- `ZplBuilder::barcodeCode93()` and `ZplCommand\BarcodeCode93` add support for `^BA` (Code 93 Bar Code) ([`7e8d454`](https://github.com/JanisVepris/zpl-builder-php/commit/7e8d454))
+- `ZplBuilder::barcodeUpcE()` and `ZplCommand\BarcodeUpcE` add support for `^B9` (UPC-E Bar Code) ([`0dd033e`](https://github.com/JanisVepris/zpl-builder-php/commit/0dd033e))
+- `ZplBuilder::barcodeEan8()` and `ZplCommand\BarcodeEan8` add support for `^B8` (EAN-8 Bar Code) ([`c1d6020`](https://github.com/JanisVepris/zpl-builder-php/commit/c1d6020))
+- `ZplBuilder::barcodePdf417()` and `ZplCommand\BarcodePdf417` add support for `^B7` (PDF417 Bar Code) ([`637b847`](https://github.com/JanisVepris/zpl-builder-php/commit/637b847))
+- `ZplBuilder::barcodePlanetCode()` and `ZplCommand\BarcodePlanetCode` add support for `^B5` (Planet Code Bar Code) ([`d2c4ed5`](https://github.com/JanisVepris/zpl-builder-php/commit/d2c4ed5))
+- `ZplBuilder::barcodeCode49()` and `ZplCommand\BarcodeCode49` add support for `^B4` (Code 49 Bar Code) ([`f1e9487`](https://github.com/JanisVepris/zpl-builder-php/commit/f1e9487))
+- `ZplBuilder::barcodeCode39()` and `ZplCommand\BarcodeCode39` add support for `^B3` (Code 39 / USD-3 / 3 of 9 Bar Code) ([`6d29a39`](https://github.com/JanisVepris/zpl-builder-php/commit/6d29a39))
+- `ZplBuilder::barcodeInterleaved2of5()` and `ZplCommand\BarcodeInterleaved2of5` add support for `^B2` (Interleaved 2 of 5 Bar Code) ([`d8f948f`](https://github.com/JanisVepris/zpl-builder-php/commit/d8f948f))
+- `ZplBuilder::barcodeCode11()` and `ZplCommand\BarcodeCode11` add support for `^B1` (Code 11 / USD-8 Bar Code) ([`aaa9b54`](https://github.com/JanisVepris/zpl-builder-php/commit/aaa9b54))
+- `ZplBuilder::barcodeAztec()` and `ZplCommand\BarcodeAztec` add support for `^B0` (Aztec Bar Code) ([`6b5470e`](https://github.com/JanisVepris/zpl-builder-php/commit/6b5470e), [`f5bb0fa`](https://github.com/JanisVepris/zpl-builder-php/commit/f5bb0fa))
 
 ## [0.60.0] - 2026-06-10
 
