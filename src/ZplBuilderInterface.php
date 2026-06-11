@@ -57,6 +57,11 @@ use Stringable;
 interface ZplBuilderInterface extends Stringable
 {
     /**
+     * Abort an in-progress graphic download and return the printer to normal print mode (`~DN`).
+     */
+    public function abortDownloadGraphic(): self;
+
+    /**
      * Register a named font preset that can later be applied via `applyFontPreset()`.
      * Unspecified dimensions inherit from the font's current settings.
      */

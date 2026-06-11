@@ -232,6 +232,13 @@ use ReflectionMethod;
 #[UsesClass(ScalableBitmappedFont::class)]
 class ZplBuilderTest extends UnitTestCase
 {
+    public function testAbortDownloadGraphicEmitsDn(): void
+    {
+        $output = (string) ZplBuilder::start()->abortDownloadGraphic();
+
+        self::assertSame('^XA~DN', $output);
+    }
+
     public function testAddFontPresetInheritsDimensionsFromFontWhenOmitted(): void
     {
         $builder = ZplBuilder::start()

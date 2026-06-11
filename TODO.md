@@ -80,7 +80,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^IS` — Image Save
 - [x] `^XG` — Recall Graphic
 - [x] `~DG` — Download Graphics
-- [ ] `~DN` — Abort Download Graphic
+- [x] `~DN` — Abort Download Graphic
 - [ ] `~DY` — Download Graphics / Native TrueType or OpenType Font
 - [ ] `~EG` — Erase Download Graphics
 

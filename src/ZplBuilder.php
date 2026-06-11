@@ -70,6 +70,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->render();
     }
 
+    public function abortDownloadGraphic(): self
+    {
+        return $this->addCommand(new Commands\AbortDownloadGraphic());
+    }
+
     public function addFontPreset(
         string $name,
         Font $font,
