@@ -73,7 +73,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^GF` — Graphic Field
 - [x] `^GS` — Graphic Symbol
 - [x] `^HG` — Host Graphic
-- [ ] `^HY` — Upload Graphics
+- [x] `^HY` — Upload Graphics
 - [ ] `^ID` — Object Delete
 - [ ] `^IL` — Image Load
 - [ ] `^IM` — Image Move

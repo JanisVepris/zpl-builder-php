@@ -16,6 +16,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::graphicField()` and `ZplCommand\GraphicField` add support for `^GF` (Graphic Field), downloading a bitmap directly into the printer at the current field origin, with the `Enum\GraphicFieldCompression` selecting the data encoding (`A`/`B`/`C`)
 - `ZplBuilder::graphicSymbol()` and `ZplCommand\GraphicSymbol` add support for `^GS` (Graphic Symbol); the symbol selector is emitted as `^FD` field data following the `^GS` command
 - `ZplBuilder::hostGraphic()` and `ZplCommand\HostGraphic` add support for `^HG` (Host Graphic), uploading a stored graphic to the host; the device defaults to `R:` (RAM) and the extension to `GRF`
+- `ZplBuilder::uploadGraphics()` and `ZplCommand\UploadGraphics` add support for `^HY` (Upload Graphics), uploading a stored graphic object to the host in any supported format (`GRF` raw bitmap or `PNG` compressed); the device defaults to `R:` (RAM) and the extension to `GRF`
 
 ## [0.61.0] - 2026-06-11
 

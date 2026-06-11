@@ -1247,6 +1247,20 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function uploadGraphics(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        return $this->addCommand(
+            new Commands\UploadGraphics(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
     public function when(bool|callable $predicate, callable $callback, ?callable $elseCallback = null): self
     {
         if (is_callable($predicate) ? $predicate() : $predicate) {

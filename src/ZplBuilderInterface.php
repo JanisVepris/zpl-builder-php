@@ -1110,6 +1110,19 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Upload a stored graphic object from the printer to the host in any supported format (`^HY`).
+     * An extension of `GRF` uploads the raw bitmap; `PNG` uploads the compressed bitmap. Standalone
+     * command — it emits only `^HY…`, with no `^FD … ^FS`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function uploadGraphics(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
      * Conditionally apply a callback to the builder. If `$predicate` is a boolean, `$callback`
      * is applied when it is `true`; if it is a callable, `$callback` is applied when it returns
      * `true` when invoked. When the predicate is falsy and `$elseCallback` is provided, that

@@ -1961,6 +1961,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testUploadGraphicsEmitsHy(): void
+    {
+        $output = (string) ZplBuilder::start()->uploadGraphics('SAMPLE', StorageDevice::Flash, 'PNG');
+
+        self::assertSame('^XA^HYE:SAMPLE.PNG', $output);
+    }
+
+    public function testUploadGraphicsUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->uploadGraphics('LOGO');
+
+        self::assertSame('^XA^HYR:LOGO.GRF', $output);
+    }
+
     public function testWhenAppliesCallbackWhenPredicateIsTrue(): void
     {
         $output = (string) ZplBuilder::start()
