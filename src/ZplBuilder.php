@@ -1025,6 +1025,22 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function imageLoad(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        $this->addCommand(
+            new Commands\ImageLoad(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
     public function labelHome(int $x = 0, int $y = 0): self
     {
         return $this->addCommand(new Commands\LabelHome($x, $y));

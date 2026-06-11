@@ -1472,6 +1472,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^HGR:LOGO.GRF', $output);
     }
 
+    public function testImageLoadEmitsIlAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->imageLoad('SAMPLE', StorageDevice::Flash);
+
+        self::assertSame('^XA^ILE:SAMPLE.GRF^FS', $output);
+    }
+
+    public function testImageLoadUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->imageLoad('LOGO');
+
+        self::assertSame('^XA^ILR:LOGO.GRF^FS', $output);
+    }
+
     public function testLabelHomeEmitsLh(): void
     {
         $output = (string) ZplBuilder::start()->labelHome(20, 30);

@@ -75,7 +75,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^HG` — Host Graphic
 - [x] `^HY` — Upload Graphics
 - [x] `^ID` — Object Delete
-- [ ] `^IL` — Image Load
+- [x] `^IL` — Image Load
 - [ ] `^IM` — Image Move
 - [ ] `^IS` — Image Save
 - [ ] `^XG` — Recall Graphic

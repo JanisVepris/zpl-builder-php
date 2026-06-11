@@ -914,6 +914,19 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Load a stored image at the start of a label format and merge it with the field data that
+     * follows (`^IL ... ^FS`). The image is always positioned at the origin (`^FO0,0`). The device
+     * defaults to `R:` (RAM) and the extension to `GRF`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function imageLoad(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
      * Move the label's home origin to the given (x, y) coordinate (`^LH`).
      *
      * @throws IntegerValueOutOfRangeException
