@@ -42,6 +42,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
@@ -1311,6 +1312,13 @@ interface ZplBuilderInterface extends Stringable
      * presets, barcode defaults, and the newline preference.
      */
     public function reset(): self;
+
+    /**
+     * Tell the printer whether to check for a wired print server at network boot (`^NB`). When set
+     * to skip (the default), the wireless print server is used as the primary; when set to check, a
+     * detected wired print server takes priority.
+     */
+    public function searchWiredPrintServer(WiredPrintServerCheck $check = WiredPrintServerCheck::Skip): self;
 
     /** Select the date and time format shown on the configuration label and control panel (`^KD`). */
     public function selectDateTimeFormat(DateTimeFormat $format): self;

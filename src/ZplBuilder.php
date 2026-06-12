@@ -42,6 +42,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
@@ -1445,6 +1446,11 @@ class ZplBuilder implements ZplBuilderInterface
         $this->addCommand(new Commands\StartFormat());
 
         return $this;
+    }
+
+    public function searchWiredPrintServer(WiredPrintServerCheck $check = WiredPrintServerCheck::Skip): self
+    {
+        return $this->addCommand(new Commands\SearchWiredPrintServer($check));
     }
 
     public function selectDateTimeFormat(DateTimeFormat $format): self

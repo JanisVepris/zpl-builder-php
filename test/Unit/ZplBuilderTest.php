@@ -45,6 +45,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
@@ -2127,6 +2128,20 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertCount(1, $commands);
         self::assertSame('^XA', (string) $commands[0]);
+    }
+
+    public function testSearchWiredPrintServerChecks(): void
+    {
+        $output = (string) ZplBuilder::start()->searchWiredPrintServer(WiredPrintServerCheck::Check);
+
+        self::assertSame('^XA^NBC', $output);
+    }
+
+    public function testSearchWiredPrintServerEmitsNbWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->searchWiredPrintServer();
+
+        self::assertSame('^XA^NBS', $output);
     }
 
     public function testSelectDateTimeFormatEmitsKd(): void
