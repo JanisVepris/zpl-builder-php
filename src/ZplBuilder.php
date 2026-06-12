@@ -1493,6 +1493,32 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setMediaSensors(
+        int $web,
+        int $media,
+        int $ribbon,
+        int $labelLength,
+        ?int $mediaLedIntensity = null,
+        ?int $ribbonLedIntensity = null,
+        ?int $markSensing = null,
+        ?int $markMediaSensing = null,
+        ?int $markLedSensing = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetMediaSensors(
+                web: $web,
+                media: $media,
+                ribbon: $ribbon,
+                labelLength: $labelLength,
+                mediaLedIntensity: $mediaLedIntensity,
+                ribbonLedIntensity: $ribbonLedIntensity,
+                markSensing: $markSensing,
+                markMediaSensing: $markMediaSensing,
+                markLedSensing: $markLedSensing,
+            ),
+        );
+    }
+
     public function setOffset(
         ClockSet $clockSet,
         int $monthsOffset = 0,

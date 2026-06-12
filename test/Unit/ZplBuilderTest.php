@@ -2293,6 +2293,34 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testSetMediaSensorsEmitsOptionalParameters(): void
+    {
+        $output = (string) ZplBuilder::start()->setMediaSensors(50, 40, 30, 1225, 60, 70);
+
+        self::assertSame('^XA^SS050,040,030,1225,060,070', $output);
+    }
+
+    public function testSetMediaSensorsEmitsSs(): void
+    {
+        $output = (string) ZplBuilder::start()->setMediaSensors(50, 40, 30, 1225);
+
+        self::assertSame('^XA^SS050,040,030,1225', $output);
+    }
+
+    public function testSetMediaSensorsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setMediaSensors(101, 0, 0, 1);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSetOffsetEmitsSo(): void
     {
         $output = (string) ZplBuilder::start()

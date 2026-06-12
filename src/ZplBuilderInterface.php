@@ -1362,6 +1362,27 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Override the media, web, ribbon, and label-length values set during media calibration
+     * (`^SS`). `$web`, `$media`, and `$ribbon` are sensor readings (0–100); `$labelLength` is in
+     * dots (1–32000). The remaining LED-intensity and mark-sensing parameters (each 0–100) are
+     * optional — omit the trailing ones to leave them at their calibrated values. Maximum values
+     * are platform-dependent.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setMediaSensors(
+        int $web,
+        int $media,
+        int $ribbon,
+        int $labelLength,
+        ?int $mediaLedIntensity = null,
+        ?int $ribbonLedIntensity = null,
+        ?int $markSensing = null,
+        ?int $markMediaSensing = null,
+        ?int $markLedSensing = null,
+    ): self;
+
+    /**
      * Set the secondary or tertiary Real-Time Clock offset from the primary clock (`^SO`).
      * Each offset (months, days, years, hours, minutes, seconds) defaults to 0 and accepts
      * `-32000` to `32000`. Only one secondary (`SO2`) offset may be used per label; use a
