@@ -32,6 +32,7 @@ use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
+use Janisvepris\ZplBuilder\Enum\NetworkDevice;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
@@ -1307,6 +1308,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
 
         return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function primaryDevice(NetworkDevice $device = NetworkDevice::Printer): self
+    {
+        return $this->addCommand(new Commands\PrimaryDevice($device));
     }
 
     public function printerSleep(int $idleSeconds = 0, bool $shutdownWithLabelsQueued = false): self

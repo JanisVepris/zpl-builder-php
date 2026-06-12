@@ -35,6 +35,7 @@ use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
+use Janisvepris\ZplBuilder\Enum\NetworkDevice;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
@@ -1908,6 +1909,20 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->objectDelete('*');
 
         self::assertSame('^XA^IDR:*.GRF^FS', $output);
+    }
+
+    public function testPrimaryDeviceEmitsNpWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->primaryDevice();
+
+        self::assertSame('^XA^NPP', $output);
+    }
+
+    public function testPrimaryDeviceSelectsPrintServer(): void
+    {
+        $output = (string) ZplBuilder::start()->primaryDevice(NetworkDevice::PrintServer);
+
+        self::assertSame('^XA^NPM', $output);
     }
 
     public function testPrinterSleepEmitsExplicitValues(): void

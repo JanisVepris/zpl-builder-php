@@ -183,7 +183,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^NB` — Search for Wired Print Server during Network Boot
 - [x] `^NI` — Network ID Number
 - [x] `^NN` — Set SNMP
-- [ ] `^NP` — Set Primary/Secondary Device
+- [x] `^NP` — Set Primary/Secondary Device
 - [ ] `^NS` — Change Networking Settings
 - [ ] `^NT` — Set SMTP
 - [ ] `^NW` — Set Web Authentication Timeout Value

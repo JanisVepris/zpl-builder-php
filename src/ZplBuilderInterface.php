@@ -32,6 +32,7 @@ use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
+use Janisvepris\ZplBuilder\Enum\NetworkDevice;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
@@ -1207,6 +1208,12 @@ interface ZplBuilderInterface extends Stringable
         StorageDevice $device = StorageDevice::Ram,
         string $extension = 'GRF',
     ): self;
+
+    /**
+     * Choose whether the printer uses its own or the print server's LAN/WLAN settings at boot
+     * (`^NP`). Defaults to the printer's own settings.
+     */
+    public function primaryDevice(NetworkDevice $device = NetworkDevice::Printer): self;
 
     /**
      * Place the printer in idle/shutdown mode after a period of inactivity (`^ZZ`). `$idleSeconds`

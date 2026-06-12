@@ -43,6 +43,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::searchWiredPrintServer()` and `ZplCommand\SearchWiredPrintServer` add support for `^NB` (Search for Wired Print Server during Network Boot), with `Enum\WiredPrintServerCheck` choosing whether to check for a wired print server at boot
 - `ZplBuilder::networkId()` and `ZplCommand\NetworkId` add support for `^NI` (Network ID Number), assigning the printer's RS-485 network ID (1 to 999)
 - `ZplBuilder::setSnmp()` and `ZplCommand\SetSnmp` add support for `^NN` (Set SNMP), setting the system name/contact/location and get/set/trap community names
+- `ZplBuilder::primaryDevice()` and `ZplCommand\PrimaryDevice` add support for `^NP` (Set Primary/Secondary Device), with `Enum\NetworkDevice` choosing whether the printer's or print server's network settings are used at boot
 
 ## [0.62.0] - 2026-06-12
 
