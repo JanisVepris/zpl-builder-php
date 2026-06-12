@@ -184,7 +184,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^NI` — Network ID Number
 - [x] `^NN` — Set SNMP
 - [x] `^NP` — Set Primary/Secondary Device
-- [ ] `^NS` — Change Networking Settings
+- [x] `^NS` — Change Networking Settings
 - [ ] `^NT` — Set SMTP
 - [ ] `^NW` — Set Web Authentication Timeout Value
 - [ ] `^RA` — Read AFI or DSFID Byte

@@ -23,6 +23,7 @@ use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
+use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -1581,4 +1582,26 @@ interface ZplBuilderInterface extends Stringable
      * @param null|(callable(ZplBuilder): mixed) $elseCallback
      */
     public function when(bool|callable $predicate, callable $callback, ?callable $elseCallback = null): self;
+
+    /**
+     * Change the printer's wired print-server network settings (`^NS`). `$ipResolution` selects how
+     * the IP address is obtained; `$ipAddress`, `$subnetMask`, and `$defaultGateway` are dotted-quad
+     * strings. The trailing parameters — WINS server, connection-timeout checking, timeout value
+     * (0–9999 s), ARP broadcast interval, and base RAW port (0–99999) — are optional; omit the
+     * trailing ones to leave them unchanged.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function wiredNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self;
 }

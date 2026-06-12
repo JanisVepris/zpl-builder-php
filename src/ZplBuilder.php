@@ -23,6 +23,7 @@ use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
+use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -1704,6 +1705,32 @@ class ZplBuilder implements ZplBuilderInterface
         }
 
         return $this;
+    }
+
+    public function wiredNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\WiredNetworkSettings(
+                ipResolution: $ipResolution,
+                ipAddress: $ipAddress,
+                subnetMask: $subnetMask,
+                defaultGateway: $defaultGateway,
+                winsServer: $winsServer,
+                connectionTimeoutChecking: $connectionTimeoutChecking,
+                timeoutValue: $timeoutValue,
+                arpInterval: $arpInterval,
+                basePortNumber: $basePortNumber,
+            ),
+        );
     }
 
     /**

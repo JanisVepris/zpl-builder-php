@@ -44,6 +44,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::networkId()` and `ZplCommand\NetworkId` add support for `^NI` (Network ID Number), assigning the printer's RS-485 network ID (1 to 999)
 - `ZplBuilder::setSnmp()` and `ZplCommand\SetSnmp` add support for `^NN` (Set SNMP), setting the system name/contact/location and get/set/trap community names
 - `ZplBuilder::primaryDevice()` and `ZplCommand\PrimaryDevice` add support for `^NP` (Set Primary/Secondary Device), with `Enum\NetworkDevice` choosing whether the printer's or print server's network settings are used at boot
+- `ZplBuilder::wiredNetworkSettings()` and `ZplCommand\WiredNetworkSettings` add support for `^NS` (Change Wired Networking Settings), with `Enum\IpResolution` selecting IP resolution plus address/subnet/gateway and optional WINS/timeout/ARP/port parameters
 
 ## [0.62.0] - 2026-06-12
 

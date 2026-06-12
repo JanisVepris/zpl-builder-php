@@ -26,6 +26,7 @@ use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
+use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -2709,6 +2710,18 @@ class ZplBuilderTest extends UnitTestCase
             );
 
         self::assertSame('^XAYES', $output);
+    }
+
+    public function testWiredNetworkSettingsEmitsNs(): void
+    {
+        $output = (string) ZplBuilder::start()->wiredNetworkSettings(
+            IpResolution::Permanent,
+            '192.168.0.1',
+            '255.255.255.0',
+            '192.168.0.2',
+        );
+
+        self::assertSame('^XA^NSP,192.168.0.1,255.255.255.0,192.168.0.2', $output);
     }
 
     public function testZplBuilderImplementsZplBuilderInterface(): void
