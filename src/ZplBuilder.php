@@ -1706,6 +1706,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function webAuthTimeout(int $minutes = 5): self
+    {
+        return $this->addCommand(new Commands\WebAuthenticationTimeout($minutes));
+    }
+
     public function when(bool|callable $predicate, callable $callback, ?callable $elseCallback = null): self
     {
         if (is_callable($predicate) ? $predicate() : $predicate) {

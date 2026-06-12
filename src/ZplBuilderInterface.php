@@ -1579,6 +1579,14 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Set the timeout (in minutes) before the printer re-prompts for its password on the web pages
+     * (`^NW`). Accepts 0 (no secure pages without the password) to 255 minutes; defaults to 5.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function webAuthTimeout(int $minutes = 5): self;
+
+    /**
      * Conditionally apply a callback to the builder. If `$predicate` is a boolean, `$callback`
      * is applied when it is `true`; if it is a callable, `$callback` is applied when it returns
      * `true` when invoked. When the predicate is falsy and `$elseCallback` is provided, that

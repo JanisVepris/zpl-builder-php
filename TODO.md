@@ -186,7 +186,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^NP` — Set Primary/Secondary Device
 - [x] `^NS` — Change Networking Settings
 - [x] `^NT` — Set SMTP
-- [ ] `^NW` — Set Web Authentication Timeout Value
+- [x] `^NW` — Set Web Authentication Timeout Value
 - [ ] `^RA` — Read AFI or DSFID Byte
 - [ ] `^RB` — Define EPC Data Structure
 - [ ] `^RE` — Enable/Disable E.A.S. Bit

@@ -2663,6 +2663,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^HYR:LOGO.GRF', $output);
     }
 
+    public function testWebAuthTimeoutEmitsNwWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->webAuthTimeout();
+
+        self::assertSame('^XA^NW5', $output);
+    }
+
+    public function testWebAuthTimeoutValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->webAuthTimeout(256);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testWhenAppliesCallbackWhenPredicateIsTrue(): void
     {
         $output = (string) ZplBuilder::start()
