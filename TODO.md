@@ -192,7 +192,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^RE` — Enable/Disable E.A.S. Bit
 - [x] `^RF` — Read or Write RFID Format
 - [x] `^RI` — Get RFID Tag ID
-- [ ] `^RM` — Enable RFID Motion
+- [x] `^RM` — Enable RFID Motion
 - [ ] `^RN` — Detect Multiple RFID Tags in Encoding Field
 - [ ] `^RR` — Specify RFID Retries for a Block
 - [ ] `^RS` — Set Up RFID Parameters

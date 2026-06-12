@@ -780,6 +780,13 @@ interface ZplBuilderInterface extends Stringable
      */
     public function enableEasBit(bool $enabled = true, int $retries = 0): self;
 
+    /**
+     * Enable or disable RFID label motion (`^RM`). When disabled, the label does not move when it
+     * reaches the program position — useful for debugging and setup. Not persistent across labels.
+     * Not supported by all printers.
+     */
+    public function enableRfidMotion(bool $enabled = true): self;
+
     /** Finalise the format by appending `^XZ`. */
     public function end(): self;
 

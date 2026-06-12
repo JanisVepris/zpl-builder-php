@@ -52,6 +52,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::enableEasBit()` and `ZplCommand\EnableEasBit` add support for `^RE` (Enable/Disable E.A.S. Bit), toggling the Electronic Article Surveillance bit on supported ISO15693 tags
 - `ZplBuilder::readWriteRfidFormat()` and `ZplCommand\ReadWriteRfidFormat` add support for `^RF` (Read or Write RFID Format), with `Enum\RfidOperation` and `Enum\RfidReadWriteFormat` selecting the read/write operation and data format
 - `ZplBuilder::getRfidTagId()` and `ZplCommand\GetRfidTagId` add support for `^RI` (Get RFID Tag ID), reading a tag's serial number into a field, with `Enum\RfidDataOrder` selecting byte order
+- `ZplBuilder::enableRfidMotion()` and `ZplCommand\EnableRfidMotion` add support for `^RM` (Enable RFID Motion), toggling whether the label moves when it reaches the program position
 
 ## [0.62.0] - 2026-06-12
 

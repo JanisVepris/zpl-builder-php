@@ -876,6 +876,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function enableRfidMotion(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\EnableRfidMotion($enabled));
+    }
+
     public function end(): self
     {
         return $this->addCommand(new Commands\EndFormat());

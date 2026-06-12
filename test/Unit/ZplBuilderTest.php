@@ -1157,6 +1157,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^REY,0', $output);
     }
 
+    public function testEnableRfidMotionDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->enableRfidMotion(false);
+
+        self::assertSame('^XA^RMN', $output);
+    }
+
+    public function testEnableRfidMotionEmitsRm(): void
+    {
+        $output = (string) ZplBuilder::start()->enableRfidMotion();
+
+        self::assertSame('^XA^RMY', $output);
+    }
+
     public function testEndAppendsEndFormatEveryTimeItsCalled(): void
     {
         $output = (string) ZplBuilder::start()->end()->end();
