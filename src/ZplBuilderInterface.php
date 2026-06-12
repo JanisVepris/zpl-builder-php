@@ -1059,6 +1059,15 @@ interface ZplBuilderInterface extends Stringable
     public function labelShift(int $shift = 0): self;
 
     /**
+     * Move the entire label format up or down relative to the top edge of the label (`^LT`).
+     * Accepts -120 to 120 dot rows; a negative value moves the format towards the top edge, a
+     * positive value away from it.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function labelTop(int $dotRows): self;
+
+    /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
      * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
      * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension

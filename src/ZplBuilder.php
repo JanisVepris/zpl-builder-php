@@ -1177,6 +1177,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\LabelShift($shift));
     }
 
+    public function labelTop(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\LabelTop($dotRows));
+    }
+
     public function objectDelete(
         string $name,
         StorageDevice $device = StorageDevice::Ram,

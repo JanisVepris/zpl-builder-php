@@ -1696,6 +1696,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^LS0', $output);
     }
 
+    public function testLabelTopEmitsLt(): void
+    {
+        $output = (string) ZplBuilder::start()->labelTop(-30);
+
+        self::assertSame('^XA^LT-30', $output);
+    }
+
     public function testNoPrintQuantityEmittedByDefault(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
