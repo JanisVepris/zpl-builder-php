@@ -761,6 +761,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function codeValidation(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\CodeValidation($enabled));
+    }
+
     public function comment(string $text): self
     {
         return $this->addCommand(new Commands\FieldComment($text));

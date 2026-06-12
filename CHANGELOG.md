@@ -19,6 +19,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::suppressBackfeed()` and `ZplCommand\SuppressBackfeed` add support for `^XB` (Suppress Backfeed), suppressing the forward feed to the tear-off position for the current label to improve batch-printing throughput ([`b70e001`](https://github.com/JanisVepris/zpl-builder-php/commit/b70e001))
 - `ZplBuilder::changeMemoryLetters()` and `ZplCommand\ChangeMemoryLetters` add support for `^CM` (Change Memory Letter Designation), reassigning the printer's `B:`/`E:`/`R:`/`A:` memory-device letters, with `Enum\MemoryLetter` selecting each target (`None` to leave a letter unassigned)
 - `ZplBuilder::cacheOn()` and `ZplCommand\CacheOn` add support for `^CO` (Cache On), resizing the scalable-font character cache, with `Enum\CacheType` selecting the normal or internal (Asian-font) buffer
+- `ZplBuilder::codeValidation()` and `ZplCommand\CodeValidation` add support for `^CV` (Code Validation), toggling whether the printer validates each bar code's data and prints an error message in place of an invalid bar code
 
 ## [0.62.0] - 2026-06-12
 

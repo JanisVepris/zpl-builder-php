@@ -985,6 +985,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^CMB,E,R,A', $output);
     }
 
+    public function testCodeValidationDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->codeValidation(false);
+
+        self::assertSame('^XA^CVN', $output);
+    }
+
+    public function testCodeValidationEmitsCv(): void
+    {
+        $output = (string) ZplBuilder::start()->codeValidation();
+
+        self::assertSame('^XA^CVY', $output);
+    }
+
     public function testCommentEmitsFx(): void
     {
         $output = (string) ZplBuilder::start()->comment(' section header');

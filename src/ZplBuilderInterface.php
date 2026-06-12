@@ -660,6 +660,13 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Toggle bar-code data validation (`^CV`). When enabled, the printer checks each bar code's data
+     * against its symbology and prints an `INVALID - X` message in place of any bar code that fails.
+     * Remains active across formats until disabled or the printer is turned off.
+     */
+    public function codeValidation(bool $enabled = true): self;
+
+    /**
      * Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging.
      *
      * @throws StringLengthOutOfRangeException
