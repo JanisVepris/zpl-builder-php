@@ -42,6 +42,9 @@ use Janisvepris\ZplBuilder\Enum\PrintSpeed;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidByteType;
+use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
@@ -1282,6 +1285,22 @@ interface ZplBuilderInterface extends Stringable
      * nothing is appended to the command list.
      */
     public function raw(string $zpl): self;
+
+    /**
+     * Read a tag's AFI or DSFID byte into a field for printing or return to the host (`^RA`).
+     * `$fieldNumber` (0–9999) is the `^FN` field the data is read into; `$format` selects ASCII or
+     * hexadecimal output; `$retries` (0–10) is the read-retry count; `$motion` controls label feed;
+     * and `$byteType` selects the AFI or DSFID byte. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function readAfiOrDsfidByte(
+        int $fieldNumber = 0,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidByteType $byteType = RfidByteType::Afi,
+    ): self;
 
     /**
      * Invoke a stored format from the printer's memory (`^XF`).

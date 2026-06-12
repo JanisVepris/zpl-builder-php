@@ -47,6 +47,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::wiredNetworkSettings()` and `ZplCommand\WiredNetworkSettings` add support for `^NS` (Change Wired Networking Settings), with `Enum\IpResolution` selecting IP resolution plus address/subnet/gateway and optional WINS/timeout/ARP/port parameters
 - `ZplBuilder::setSmtp()` and `ZplCommand\SetSmtp` add support for `^NT` (Set SMTP), setting the SMTP server address and print-server domain for e-mail alerts
 - `ZplBuilder::webAuthTimeout()` and `ZplCommand\WebAuthenticationTimeout` add support for `^NW` (Set Web Authentication Timeout Value), setting the printer web-page password timeout (0 to 255 minutes)
+- `ZplBuilder::readAfiOrDsfidByte()` and `ZplCommand\ReadAfiOrDsfidByte` add support for `^RA` (Read AFI or DSFID Byte), with `Enum\RfidByteFormat`, `Enum\RfidMotion`, and `Enum\RfidByteType` selecting the output format, label motion, and byte to read
 
 ## [0.62.0] - 2026-06-12
 

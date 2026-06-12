@@ -42,6 +42,9 @@ use Janisvepris\ZplBuilder\Enum\PrintSpeed;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidByteType;
+use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
@@ -1389,6 +1392,24 @@ class ZplBuilder implements ZplBuilderInterface
         }
 
         return $this->addCommand(new Commands\RawCommand($zpl));
+    }
+
+    public function readAfiOrDsfidByte(
+        int $fieldNumber = 0,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidByteType $byteType = RfidByteType::Afi,
+    ): self {
+        return $this->addCommand(
+            new Commands\ReadAfiOrDsfidByte(
+                fieldNumber: $fieldNumber,
+                format: $format,
+                retries: $retries,
+                motion: $motion,
+                byteType: $byteType,
+            ),
+        );
     }
 
     public function recallFormat(

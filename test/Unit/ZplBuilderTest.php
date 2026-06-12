@@ -2058,6 +2058,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^FO5,5^GB100,100,2^FS', $output);
     }
 
+    public function testReadAfiOrDsfidByteEmitsRa(): void
+    {
+        $output = (string) ZplBuilder::start()->readAfiOrDsfidByte();
+
+        self::assertSame('^XA^RA0,0,0,0,A', $output);
+    }
+
+    public function testReadAfiOrDsfidByteValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->readAfiOrDsfidByte(retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testRecallFormatEmitsXf(): void
     {
         $output = (string) ZplBuilder::start()->recallFormat('LABEL', StorageDevice::Flash);
