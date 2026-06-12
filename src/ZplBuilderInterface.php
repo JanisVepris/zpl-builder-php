@@ -1010,6 +1010,12 @@ interface ZplBuilderInterface extends Stringable
     public function hasFontPreset(string $name): bool;
 
     /**
+     * Enable or disable the head cold warning indicator (`^MW`), used with RS-485 printer
+     * communications. A value is required — the printer ignores the command otherwise.
+     */
+    public function headColdWarning(bool $enabled = true): self;
+
+    /**
      * Send a stored format from the printer back to the host (`^HF`). Standalone command — it emits
      * only `^HF…`, with no `^FD … ^FS`. The device defaults to `R:` (RAM) and the extension to
      * `ZPL`.

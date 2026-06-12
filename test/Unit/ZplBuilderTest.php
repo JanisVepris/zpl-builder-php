@@ -1651,6 +1651,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertTrue($builder->hasFontPreset('big'));
     }
 
+    public function testHeadColdWarningDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->headColdWarning(false);
+
+        self::assertSame('^XA^MWN', $output);
+    }
+
+    public function testHeadColdWarningEmitsMw(): void
+    {
+        $output = (string) ZplBuilder::start()->headColdWarning();
+
+        self::assertSame('^XA^MWY', $output);
+    }
+
     public function testHostFormatEmitsHf(): void
     {
         $output = (string) ZplBuilder::start()->hostFormat('FILE1', StorageDevice::MemoryCardB);

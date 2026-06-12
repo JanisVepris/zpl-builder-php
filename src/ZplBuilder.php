@@ -1122,6 +1122,11 @@ class ZplBuilder implements ZplBuilderInterface
         return isset($this->fontPresets[$name]);
     }
 
+    public function headColdWarning(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\HeadColdWarning($enabled));
+    }
+
     public function hostFormat(
         string $name,
         StorageDevice $device = StorageDevice::Ram,

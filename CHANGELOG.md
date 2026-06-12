@@ -29,6 +29,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::modeProtection()` and `ZplCommand\ModeProtection` add support for `^MP` (Mode Protection), locking individual control-panel mode functions, with `Enum\ProtectedMode` selecting which to disable (or `EnableAll`)
 - `ZplBuilder::mediaType()` and `ZplCommand\MediaType` add support for `^MT` (Media Type), selecting the print method, with `Enum\PrintMethod` choosing thermal transfer (ribbon) or direct thermal
 - `ZplBuilder::setUnits()` and `ZplCommand\SetUnits` add support for `^MU` (Set Units of Measurement), selecting dots/inches/millimetres via `Enum\MeasurementUnit` and optionally converting a format between resolutions
+- `ZplBuilder::headColdWarning()` and `ZplCommand\HeadColdWarning` add support for `^MW` (Modify Head Cold Warning), enabling or disabling the head cold warning indicator
 
 ## [0.62.0] - 2026-06-12
 
