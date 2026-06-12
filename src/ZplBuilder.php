@@ -45,6 +45,8 @@ use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
+use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
@@ -1425,6 +1427,22 @@ class ZplBuilder implements ZplBuilderInterface
                 retries: $retries,
                 motion: $motion,
                 byteType: $byteType,
+            ),
+        );
+    }
+
+    public function readWriteRfidFormat(
+        RfidOperation $operation = RfidOperation::Write,
+        RfidReadWriteFormat $format = RfidReadWriteFormat::Hexadecimal,
+        ?int $startingBlock = null,
+        ?int $numberOfBytes = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\ReadWriteRfidFormat(
+                operation: $operation,
+                format: $format,
+                startingBlock: $startingBlock,
+                numberOfBytes: $numberOfBytes,
             ),
         );
     }

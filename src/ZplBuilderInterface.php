@@ -45,6 +45,8 @@ use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
+use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
@@ -1319,6 +1321,22 @@ interface ZplBuilderInterface extends Stringable
         int $retries = 0,
         RfidMotion $motion = RfidMotion::Feed,
         RfidByteType $byteType = RfidByteType::Afi,
+    ): self;
+
+    /**
+     * Read from or write to (encode) an RFID tag (`^RF`). `$operation` selects read/write/lock/
+     * read-password; `$format` selects ASCII, hexadecimal, or EPC (pair EPC with
+     * `defineEpcDataStructure()`). `$startingBlock` and `$numberOfBytes` are optional and omitted
+     * when null. For a write, chain `fieldData()` with the tag data; for a read, precede with
+     * `fieldNumber()`. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function readWriteRfidFormat(
+        RfidOperation $operation = RfidOperation::Write,
+        RfidReadWriteFormat $format = RfidReadWriteFormat::Hexadecimal,
+        ?int $startingBlock = null,
+        ?int $numberOfBytes = null,
     ): self;
 
     /**

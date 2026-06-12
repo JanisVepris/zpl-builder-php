@@ -45,6 +45,7 @@ use Janisvepris\ZplBuilder\Enum\PrintSpeed;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
@@ -2105,6 +2106,20 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testReadWriteRfidFormatEmitsRf(): void
+    {
+        $output = (string) ZplBuilder::start()->readWriteRfidFormat();
+
+        self::assertSame('^XA^RFW,H', $output);
+    }
+
+    public function testReadWriteRfidFormatReads(): void
+    {
+        $output = (string) ZplBuilder::start()->readWriteRfidFormat(RfidOperation::Read);
+
+        self::assertSame('^XA^RFR,H', $output);
     }
 
     public function testRecallFormatEmitsXf(): void
