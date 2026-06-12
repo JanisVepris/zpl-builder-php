@@ -30,6 +30,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::mediaType()` and `ZplCommand\MediaType` add support for `^MT` (Media Type), selecting the print method, with `Enum\PrintMethod` choosing thermal transfer (ribbon) or direct thermal
 - `ZplBuilder::setUnits()` and `ZplCommand\SetUnits` add support for `^MU` (Set Units of Measurement), selecting dots/inches/millimetres via `Enum\MeasurementUnit` and optionally converting a format between resolutions
 - `ZplBuilder::headColdWarning()` and `ZplCommand\HeadColdWarning` add support for `^MW` (Modify Head Cold Warning), enabling or disabling the head cold warning indicator
+- `ZplBuilder::printRate()` and `ZplCommand\PrintRate` add support for `^PR` (Print Rate), setting the print, slew, and backfeed speeds, with `Enum\PrintSpeed` selecting each speed in inches per second
 
 ## [0.62.0] - 2026-06-12
 

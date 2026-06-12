@@ -36,6 +36,7 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\PrintMethod;
+use Janisvepris\ZplBuilder\Enum\PrintSpeed;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1316,6 +1317,20 @@ class ZplBuilder implements ZplBuilderInterface
     public function printQuantity(int $quantity): self
     {
         return $this->addCommand(new Commands\PrintQuantity($quantity));
+    }
+
+    public function printRate(
+        PrintSpeed $print = PrintSpeed::Ips2,
+        PrintSpeed $slew = PrintSpeed::Ips6,
+        PrintSpeed $backfeed = PrintSpeed::Ips2,
+    ): self {
+        return $this->addCommand(
+            new Commands\PrintRate(
+                print: $print,
+                slew: $slew,
+                backfeed: $backfeed,
+            ),
+        );
     }
 
     public function printWidth(int $width): self

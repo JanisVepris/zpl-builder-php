@@ -117,7 +117,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^MW` — Modify Head Cold Warning
 - [x] `^PO` — Print Orientation
 - [x] `^PQ` — Print Quantity
-- [ ] `^PR` — Print Rate
+- [x] `^PR` — Print Rate
 - [x] `^PW` — Print Width
 - [ ] `^SP` — Start Print
 - [ ] `^SS` — Set Media Sensors

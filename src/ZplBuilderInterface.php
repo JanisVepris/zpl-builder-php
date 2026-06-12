@@ -36,6 +36,7 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\PrintMethod;
+use Janisvepris\ZplBuilder\Enum\PrintSpeed;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1206,6 +1207,17 @@ interface ZplBuilderInterface extends Stringable
      * @throws IntegerValueOutOfRangeException
      */
     public function printQuantity(int $quantity): self;
+
+    /**
+     * Set the print, slew, and backfeed speeds in inches per second (`^PR`). Each speed is a value
+     * the printer supports (`PrintSpeed`); the printer caps any value above its maximum rate. The
+     * defaults match the spec: print and backfeed at 2 ips, slew at 6 ips.
+     */
+    public function printRate(
+        PrintSpeed $print = PrintSpeed::Ips2,
+        PrintSpeed $slew = PrintSpeed::Ips6,
+        PrintSpeed $backfeed = PrintSpeed::Ips2,
+    ): self;
 
     /**
      * Set the label's print width in dots (`^PW`).

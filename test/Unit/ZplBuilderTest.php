@@ -39,6 +39,7 @@ use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\PrintMethod;
+use Janisvepris\ZplBuilder\Enum\PrintSpeed;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1919,6 +1920,24 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5)->end();
 
         self::assertSame('^XA^FDHello^FS^PQ5^XZ', $output);
+    }
+
+    public function testPrintRateEmitsExplicitSpeeds(): void
+    {
+        $output = (string) ZplBuilder::start()->printRate(
+            PrintSpeed::Ips6,
+            PrintSpeed::Ips8,
+            PrintSpeed::Ips4,
+        );
+
+        self::assertSame('^XA^PR6,8,4', $output);
+    }
+
+    public function testPrintRateEmitsPrWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->printRate();
+
+        self::assertSame('^XA^PR2,6,2', $output);
     }
 
     public function testPrintWidthEmitsPw(): void
