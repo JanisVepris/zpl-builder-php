@@ -34,6 +34,7 @@ use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
@@ -1250,6 +1251,11 @@ class ZplBuilder implements ZplBuilderInterface
     public function mediaTracking(MediaTrackingType $tracking): self
     {
         return $this->addCommand(new Commands\MediaTracking($tracking));
+    }
+
+    public function modeProtection(ProtectedMode $mode): self
+    {
+        return $this->addCommand(new Commands\ModeProtection($mode));
     }
 
     public function objectDelete(

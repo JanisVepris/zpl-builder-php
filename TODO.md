@@ -111,7 +111,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^ML` — Maximum Label Length
 - [x] `^MM` — Print Mode
 - [x] `^MN` — Media Tracking
-- [ ] `^MP` — Mode Protection
+- [x] `^MP` — Mode Protection
 - [ ] `^MT` — Media Type
 - [ ] `^MU` — Set Units of Measurement
 - [ ] `^MW` — Modify Head Cold Warning

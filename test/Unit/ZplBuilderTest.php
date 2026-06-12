@@ -37,6 +37,7 @@ use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
@@ -1817,6 +1818,13 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->mediaTracking(MediaTrackingType::NonContinuousWeb);
 
         self::assertSame('^XA^MNY', $output);
+    }
+
+    public function testModeProtectionEmitsMp(): void
+    {
+        $output = (string) ZplBuilder::start()->modeProtection(ProtectedMode::DisableDarkness);
+
+        self::assertSame('^XA^MPD', $output);
     }
 
     public function testNoPrintQuantityEmittedByDefault(): void

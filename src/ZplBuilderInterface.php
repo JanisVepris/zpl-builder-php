@@ -34,6 +34,7 @@ use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
@@ -1143,6 +1144,13 @@ interface ZplBuilderInterface extends Stringable
      * printer ignores the command otherwise.
      */
     public function mediaTracking(MediaTrackingType $tracking): self;
+
+    /**
+     * Disable (lock) a control-panel mode function so its setting can no longer be changed (`^MP`).
+     * Each call protects one function — darkness, position, calibration, pause, feed, cancel, menu,
+     * or all mode-saves — or re-enables every mode (`ProtectedMode::EnableAll`). A value is required.
+     */
+    public function modeProtection(ProtectedMode $mode): self;
 
     /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).

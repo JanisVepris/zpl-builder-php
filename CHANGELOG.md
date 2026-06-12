@@ -26,6 +26,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::maximumLabelLength()` and `ZplCommand\MaximumLabelLength` add support for `^ML` (Maximum Label Length), setting the maximum label length in dot rows (0 to 32000) for calibration
 - `ZplBuilder::printMode()` and `ZplCommand\PrintMode` add support for `^MM` (Print Mode), selecting the post-print action and prepeel option, with `Enum\PostPrintAction` selecting tear-off/peel-off/rewind/applicator/cutter/delayed-cutter
 - `ZplBuilder::mediaTracking()` and `ZplCommand\MediaTracking` add support for `^MN` (Media Tracking), telling the printer whether the media is continuous or non-continuous (web/mark sensing), with `Enum\MediaTrackingType` selecting the mode
+- `ZplBuilder::modeProtection()` and `ZplCommand\ModeProtection` add support for `^MP` (Mode Protection), locking individual control-panel mode functions, with `Enum\ProtectedMode` selecting which to disable (or `EnableAll`)
 
 ## [0.62.0] - 2026-06-12
 
