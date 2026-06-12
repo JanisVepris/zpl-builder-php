@@ -2481,6 +2481,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $builder);
     }
 
+    public function testSetSmtpEmitsNt(): void
+    {
+        $output = (string) ZplBuilder::start()->setSmtp('10.0.0.1', 'example.com');
+
+        self::assertSame('^XA^NT10.0.0.1,example.com', $output);
+    }
+
     public function testSetSnmpEmitsNn(): void
     {
         $output = (string) ZplBuilder::start()->setSnmp(systemName: 'printer1');

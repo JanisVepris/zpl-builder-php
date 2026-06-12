@@ -1467,6 +1467,14 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Set the printer's SMTP server address and print-server domain for e-mail alerts (`^NT`). The
+     * server address is a dotted-quad string; the domain is a host domain name (e.g. `zebra.com`).
+     *
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setSmtp(string $serverAddress = '', string $domain = ''): self;
+
+    /**
      * Set the printer's SNMP parameters (`^NN`): system name (≤17 bytes), contact and location
      * (≤50 bytes each), and the get/set (≤19 bytes) and trap (≤20 bytes) community names. The
      * community names default to `public`.

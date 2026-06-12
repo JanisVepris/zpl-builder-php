@@ -1595,6 +1595,16 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setSmtp(string $serverAddress = '', string $domain = ''): self
+    {
+        return $this->addCommand(
+            new Commands\SetSmtp(
+                serverAddress: $serverAddress,
+                domain: $domain,
+            ),
+        );
+    }
+
     public function setSnmp(
         string $systemName = '',
         string $systemContact = '',

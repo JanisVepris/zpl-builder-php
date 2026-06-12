@@ -45,6 +45,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setSnmp()` and `ZplCommand\SetSnmp` add support for `^NN` (Set SNMP), setting the system name/contact/location and get/set/trap community names
 - `ZplBuilder::primaryDevice()` and `ZplCommand\PrimaryDevice` add support for `^NP` (Set Primary/Secondary Device), with `Enum\NetworkDevice` choosing whether the printer's or print server's network settings are used at boot
 - `ZplBuilder::wiredNetworkSettings()` and `ZplCommand\WiredNetworkSettings` add support for `^NS` (Change Wired Networking Settings), with `Enum\IpResolution` selecting IP resolution plus address/subnet/gateway and optional WINS/timeout/ARP/port parameters
+- `ZplBuilder::setSmtp()` and `ZplCommand\SetSmtp` add support for `^NT` (Set SMTP), setting the SMTP server address and print-server domain for e-mail alerts
 
 ## [0.62.0] - 2026-06-12
 
