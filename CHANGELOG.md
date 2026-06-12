@@ -10,13 +10,13 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 
 ### Added
 
-- `ZplBuilder::downloadFormat()` and `ZplCommand\DownloadFormat` add support for `^DF` (Download Format), opening a stored-format download so subsequent commands are saved under a name for later recall with `^XF`; the device defaults to `R:` (RAM) and the extension to `ZPL`
-- `ZplBuilder::hostFormat()` and `ZplCommand\HostFormat` add support for `^HF` (Host Format), sending a stored format from the printer back to the host; the device defaults to `R:` (RAM) and the extension to `ZPL`
-- `ZplBuilder::labelShift()` and `ZplCommand\LabelShift` add support for `^LS` (Label Shift), shifting all field positions left by -9999 to 9999 dots for Z-130/Z-220 compatibility; defaults to 0 (no shift)
-- `ZplBuilder::labelTop()` and `ZplCommand\LabelTop` add support for `^LT` (Label Top), moving the entire label format -120 to 120 dot rows relative to the top edge
-- `ZplBuilder::slew()` and `ZplCommand\Slew` add support for `^PF` (Slew Given Number of Dot Rows), feeding 0 to 32000 dot rows without printing to speed up labels with a blank bottom
-- `ZplBuilder::printMirror()` and `ZplCommand\PrintMirror` add support for `^PM` (Printing Mirror Image of Label), printing the entire label flipped left to right
-- `ZplBuilder::suppressBackfeed()` and `ZplCommand\SuppressBackfeed` add support for `^XB` (Suppress Backfeed), suppressing the forward feed to the tear-off position for the current label to improve batch-printing throughput
+- `ZplBuilder::downloadFormat()` and `ZplCommand\DownloadFormat` add support for `^DF` (Download Format), opening a stored-format download so subsequent commands are saved under a name for later recall with `^XF`; the device defaults to `R:` (RAM) and the extension to `ZPL` ([`d5a5906`](https://github.com/JanisVepris/zpl-builder-php/commit/d5a5906))
+- `ZplBuilder::hostFormat()` and `ZplCommand\HostFormat` add support for `^HF` (Host Format), sending a stored format from the printer back to the host; the device defaults to `R:` (RAM) and the extension to `ZPL` ([`f74086b`](https://github.com/JanisVepris/zpl-builder-php/commit/f74086b))
+- `ZplBuilder::labelShift()` and `ZplCommand\LabelShift` add support for `^LS` (Label Shift), shifting all field positions left by -9999 to 9999 dots for Z-130/Z-220 compatibility; defaults to 0 (no shift) ([`cacfbf2`](https://github.com/JanisVepris/zpl-builder-php/commit/cacfbf2))
+- `ZplBuilder::labelTop()` and `ZplCommand\LabelTop` add support for `^LT` (Label Top), moving the entire label format -120 to 120 dot rows relative to the top edge ([`295f173`](https://github.com/JanisVepris/zpl-builder-php/commit/295f173))
+- `ZplBuilder::slew()` and `ZplCommand\Slew` add support for `^PF` (Slew Given Number of Dot Rows), feeding 0 to 32000 dot rows without printing to speed up labels with a blank bottom ([`0339bf4`](https://github.com/JanisVepris/zpl-builder-php/commit/0339bf4))
+- `ZplBuilder::printMirror()` and `ZplCommand\PrintMirror` add support for `^PM` (Printing Mirror Image of Label), printing the entire label flipped left to right ([`43ac7c5`](https://github.com/JanisVepris/zpl-builder-php/commit/43ac7c5))
+- `ZplBuilder::suppressBackfeed()` and `ZplCommand\SuppressBackfeed` add support for `^XB` (Suppress Backfeed), suppressing the forward feed to the tear-off position for the current label to improve batch-printing throughput ([`b70e001`](https://github.com/JanisVepris/zpl-builder-php/commit/b70e001))
 
 ## [0.62.0] - 2026-06-12
 
