@@ -26,6 +26,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
@@ -629,6 +630,19 @@ interface ZplBuilderInterface extends Stringable
 
     /** Set the printer's character encoding (`^CI`), with optional character remaps. */
     public function changeInternationalEncoding(Encoding $encoding, CharacterRemap ...$characterRemaps): self;
+
+    /**
+     * Reassign the printer's memory-device letter designations (`^CM`). Each parameter selects which
+     * physical device the corresponding default letter (`B:`, `E:`, `R:`, `A:`) points to; pass
+     * `MemoryLetter::None` to leave a letter unassigned. The defaults keep every letter pointing at
+     * its own device. The printer resets all letters to their defaults if two parameters collide.
+     */
+    public function changeMemoryLetters(
+        MemoryLetter $aliasForB = MemoryLetter::MemoryCardB,
+        MemoryLetter $aliasForE = MemoryLetter::Flash,
+        MemoryLetter $aliasForR = MemoryLetter::Ram,
+        MemoryLetter $aliasForA = MemoryLetter::MemoryCardA,
+    ): self;
 
     /**
      * Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging.

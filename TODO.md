@@ -102,7 +102,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 
 ## Printing control and media
 
-- [ ] `^CM` — Change Memory Letter Designation
+- [x] `^CM` — Change Memory Letter Designation
 - [ ] `^CO` — Cache On
 - [ ] `^CV` — Code Validation
 - [ ] `^MC` — Map Clear

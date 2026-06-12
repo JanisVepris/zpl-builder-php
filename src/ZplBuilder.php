@@ -26,6 +26,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
@@ -726,6 +727,22 @@ class ZplBuilder implements ZplBuilderInterface
     {
         return $this->addCommand(
             new Commands\ChangeInternationalEncoding($encoding, ...$characterRemaps),
+        );
+    }
+
+    public function changeMemoryLetters(
+        MemoryLetter $aliasForB = MemoryLetter::MemoryCardB,
+        MemoryLetter $aliasForE = MemoryLetter::Flash,
+        MemoryLetter $aliasForR = MemoryLetter::Ram,
+        MemoryLetter $aliasForA = MemoryLetter::MemoryCardA,
+    ): self {
+        return $this->addCommand(
+            new Commands\ChangeMemoryLetters(
+                aliasForB: $aliasForB,
+                aliasForE: $aliasForE,
+                aliasForR: $aliasForR,
+                aliasForA: $aliasForA,
+            ),
         );
     }
 

@@ -29,6 +29,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
@@ -936,6 +937,23 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^CI28,65,66', $output);
+    }
+
+    public function testChangeMemoryLettersEmitsCm(): void
+    {
+        $output = (string) ZplBuilder::start()->changeMemoryLetters(
+            aliasForB: MemoryLetter::Flash,
+            aliasForE: MemoryLetter::MemoryCardB,
+        );
+
+        self::assertSame('^XA^CME,B,R,A', $output);
+    }
+
+    public function testChangeMemoryLettersUsesIdentityDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->changeMemoryLetters();
+
+        self::assertSame('^XA^CMB,E,R,A', $output);
     }
 
     public function testCommentEmitsFx(): void
