@@ -734,6 +734,20 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldComment($text));
     }
 
+    public function downloadFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self {
+        return $this->addCommand(
+            new Commands\DownloadFormat(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
     public function downloadGraphics(
         string $name,
         int $totalBytes,

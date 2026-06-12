@@ -964,6 +964,20 @@ class ZplBuilderTest extends UnitTestCase
         );
     }
 
+    public function testDownloadFormatEmitsDf(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadFormat('STOREFMT', StorageDevice::Flash);
+
+        self::assertSame('^XA^DFE:STOREFMT.ZPL', $output);
+    }
+
+    public function testDownloadFormatUsesRamAndZplDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadFormat('STOREFMT');
+
+        self::assertSame('^XA^DFR:STOREFMT.ZPL', $output);
+    }
+
     public function testDownloadGraphicsEmitsDg(): void
     {
         $output = (string) ZplBuilder::start()->downloadGraphics('SAMPLE', 8000, 80, 'FF00FF00', StorageDevice::Flash);

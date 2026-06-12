@@ -639,6 +639,20 @@ interface ZplBuilderInterface extends Stringable
     public function comment(string $text): self;
 
     /**
+     * Open a stored-format download so the commands that follow are saved under the given name
+     * rather than printed (`^DF`). Pair with `recallFormat()` (`^XF`) to merge the stored format
+     * with variable data. Standalone command — it emits only `^DF…`, with no `^FD … ^FS`. The
+     * device defaults to `R:` (RAM) and the extension to `ZPL`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function downloadFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self;
+
+    /**
      * Download an ASCII-hex graphic image into a printer storage device (`~DG`). `$totalBytes` and
      * `$bytesPerRow` are the totals the caller computes for the image. Standalone command — no
      * `^FD … ^FS`. A caret or tilde in `$data` is rejected — either would abort the download. The

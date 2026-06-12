@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 The public API is **unstable until 1.0** — minor versions may include breaking changes.
 
+## [Unreleased]
+
+### Added
+
+- `ZplBuilder::downloadFormat()` and `ZplCommand\DownloadFormat` add support for `^DF` (Download Format), opening a stored-format download so subsequent commands are saved under a name for later recall with `^XF`; the device defaults to `R:` (RAM) and the extension to `ZPL`
+
 ## [0.62.0] - 2026-06-12
 
 ### Added
