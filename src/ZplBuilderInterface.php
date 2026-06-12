@@ -27,6 +27,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
 use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
@@ -1358,6 +1359,21 @@ interface ZplBuilderInterface extends Stringable
         int $hoursOffset = 0,
         int $minutesOffset = 0,
         int $secondsOffset = 0,
+    ): self;
+
+    /**
+     * Set the units the printer interprets coordinates in (`^MU`), and optionally convert a format
+     * between resolutions. `$unit` selects dots, inches, or millimetres (carried field-to-field
+     * until changed). Pass both `$baseDpi` (150/200/300) and `$conversionDpi` (300/600) to scale a
+     * format authored at one resolution to another; `$conversionDpi` is ignored unless `$baseDpi`
+     * is also given. Best placed at the start of the label.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setUnits(
+        MeasurementUnit $unit = MeasurementUnit::Dots,
+        ?int $baseDpi = null,
+        ?int $conversionDpi = null,
     ): self;
 
     /**

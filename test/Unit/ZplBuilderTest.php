@@ -30,6 +30,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
 use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
@@ -2287,6 +2288,34 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testSetUnitsEmitsConversion(): void
+    {
+        $output = (string) ZplBuilder::start()->setUnits(MeasurementUnit::Dots, 150, 300);
+
+        self::assertSame('^XA^MUD,150,300', $output);
+    }
+
+    public function testSetUnitsEmitsMuWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->setUnits();
+
+        self::assertSame('^XA^MUD', $output);
+    }
+
+    public function testSetUnitsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setUnits(baseDpi: 149);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testSlewEmitsPf(): void

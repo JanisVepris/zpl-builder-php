@@ -28,6 +28,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::mediaTracking()` and `ZplCommand\MediaTracking` add support for `^MN` (Media Tracking), telling the printer whether the media is continuous or non-continuous (web/mark sensing), with `Enum\MediaTrackingType` selecting the mode
 - `ZplBuilder::modeProtection()` and `ZplCommand\ModeProtection` add support for `^MP` (Mode Protection), locking individual control-panel mode functions, with `Enum\ProtectedMode` selecting which to disable (or `EnableAll`)
 - `ZplBuilder::mediaType()` and `ZplCommand\MediaType` add support for `^MT` (Media Type), selecting the print method, with `Enum\PrintMethod` choosing thermal transfer (ribbon) or direct thermal
+- `ZplBuilder::setUnits()` and `ZplCommand\SetUnits` add support for `^MU` (Set Units of Measurement), selecting dots/inches/millimetres via `Enum\MeasurementUnit` and optionally converting a format between resolutions
 
 ## [0.62.0] - 2026-06-12
 

@@ -27,6 +27,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
 use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
@@ -1490,6 +1491,20 @@ class ZplBuilder implements ZplBuilderInterface
                 hoursOffset: $hoursOffset,
                 minutesOffset: $minutesOffset,
                 secondsOffset: $secondsOffset,
+            ),
+        );
+    }
+
+    public function setUnits(
+        MeasurementUnit $unit = MeasurementUnit::Dots,
+        ?int $baseDpi = null,
+        ?int $conversionDpi = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetUnits(
+                unit: $unit,
+                baseDpi: $baseDpi,
+                conversionDpi: $conversionDpi,
             ),
         );
     }
