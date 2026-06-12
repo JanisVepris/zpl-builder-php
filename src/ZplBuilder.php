@@ -1225,6 +1225,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\MapClear($clear));
     }
 
+    public function maximumLabelLength(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\MaximumLabelLength($dotRows));
+    }
+
     public function mediaDarkness(int $level): self
     {
         return $this->addCommand(new Commands\MediaDarkness($level));

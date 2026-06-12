@@ -1779,6 +1779,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^MCN', $output);
     }
 
+    public function testMaximumLabelLengthEmitsMl(): void
+    {
+        $output = (string) ZplBuilder::start()->maximumLabelLength(1225);
+
+        self::assertSame('^XA^ML1225', $output);
+    }
+
     public function testMediaDarknessEmitsMd(): void
     {
         $output = (string) ZplBuilder::start()->mediaDarkness(15);

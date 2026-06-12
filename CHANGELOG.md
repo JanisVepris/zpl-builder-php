@@ -23,6 +23,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::mapClear()` and `ZplCommand\MapClear` add support for `^MC` (Map Clear), retaining the current label bitmap across labels instead of clearing it after printing
 - `ZplBuilder::mediaDarkness()` and `ZplCommand\MediaDarkness` add support for `^MD` (Media Darkness), adjusting print darkness by -30 to 30 relative to the printer's current setting
 - `ZplBuilder::mediaFeed()` and `ZplCommand\MediaFeed` add support for `^MF` (Media Feed), setting the media feed action at power-up and after head-close, with `Enum\MediaFeedAction` selecting each action
+- `ZplBuilder::maximumLabelLength()` and `ZplCommand\MaximumLabelLength` add support for `^ML` (Maximum Label Length), setting the maximum label length in dot rows (0 to 32000) for calibration
 
 ## [0.62.0] - 2026-06-12
 

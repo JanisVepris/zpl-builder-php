@@ -1112,6 +1112,14 @@ interface ZplBuilderInterface extends Stringable
     public function mapClear(bool $clear = true): self;
 
     /**
+     * Set the maximum label length in dot rows (`^ML`). Accepts 0 to 32000. For calibration to
+     * work, this must be equal to or greater than the actual label length.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function maximumLabelLength(int $dotRows): self;
+
+    /**
      * Adjust the print darkness relative to the printer's current setting (`^MD`). Accepts -30 to
      * 30; each call is applied against the configuration-label value, and the result is clamped to
      * the printer's overall range. A `~SD` value, if set, is added on top of this.
