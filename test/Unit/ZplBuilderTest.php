@@ -1065,6 +1065,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^RB96', $output);
     }
 
+    public function testDetectMultipleRfidTagsDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->detectMultipleRfidTags(false);
+
+        self::assertSame('^XA^RNN', $output);
+    }
+
+    public function testDetectMultipleRfidTagsEmitsRn(): void
+    {
+        $output = (string) ZplBuilder::start()->detectMultipleRfidTags();
+
+        self::assertSame('^XA^RNY', $output);
+    }
+
     public function testDownloadFormatEmitsDf(): void
     {
         $output = (string) ZplBuilder::start()->downloadFormat('STOREFMT', StorageDevice::Flash);

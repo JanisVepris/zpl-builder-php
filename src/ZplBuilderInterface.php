@@ -718,6 +718,13 @@ interface ZplBuilderInterface extends Stringable
     public function defineEpcDataStructure(int $totalBitSize = 96, int ...$partitionSizes): self;
 
     /**
+     * Enable or disable detection of multiple RFID tags in the encoding field (`^RN`). When enabled
+     * (the default), the printer voids the label if more than one tag is present; disabling speeds
+     * up printing. Persistent across labels. Not supported by all printers.
+     */
+    public function detectMultipleRfidTags(bool $enabled = true): self;
+
+    /**
      * Open a stored-format download so the commands that follow are saved under the given name
      * rather than printed (`^DF`). Pair with `recallFormat()` (`^XF`) to merge the stored format
      * with variable data. Standalone command — it emits only `^DF…`, with no `^FD … ^FS`. The

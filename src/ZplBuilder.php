@@ -810,6 +810,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function detectMultipleRfidTags(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\DetectMultipleRfidTags($enabled));
+    }
+
     public function downloadFormat(
         string $name,
         StorageDevice $device = StorageDevice::Ram,
