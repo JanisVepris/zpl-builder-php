@@ -737,6 +737,16 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function calibrateRfidTransponder(string $startString = 'start', string $endString = 'end'): self
+    {
+        return $this->addCommand(
+            new Commands\CalibrateRfidTransponder(
+                startString: $startString,
+                endString: $endString,
+            ),
+        );
+    }
+
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
         $current = $this->fontSettingsFor($font);

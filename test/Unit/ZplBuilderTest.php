@@ -916,6 +916,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testCalibrateRfidTransponderEmitsHr(): void
+    {
+        $output = (string) ZplBuilder::start()->calibrateRfidTransponder();
+
+        self::assertSame('^XA^HRstart,end', $output);
+    }
+
     public function testChangeFontEmitsCfWithLetterFont(): void
     {
         $output = (string) ZplBuilder::start()->changeFont(Font::A, 30, 15);

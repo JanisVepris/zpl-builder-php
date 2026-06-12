@@ -650,6 +650,16 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Initiate an RFID transponder-position calibration for the loaded RFID media (`^HR`),
+     * returning a results table to the host. `$startString` and `$endString` (each 1–64 bytes)
+     * bracket the table in the host output. Not supported by all printers.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function calibrateRfidTransponder(string $startString = 'start', string $endString = 'end'): self;
+
+    /**
      * Change the default font (`^CF`) and optionally its height and/or width.
      * Unspecified dimensions keep the last value set for that font.
      *
