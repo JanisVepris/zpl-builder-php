@@ -1111,6 +1111,15 @@ interface ZplBuilderInterface extends Stringable
     public function mapClear(bool $clear = true): self;
 
     /**
+     * Adjust the print darkness relative to the printer's current setting (`^MD`). Accepts -30 to
+     * 30; each call is applied against the configuration-label value, and the result is clamped to
+     * the printer's overall range. A `~SD` value, if set, is added on top of this.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function mediaDarkness(int $level): self;
+
+    /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
      * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
      * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension

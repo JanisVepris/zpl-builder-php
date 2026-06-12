@@ -1224,6 +1224,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\MapClear($clear));
     }
 
+    public function mediaDarkness(int $level): self
+    {
+        return $this->addCommand(new Commands\MediaDarkness($level));
+    }
+
     public function objectDelete(
         string $name,
         StorageDevice $device = StorageDevice::Ram,

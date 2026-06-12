@@ -1778,6 +1778,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^MCN', $output);
     }
 
+    public function testMediaDarknessEmitsMd(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaDarkness(15);
+
+        self::assertSame('^XA^MD15', $output);
+    }
+
+    public function testMediaDarknessRendersNegativeAdjustment(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaDarkness(-6);
+
+        self::assertSame('^XA^MD-6', $output);
+    }
+
     public function testNoPrintQuantityEmittedByDefault(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();

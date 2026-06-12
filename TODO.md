@@ -106,7 +106,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^CO` — Cache On
 - [x] `^CV` — Code Validation
 - [x] `^MC` — Map Clear
-- [ ] `^MD` — Media Darkness
+- [x] `^MD` — Media Darkness
 - [ ] `^MF` — Media Feed
 - [ ] `^ML` — Maximum Label Length
 - [ ] `^MM` — Print Mode
