@@ -31,6 +31,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setUnits()` and `ZplCommand\SetUnits` add support for `^MU` (Set Units of Measurement), selecting dots/inches/millimetres via `Enum\MeasurementUnit` and optionally converting a format between resolutions
 - `ZplBuilder::headColdWarning()` and `ZplCommand\HeadColdWarning` add support for `^MW` (Modify Head Cold Warning), enabling or disabling the head cold warning indicator
 - `ZplBuilder::printRate()` and `ZplCommand\PrintRate` add support for `^PR` (Print Rate), setting the print, slew, and backfeed speeds, with `Enum\PrintSpeed` selecting each speed in inches per second
+- `ZplBuilder::startPrint()` and `ZplCommand\StartPrint` add support for `^SP` (Start Print), starting the print at a given dot row before the rest of the format is composed
 
 ## [0.62.0] - 2026-06-12
 

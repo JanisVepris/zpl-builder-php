@@ -2363,6 +2363,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) ZplBuilder::start());
     }
 
+    public function testStartPrintEmitsSp(): void
+    {
+        $output = (string) ZplBuilder::start()->startPrint(500);
+
+        self::assertSame('^XA^SP500', $output);
+    }
+
     public function testSuppressBackfeedEmitsXb(): void
     {
         $output = (string) ZplBuilder::start()->suppressBackfeed();

@@ -1542,6 +1542,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $builder->addCommand(new Commands\StartFormat());
     }
 
+    public function startPrint(int $dotRow): self
+    {
+        return $this->addCommand(new Commands\StartPrint($dotRow));
+    }
+
     public function suppressBackfeed(): self
     {
         return $this->addCommand(new Commands\SuppressBackfeed());

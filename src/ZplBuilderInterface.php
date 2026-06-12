@@ -1403,6 +1403,14 @@ interface ZplBuilderInterface extends Stringable
     public function slew(int $dotRows): self;
 
     /**
+     * Start printing the label at the given dot row before the rest of the format is composed
+     * (`^SP`), improving throughput on complex labels. Accepts 0 to 32000.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function startPrint(int $dotRow): self;
+
+    /**
      * Suppress the forward feed to the tear-off position for this label (`^XB`), improving
      * throughput when batch printing. The last label in a batch should omit this command.
      */
