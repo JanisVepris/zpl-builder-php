@@ -863,6 +863,16 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function enableEasBit(bool $enabled = true, int $retries = 0): self
+    {
+        return $this->addCommand(
+            new Commands\EnableEasBit(
+                enabled: $enabled,
+                retries: $retries,
+            ),
+        );
+    }
+
     public function end(): self
     {
         return $this->addCommand(new Commands\EndFormat());

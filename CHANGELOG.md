@@ -49,6 +49,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::webAuthTimeout()` and `ZplCommand\WebAuthenticationTimeout` add support for `^NW` (Set Web Authentication Timeout Value), setting the printer web-page password timeout (0 to 255 minutes)
 - `ZplBuilder::readAfiOrDsfidByte()` and `ZplCommand\ReadAfiOrDsfidByte` add support for `^RA` (Read AFI or DSFID Byte), with `Enum\RfidByteFormat`, `Enum\RfidMotion`, and `Enum\RfidByteType` selecting the output format, label motion, and byte to read
 - `ZplBuilder::defineEpcDataStructure()` and `ZplCommand\DefineEpcDataStructure` add support for `^RB` (Define EPC Data Structure), defining the total bit size and per-partition bit sizes for EPC tag encoding
+- `ZplBuilder::enableEasBit()` and `ZplCommand\EnableEasBit` add support for `^RE` (Enable/Disable E.A.S. Bit), toggling the Electronic Article Surveillance bit on supported ISO15693 tags
 
 ## [0.62.0] - 2026-06-12
 

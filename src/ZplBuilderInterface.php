@@ -768,6 +768,15 @@ interface ZplBuilderInterface extends Stringable
         StorageDevice $device = StorageDevice::Ram,
     ): self;
 
+    /**
+     * Enable or disable the Electronic Article Surveillance (E.A.S.) bit on supported ISO15693 tags
+     * (`^RE`). `$retries` (0–10) is the write-retry count. Ignored on tags that don't support
+     * E.A.S. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function enableEasBit(bool $enabled = true, int $retries = 0): self;
+
     /** Finalise the format by appending `^XZ`. */
     public function end(): self;
 

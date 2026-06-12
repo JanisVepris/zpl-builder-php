@@ -1142,6 +1142,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testEnableEasBitDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->enableEasBit(false);
+
+        self::assertSame('^XA^REN,0', $output);
+    }
+
+    public function testEnableEasBitEmitsRe(): void
+    {
+        $output = (string) ZplBuilder::start()->enableEasBit();
+
+        self::assertSame('^XA^REY,0', $output);
+    }
+
     public function testEndAppendsEndFormatEveryTimeItsCalled(): void
     {
         $output = (string) ZplBuilder::start()->end()->end();
