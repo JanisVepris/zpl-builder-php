@@ -2465,6 +2465,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $builder);
     }
 
+    public function testSetSnmpEmitsNn(): void
+    {
+        $output = (string) ZplBuilder::start()->setSnmp(systemName: 'printer1');
+
+        self::assertSame('^XA^NNprinter1,,,public,public,public', $output);
+    }
+
+    public function testSetSnmpValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setSnmp(systemName: str_repeat('a', 18));
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSetUnitsEmitsConversion(): void
     {
         $output = (string) ZplBuilder::start()->setUnits(MeasurementUnit::Dots, 150, 300);

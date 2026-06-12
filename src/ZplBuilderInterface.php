@@ -1459,6 +1459,23 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Set the printer's SNMP parameters (`^NN`): system name (≤17 bytes), contact and location
+     * (≤50 bytes each), and the get/set (≤19 bytes) and trap (≤20 bytes) community names. The
+     * community names default to `public`.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setSnmp(
+        string $systemName = '',
+        string $systemContact = '',
+        string $systemLocation = '',
+        string $getCommunity = 'public',
+        string $setCommunity = 'public',
+        string $trapCommunity = 'public',
+    ): self;
+
+    /**
      * Set the units the printer interprets coordinates in (`^MU`), and optionally convert a format
      * between resolutions. `$unit` selects dots, inches, or millimetres (carried field-to-field
      * until changed). Pass both `$baseDpi` (150/200/300) and `$conversionDpi` (300/600) to scale a

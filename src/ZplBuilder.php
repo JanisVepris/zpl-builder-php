@@ -1588,6 +1588,26 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setSnmp(
+        string $systemName = '',
+        string $systemContact = '',
+        string $systemLocation = '',
+        string $getCommunity = 'public',
+        string $setCommunity = 'public',
+        string $trapCommunity = 'public',
+    ): self {
+        return $this->addCommand(
+            new Commands\SetSnmp(
+                systemName: $systemName,
+                systemContact: $systemContact,
+                systemLocation: $systemLocation,
+                getCommunity: $getCommunity,
+                setCommunity: $setCommunity,
+                trapCommunity: $trapCommunity,
+            ),
+        );
+    }
+
     public function setUnits(
         MeasurementUnit $unit = MeasurementUnit::Dots,
         ?int $baseDpi = null,
