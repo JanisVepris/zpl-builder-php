@@ -1764,6 +1764,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^LT-30', $output);
     }
 
+    public function testMapClearEmitsMc(): void
+    {
+        $output = (string) ZplBuilder::start()->mapClear();
+
+        self::assertSame('^XA^MCY', $output);
+    }
+
+    public function testMapClearRetainsBitmap(): void
+    {
+        $output = (string) ZplBuilder::start()->mapClear(false);
+
+        self::assertSame('^XA^MCN', $output);
+    }
+
     public function testNoPrintQuantityEmittedByDefault(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();

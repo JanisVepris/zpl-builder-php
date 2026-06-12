@@ -1104,6 +1104,13 @@ interface ZplBuilderInterface extends Stringable
     public function labelTop(int $dotRows): self;
 
     /**
+     * Retain the current label bitmap after printing instead of clearing it (`^MC`). Pass `false`
+     * to keep the default clear-after-print behaviour. Pair with `fieldVariable()` (`^FV`) to build
+     * a label template whose static portion carries over to the next label.
+     */
+    public function mapClear(bool $clear = true): self;
+
+    /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
      * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
      * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension

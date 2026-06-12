@@ -1219,6 +1219,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\LabelTop($dotRows));
     }
 
+    public function mapClear(bool $clear = true): self
+    {
+        return $this->addCommand(new Commands\MapClear($clear));
+    }
+
     public function objectDelete(
         string $name,
         StorageDevice $device = StorageDevice::Ram,
