@@ -30,6 +30,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
@@ -1790,6 +1791,16 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->mediaDarkness(-6);
 
         self::assertSame('^XA^MD-6', $output);
+    }
+
+    public function testMediaFeedEmitsMf(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaFeed(
+            MediaFeedAction::Feed,
+            MediaFeedAction::None,
+        );
+
+        self::assertSame('^XA^MFF,N', $output);
     }
 
     public function testNoPrintQuantityEmittedByDefault(): void

@@ -27,6 +27,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
@@ -1227,6 +1228,16 @@ class ZplBuilder implements ZplBuilderInterface
     public function mediaDarkness(int $level): self
     {
         return $this->addCommand(new Commands\MediaDarkness($level));
+    }
+
+    public function mediaFeed(MediaFeedAction $powerUp, MediaFeedAction $headClose): self
+    {
+        return $this->addCommand(
+            new Commands\MediaFeed(
+                powerUp: $powerUp,
+                headClose: $headClose,
+            ),
+        );
     }
 
     public function objectDelete(

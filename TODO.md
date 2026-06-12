@@ -107,7 +107,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^CV` — Code Validation
 - [x] `^MC` — Map Clear
 - [x] `^MD` — Media Darkness
-- [ ] `^MF` — Media Feed
+- [x] `^MF` — Media Feed
 - [ ] `^ML` — Maximum Label Length
 - [ ] `^MM` — Print Mode
 - [ ] `^MN` — Media Tracking

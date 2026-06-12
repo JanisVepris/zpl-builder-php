@@ -27,6 +27,7 @@ use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
@@ -1118,6 +1119,13 @@ interface ZplBuilderInterface extends Stringable
      * @throws IntegerValueOutOfRangeException
      */
     public function mediaDarkness(int $level): self;
+
+    /**
+     * Set what the printer does to the media at power-up and after the printhead closes (`^MF`).
+     * Each action feeds to the first web, runs calibration (`~JC`), detects label length (`~JL`),
+     * or does not feed. Both defaults are platform-dependent, so both arguments are required.
+     */
+    public function mediaFeed(MediaFeedAction $powerUp, MediaFeedAction $headClose): self;
 
     /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
