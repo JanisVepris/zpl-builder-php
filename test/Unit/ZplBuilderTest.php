@@ -45,6 +45,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
@@ -2377,6 +2378,20 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetZplEmitsSzWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->setZpl();
+
+        self::assertSame('^XA^SZ2', $output);
+    }
+
+    public function testSetZplSelectsLegacyZpl(): void
+    {
+        $output = (string) ZplBuilder::start()->setZpl(ZplMode::Zpl);
+
+        self::assertSame('^XA^SZ1', $output);
     }
 
     public function testSlewEmitsPf(): void

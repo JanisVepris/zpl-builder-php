@@ -42,6 +42,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
@@ -1414,6 +1415,12 @@ interface ZplBuilderInterface extends Stringable
         ?int $baseDpi = null,
         ?int $conversionDpi = null,
     ): self;
+
+    /**
+     * Select the ZPL language the printer interprets (`^SZ`): legacy ZPL or ZPL II (the default).
+     * Remains active until changed again or the printer is turned off.
+     */
+    public function setZpl(ZplMode $mode = ZplMode::ZplII): self;
 
     /**
      * Slew (feed without printing) the given number of dot rows from the bottom of the label

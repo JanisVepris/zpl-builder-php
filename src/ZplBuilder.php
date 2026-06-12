@@ -42,6 +42,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
@@ -1553,6 +1554,11 @@ class ZplBuilder implements ZplBuilderInterface
                 conversionDpi: $conversionDpi,
             ),
         );
+    }
+
+    public function setZpl(ZplMode $mode = ZplMode::ZplII): self
+    {
+        return $this->addCommand(new Commands\SetZpl($mode));
     }
 
     public function slew(int $dotRows): self

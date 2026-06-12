@@ -33,6 +33,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::printRate()` and `ZplCommand\PrintRate` add support for `^PR` (Print Rate), setting the print, slew, and backfeed speeds, with `Enum\PrintSpeed` selecting each speed in inches per second
 - `ZplBuilder::startPrint()` and `ZplCommand\StartPrint` add support for `^SP` (Start Print), starting the print at a given dot row before the rest of the format is composed
 - `ZplBuilder::setMediaSensors()` and `ZplCommand\SetMediaSensors` add support for `^SS` (Set Media Sensors), overriding the web/media/ribbon/label-length calibration values, with optional LED-intensity and mark-sensing parameters
+- `ZplBuilder::setZpl()` and `ZplCommand\SetZpl` add support for `^SZ` (Set ZPL), selecting the ZPL language version, with `Enum\ZplMode` choosing legacy ZPL or ZPL II
 
 ## [0.62.0] - 2026-06-12
 
