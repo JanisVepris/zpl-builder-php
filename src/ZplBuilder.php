@@ -800,6 +800,13 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldComment($text));
     }
 
+    public function defineEpcDataStructure(int $totalBitSize = 96, int ...$partitionSizes): self
+    {
+        return $this->addCommand(
+            new Commands\DefineEpcDataStructure($totalBitSize, ...$partitionSizes),
+        );
+    }
+
     public function downloadFormat(
         string $name,
         StorageDevice $device = StorageDevice::Ram,

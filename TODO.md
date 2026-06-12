@@ -188,7 +188,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^NT` — Set SMTP
 - [x] `^NW` — Set Web Authentication Timeout Value
 - [x] `^RA` — Read AFI or DSFID Byte
-- [ ] `^RB` — Define EPC Data Structure
+- [x] `^RB` — Define EPC Data Structure
 - [ ] `^RE` — Enable/Disable E.A.S. Bit
 - [ ] `^RF` — Read or Write RFID Format
 - [ ] `^RI` — Get RFID Tag ID

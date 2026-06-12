@@ -1050,6 +1050,20 @@ class ZplBuilderTest extends UnitTestCase
         );
     }
 
+    public function testDefineEpcDataStructureEmitsRbWithPartitions(): void
+    {
+        $output = (string) ZplBuilder::start()->defineEpcDataStructure(96, 10, 26, 60);
+
+        self::assertSame('^XA^RB96,10,26,60', $output);
+    }
+
+    public function testDefineEpcDataStructureEmitsTotalBitSizeOnly(): void
+    {
+        $output = (string) ZplBuilder::start()->defineEpcDataStructure();
+
+        self::assertSame('^XA^RB96', $output);
+    }
+
     public function testDownloadFormatEmitsDf(): void
     {
         $output = (string) ZplBuilder::start()->downloadFormat('STOREFMT', StorageDevice::Flash);

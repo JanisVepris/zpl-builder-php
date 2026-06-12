@@ -705,6 +705,16 @@ interface ZplBuilderInterface extends Stringable
     public function comment(string $text): self;
 
     /**
+     * Define the EPC data structure used when reading or writing RFID tags (`^RB`). `$totalBitSize`
+     * is the total number of bits across the partitions (default 96); each `$partitionSizes` entry
+     * (1–64 bits) defines one partition, and they must add up to the total. Persistent across
+     * formats. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function defineEpcDataStructure(int $totalBitSize = 96, int ...$partitionSizes): self;
+
+    /**
      * Open a stored-format download so the commands that follow are saved under the given name
      * rather than printed (`^DF`). Pair with `recallFormat()` (`^XF`) to merge the stored format
      * with variable data. Standalone command — it emits only `^DF…`, with no `^FD … ^FS`. The
