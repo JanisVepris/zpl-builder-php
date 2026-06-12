@@ -123,7 +123,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^SS` — Set Media Sensors
 - [x] `^SZ` — Set ZPL
 - [x] `^ZZ` — Printer Sleep
-- [ ] `~PR` — Applicator Reprint
+- [x] `~PR` — Applicator Reprint
 - [ ] `~PS` — Print Start
 - [ ] `~SD` — Set Darkness
 - [ ] `~TA` — Tear-off Adjust Position

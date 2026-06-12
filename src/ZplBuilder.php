@@ -104,6 +104,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this;
     }
 
+    public function applicatorReprint(): self
+    {
+        return $this->addCommand(new Commands\ApplicatorReprint());
+    }
+
     public function applyFontPreset(string $name): self
     {
         if (!isset($this->fontPresets[$name])) {

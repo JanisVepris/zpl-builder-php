@@ -35,6 +35,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setMediaSensors()` and `ZplCommand\SetMediaSensors` add support for `^SS` (Set Media Sensors), overriding the web/media/ribbon/label-length calibration values, with optional LED-intensity and mark-sensing parameters
 - `ZplBuilder::setZpl()` and `ZplCommand\SetZpl` add support for `^SZ` (Set ZPL), selecting the ZPL language version, with `Enum\ZplMode` choosing legacy ZPL or ZPL II
 - `ZplBuilder::printerSleep()` and `ZplCommand\PrinterSleep` add support for `^ZZ` (Printer Sleep), placing battery-powered printers into idle/shutdown mode after a configurable idle time
+- `ZplBuilder::applicatorReprint()` and `ZplCommand\ApplicatorReprint` add support for `~PR` (Applicator Reprint), reprinting the last label on PAX/PAX2-series printers
 
 ## [0.62.0] - 2026-06-12
 

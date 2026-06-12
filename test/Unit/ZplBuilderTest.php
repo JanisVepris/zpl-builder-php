@@ -295,6 +295,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame(15, $preset->width);
     }
 
+    public function testApplicatorReprintEmitsPr(): void
+    {
+        $output = (string) ZplBuilder::start()->applicatorReprint();
+
+        self::assertSame('^XA~PR', $output);
+    }
+
     public function testApplyFontPresetEmitsChangeFontWithStoredDimensions(): void
     {
         $output = (string) ZplBuilder::start()

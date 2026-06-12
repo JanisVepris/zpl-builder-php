@@ -85,6 +85,12 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Reprint the last label, mirroring the applicator's Reprint signal (`~PR`). Supported only on
+     * PAX/PAX2-series printers, and only when applicator reprint is enabled via `^JJ`.
+     */
+    public function applicatorReprint(): self;
+
+    /**
      * Apply a previously registered font preset, emitting `^CF` with its stored dimensions.
      *
      * @throws FontPresetDoesNotExistException
