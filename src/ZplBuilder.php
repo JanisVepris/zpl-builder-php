@@ -1172,6 +1172,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
     }
 
+    public function labelShift(int $shift = 0): self
+    {
+        return $this->addCommand(new Commands\LabelShift($shift));
+    }
+
     public function objectDelete(
         string $name,
         StorageDevice $device = StorageDevice::Ram,

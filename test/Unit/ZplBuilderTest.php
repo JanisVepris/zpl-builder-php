@@ -1682,6 +1682,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^LRY', $output);
     }
 
+    public function testLabelShiftEmitsLs(): void
+    {
+        $output = (string) ZplBuilder::start()->labelShift(-50);
+
+        self::assertSame('^XA^LS-50', $output);
+    }
+
+    public function testLabelShiftUsesZeroDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->labelShift();
+
+        self::assertSame('^XA^LS0', $output);
+    }
+
     public function testNoPrintQuantityEmittedByDefault(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();

@@ -1050,6 +1050,15 @@ interface ZplBuilderInterface extends Stringable
     public function labelReversePrint(bool $reversePrint = true): self;
 
     /**
+     * Shift all field positions left by the given number of dots for compatibility with Z-130/Z-220
+     * formats (`^LS`). Accepts -9999 to 9999 and defaults to 0 (no shift). Must precede the first
+     * `^FS` to be honoured by existing Zebra printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function labelShift(int $shift = 0): self;
+
+    /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
      * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
      * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension
