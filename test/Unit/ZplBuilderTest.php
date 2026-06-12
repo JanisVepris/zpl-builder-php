@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder\Test\Unit;
 use DateTimeImmutable;
 use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
+use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
@@ -870,6 +871,34 @@ class ZplBuilderTest extends UnitTestCase
             ->barcodeUpcE('1230000045');
 
         self::assertStringContainsString('^B9N,50,', $output);
+    }
+
+    public function testCacheOnEmitsCoWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->cacheOn();
+
+        self::assertSame('^XA^COY,40,0', $output);
+    }
+
+    public function testCacheOnEmitsExplicitMemoryAndType(): void
+    {
+        $output = (string) ZplBuilder::start()->cacheOn(false, 128, CacheType::Internal);
+
+        self::assertSame('^XA^CON,128,1', $output);
+    }
+
+    public function testCacheOnValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->cacheOn(additionalMemory: -1);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testChangeFontEmitsCfWithLetterFont(): void

@@ -18,6 +18,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::printMirror()` and `ZplCommand\PrintMirror` add support for `^PM` (Printing Mirror Image of Label), printing the entire label flipped left to right ([`43ac7c5`](https://github.com/JanisVepris/zpl-builder-php/commit/43ac7c5))
 - `ZplBuilder::suppressBackfeed()` and `ZplCommand\SuppressBackfeed` add support for `^XB` (Suppress Backfeed), suppressing the forward feed to the tear-off position for the current label to improve batch-printing throughput ([`b70e001`](https://github.com/JanisVepris/zpl-builder-php/commit/b70e001))
 - `ZplBuilder::changeMemoryLetters()` and `ZplCommand\ChangeMemoryLetters` add support for `^CM` (Change Memory Letter Designation), reassigning the printer's `B:`/`E:`/`R:`/`A:` memory-device letters, with `Enum\MemoryLetter` selecting each target (`None` to leave a letter unassigned)
+- `ZplBuilder::cacheOn()` and `ZplCommand\CacheOn` add support for `^CO` (Cache On), resizing the scalable-font character cache, with `Enum\CacheType` selecting the normal or internal (Asian-font) buffer
 
 ## [0.62.0] - 2026-06-12
 

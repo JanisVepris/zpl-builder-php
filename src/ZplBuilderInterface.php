@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
@@ -618,6 +619,20 @@ interface ZplBuilderInterface extends Stringable
         ?int $height = null,
         bool $printInterpretation = true,
         bool $printInterpretationAboveCode = true,
+    ): self;
+
+    /**
+     * Resize the printer's scalable-font character cache (`^CO`). `$enabled` toggles the cache,
+     * `$additionalMemory` is the amount of memory (in K) to add beyond the default 40K cache, and
+     * `$type` selects the buffer (`CacheType::Normal`, or `Internal` for large Asian fonts). Not
+     * required on firmware x.12+, where the cache grows automatically.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function cacheOn(
+        bool $enabled = true,
+        int $additionalMemory = 40,
+        CacheType $type = CacheType::Normal,
     ): self;
 
     /**

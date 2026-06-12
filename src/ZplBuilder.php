@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
@@ -707,6 +708,20 @@ class ZplBuilder implements ZplBuilderInterface
         );
 
         return $this->fieldData($data);
+    }
+
+    public function cacheOn(
+        bool $enabled = true,
+        int $additionalMemory = 40,
+        CacheType $type = CacheType::Normal,
+    ): self {
+        return $this->addCommand(
+            new Commands\CacheOn(
+                enabled: $enabled,
+                additionalMemory: $additionalMemory,
+                type: $type,
+            ),
+        );
     }
 
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
