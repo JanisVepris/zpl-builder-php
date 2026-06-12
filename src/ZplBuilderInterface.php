@@ -1081,6 +1081,12 @@ interface ZplBuilderInterface extends Stringable
         string $extension = 'GRF',
     ): self;
 
+    /**
+     * Toggle printing the entire label as a mirror image, flipped left to right (`^PM`). Remains
+     * active until disabled (`^PMN`) or the printer is turned off.
+     */
+    public function printMirror(bool $mirror = true): self;
+
     /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
     public function printNewlines(bool $toggle = true): self;
 

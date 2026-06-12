@@ -1725,6 +1725,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^IDR:*.GRF^FS', $output);
     }
 
+    public function testPrintMirrorEmitsPm(): void
+    {
+        $output = (string) ZplBuilder::start()->printMirror(false);
+
+        self::assertSame('^XA^PMN', $output);
+    }
+
+    public function testPrintMirrorUsesYesDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->printMirror();
+
+        self::assertSame('^XA^PMY', $output);
+    }
+
     public function testPrintNewlinesSeparatesCommandsWithEol(): void
     {
         $output = (string) ZplBuilder::start()->printNewlines()->fieldData('Hi')->end();

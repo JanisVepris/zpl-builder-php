@@ -94,7 +94,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^LS` — Label Shift
 - [x] `^LT` — Label Top
 - [x] `^PF` — Slew Given Number of Dot Rows
-- [ ] `^PM` — Printing Mirror Image of Label
+- [x] `^PM` — Printing Mirror Image of Label
 - [x] `^XA` — Start Format
 - [ ] `^XB` — Suppress Backfeed
 - [x] `^XF` — Recall Format

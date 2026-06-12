@@ -1198,6 +1198,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
+    public function printMirror(bool $mirror = true): self
+    {
+        return $this->addCommand(new Commands\PrintMirror($mirror));
+    }
+
     public function printNewlines(bool $toggle = true): self
     {
         $this->printNewlines = $toggle;
