@@ -194,7 +194,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^RI` — Get RFID Tag ID
 - [x] `^RM` — Enable RFID Motion
 - [x] `^RN` — Detect Multiple RFID Tags in Encoding Field
-- [ ] `^RR` — Specify RFID Retries for a Block
+- [x] `^RR` — Specify RFID Retries for a Block
 - [ ] `^RS` — Set Up RFID Parameters
 - [ ] `^RT` — Read RFID Tag
 - [ ] `^RW` — Set RFID Read and Write Power Levels

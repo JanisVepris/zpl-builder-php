@@ -54,6 +54,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::getRfidTagId()` and `ZplCommand\GetRfidTagId` add support for `^RI` (Get RFID Tag ID), reading a tag's serial number into a field, with `Enum\RfidDataOrder` selecting byte order
 - `ZplBuilder::enableRfidMotion()` and `ZplCommand\EnableRfidMotion` add support for `^RM` (Enable RFID Motion), toggling whether the label moves when it reaches the program position
 - `ZplBuilder::detectMultipleRfidTags()` and `ZplCommand\DetectMultipleRfidTags` add support for `^RN` (Detect Multiple RFID Tags in Encoding Field), toggling the multiple-tag check before reading or writing
+- `ZplBuilder::rfidBlockRetries()` and `ZplCommand\RfidBlockRetries` add support for `^RR` (Specify RFID Retries for a Block), setting how many times the printer retries a single tag block (0 to 10)
 
 ## [0.62.0] - 2026-06-12
 

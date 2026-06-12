@@ -2280,6 +2280,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $commands[0]);
     }
 
+    public function testRfidBlockRetriesEmitsRr(): void
+    {
+        $output = (string) ZplBuilder::start()->rfidBlockRetries(5);
+
+        self::assertSame('^XA^RR5', $output);
+    }
+
+    public function testRfidBlockRetriesValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->rfidBlockRetries(11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSearchWiredPrintServerChecks(): void
     {
         $output = (string) ZplBuilder::start()->searchWiredPrintServer(WiredPrintServerCheck::Check);

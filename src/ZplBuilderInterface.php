@@ -1416,6 +1416,15 @@ interface ZplBuilderInterface extends Stringable
     public function reset(): self;
 
     /**
+     * Set the number of times the printer retries reading or writing a single tag block (`^RR`,
+     * 0–10). Persistent across formats. Distinct from the number-of-labels retry in `^RS`. Not
+     * supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function rfidBlockRetries(int $retries): self;
+
+    /**
      * Tell the printer whether to check for a wired print server at network boot (`^NB`). When set
      * to skip (the default), the wireless print server is used as the primary; when set to check, a
      * detected wired print server takes priority.

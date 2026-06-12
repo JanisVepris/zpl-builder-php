@@ -1543,6 +1543,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this;
     }
 
+    public function rfidBlockRetries(int $retries): self
+    {
+        return $this->addCommand(new Commands\RfidBlockRetries($retries));
+    }
+
     public function searchWiredPrintServer(WiredPrintServerCheck $check = WiredPrintServerCheck::Skip): self
     {
         return $this->addCommand(new Commands\SearchWiredPrintServer($check));
