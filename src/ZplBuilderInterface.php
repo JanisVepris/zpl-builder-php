@@ -1367,6 +1367,15 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Set the absolute print darkness (`~SD`), the equivalent of the control-panel darkness
+     * setting. Accepts 0 to 30 and renders as a two-digit value; a `^MD` adjustment, if set, is
+     * added on top.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setDarkness(int $darkness): self;
+
+    /**
      * Set the Real-Time Clock date and time (`^ST`). Each component defaults to the
      * corresponding value of the current system time; the time format defaults to
      * 24-hour military. Accepted ranges: month `1..12`, day `1..31`, year `1998..2097`,

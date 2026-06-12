@@ -1492,6 +1492,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setDarkness(int $darkness): self
+    {
+        return $this->addCommand(new Commands\SetDarkness($darkness));
+    }
+
     public function setDateTime(
         ?int $month = null,
         ?int $day = null,

@@ -2296,6 +2296,34 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $builder);
     }
 
+    public function testSetDarknessEmitsSd(): void
+    {
+        $output = (string) ZplBuilder::start()->setDarkness(15);
+
+        self::assertSame('^XA~SD15', $output);
+    }
+
+    public function testSetDarknessPadsSingleDigit(): void
+    {
+        $output = (string) ZplBuilder::start()->setDarkness(8);
+
+        self::assertSame('^XA~SD08', $output);
+    }
+
+    public function testSetDarknessValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setDarkness(31);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSetDateTimeDefaultsToCurrentTimeAndMilitaryFormat(): void
     {
         $now = new DateTimeImmutable();
