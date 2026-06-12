@@ -1415,6 +1415,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $builder->addCommand(new Commands\StartFormat());
     }
 
+    public function suppressBackfeed(): self
+    {
+        return $this->addCommand(new Commands\SuppressBackfeed());
+    }
+
     public function transferObject(
         StorageDevice $sourceDevice,
         StorageDevice $destinationDevice,

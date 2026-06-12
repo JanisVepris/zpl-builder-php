@@ -2155,6 +2155,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) ZplBuilder::start());
     }
 
+    public function testSuppressBackfeedEmitsXb(): void
+    {
+        $output = (string) ZplBuilder::start()->suppressBackfeed();
+
+        self::assertSame('^XA^XB', $output);
+    }
+
     public function testTransferObjectEmitsToWithDefaults(): void
     {
         $output = (string) ZplBuilder::start()->transferObject(

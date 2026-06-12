@@ -96,7 +96,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^PF` — Slew Given Number of Dot Rows
 - [x] `^PM` — Printing Mirror Image of Label
 - [x] `^XA` — Start Format
-- [ ] `^XB` — Suppress Backfeed
+- [x] `^XB` — Suppress Backfeed
 - [x] `^XF` — Recall Format
 - [x] `^XZ` — End Format
 

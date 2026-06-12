@@ -16,6 +16,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::labelTop()` and `ZplCommand\LabelTop` add support for `^LT` (Label Top), moving the entire label format -120 to 120 dot rows relative to the top edge
 - `ZplBuilder::slew()` and `ZplCommand\Slew` add support for `^PF` (Slew Given Number of Dot Rows), feeding 0 to 32000 dot rows without printing to speed up labels with a blank bottom
 - `ZplBuilder::printMirror()` and `ZplCommand\PrintMirror` add support for `^PM` (Printing Mirror Image of Label), printing the entire label flipped left to right
+- `ZplBuilder::suppressBackfeed()` and `ZplCommand\SuppressBackfeed` add support for `^XB` (Suppress Backfeed), suppressing the forward feed to the tear-off position for the current label to improve batch-printing throughput
 
 ## [0.62.0] - 2026-06-12
 

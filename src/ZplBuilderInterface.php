@@ -1269,6 +1269,12 @@ interface ZplBuilderInterface extends Stringable
     public function slew(int $dotRows): self;
 
     /**
+     * Suppress the forward feed to the tear-off position for this label (`^XB`), improving
+     * throughput when batch printing. The last label in a batch should omit this command.
+     */
+    public function suppressBackfeed(): self;
+
+    /**
      * Copy an object (graphic, font, …) from one storage device to another (`^TO`).
      *
      * Mirrors the spec's `^TOs:o.x,d:o.x` wire format: a source `device:name.extension`
