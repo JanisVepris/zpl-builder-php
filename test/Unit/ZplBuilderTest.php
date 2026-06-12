@@ -2490,6 +2490,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^XB', $output);
     }
 
+    public function testTearOffAdjustEmitsTa(): void
+    {
+        $output = (string) ZplBuilder::start()->tearOffAdjust(45);
+
+        self::assertSame('^XA~TA045', $output);
+    }
+
+    public function testTearOffAdjustRendersNegativeAdjustment(): void
+    {
+        $output = (string) ZplBuilder::start()->tearOffAdjust(-30);
+
+        self::assertSame('^XA~TA-30', $output);
+    }
+
     public function testTransferObjectEmitsToWithDefaults(): void
     {
         $output = (string) ZplBuilder::start()->transferObject(

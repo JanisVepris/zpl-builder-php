@@ -126,7 +126,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `~PR` — Applicator Reprint
 - [x] `~PS` — Print Start
 - [x] `~SD` — Set Darkness
-- [ ] `~TA` — Tear-off Adjust Position
+- [x] `~TA` — Tear-off Adjust Position
 
 ## Host I/O, diagnostics, printer state (lower priority — typically managed out-of-band)
 

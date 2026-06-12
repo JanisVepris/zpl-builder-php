@@ -38,6 +38,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::applicatorReprint()` and `ZplCommand\ApplicatorReprint` add support for `~PR` (Applicator Reprint), reprinting the last label on PAX/PAX2-series printers
 - `ZplBuilder::printStart()` and `ZplCommand\PrintStart` add support for `~PS` (Print Start), resuming printing on a printer that is in Pause Mode
 - `ZplBuilder::setDarkness()` and `ZplCommand\SetDarkness` add support for `~SD` (Set Darkness), setting the absolute print darkness (0 to 30)
+- `ZplBuilder::tearOffAdjust()` and `ZplCommand\TearOffAdjust` add support for `~TA` (Tear-off Adjust Position), shifting the media rest position (-120 to 120 dot rows) where the label is torn or cut
 
 ## [0.62.0] - 2026-06-12
 

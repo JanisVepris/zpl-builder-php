@@ -1609,6 +1609,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\SuppressBackfeed());
     }
 
+    public function tearOffAdjust(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\TearOffAdjust($dotRows));
+    }
+
     public function transferObject(
         StorageDevice $sourceDevice,
         StorageDevice $destinationDevice,

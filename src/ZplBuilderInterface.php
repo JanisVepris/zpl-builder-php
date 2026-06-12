@@ -1476,6 +1476,15 @@ interface ZplBuilderInterface extends Stringable
     public function suppressBackfeed(): self;
 
     /**
+     * Adjust the media rest position after printing (`~TA`), shifting where the label is torn or
+     * cut. Accepts -120 to 120 dot rows and renders as a 3-digit value; the step size doubles on
+     * 600 dpi printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function tearOffAdjust(int $dotRows): self;
+
+    /**
      * Copy an object (graphic, font, …) from one storage device to another (`^TO`).
      *
      * Mirrors the spec's `^TOs:o.x,d:o.x` wire format: a source `device:name.extension`
