@@ -87,7 +87,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 ## Label layout and format control
 
 - [x] `^DF` — Download Format
-- [ ] `^HF` — Host Format
+- [x] `^HF` — Host Format
 - [x] `^LH` — Label Home
 - [x] `^LL` — Label Length
 - [x] `^LR` — Label Reverse Print

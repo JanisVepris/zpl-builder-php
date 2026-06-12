@@ -11,6 +11,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 ### Added
 
 - `ZplBuilder::downloadFormat()` and `ZplCommand\DownloadFormat` add support for `^DF` (Download Format), opening a stored-format download so subsequent commands are saved under a name for later recall with `^XF`; the device defaults to `R:` (RAM) and the extension to `ZPL`
+- `ZplBuilder::hostFormat()` and `ZplCommand\HostFormat` add support for `^HF` (Host Format), sending a stored format from the printer back to the host; the device defaults to `R:` (RAM) and the extension to `ZPL`
 
 ## [0.62.0] - 2026-06-12
 

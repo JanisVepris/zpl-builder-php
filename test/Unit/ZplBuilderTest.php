@@ -1584,6 +1584,20 @@ class ZplBuilderTest extends UnitTestCase
         self::assertTrue($builder->hasFontPreset('big'));
     }
 
+    public function testHostFormatEmitsHf(): void
+    {
+        $output = (string) ZplBuilder::start()->hostFormat('FILE1', StorageDevice::MemoryCardB);
+
+        self::assertSame('^XA^HFB:FILE1.ZPL', $output);
+    }
+
+    public function testHostFormatUsesRamAndZplDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->hostFormat('FILE1');
+
+        self::assertSame('^XA^HFR:FILE1.ZPL', $output);
+    }
+
     public function testHostGraphicEmitsHg(): void
     {
         $output = (string) ZplBuilder::start()->hostGraphic('SAMPLE', StorageDevice::Flash);

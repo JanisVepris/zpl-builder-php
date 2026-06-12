@@ -968,6 +968,19 @@ interface ZplBuilderInterface extends Stringable
     public function hasFontPreset(string $name): bool;
 
     /**
+     * Send a stored format from the printer back to the host (`^HF`). Standalone command — it emits
+     * only `^HF…`, with no `^FD … ^FS`. The device defaults to `R:` (RAM) and the extension to
+     * `ZPL`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function hostFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self;
+
+    /**
      * Upload a stored graphic from the printer to the host (`^HG`). Standalone command — it emits
      * only `^HG…`, with no `^FD … ^FS`.
      *
