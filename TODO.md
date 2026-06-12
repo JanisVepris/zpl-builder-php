@@ -181,7 +181,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 
 - [x] `^HR` — Calibrate RFID Transponder Position
 - [x] `^NB` — Search for Wired Print Server during Network Boot
-- [ ] `^NI` — Network ID Number
+- [x] `^NI` — Network ID Number
 - [ ] `^NN` — Set SNMP
 - [ ] `^NP` — Set Primary/Secondary Device
 - [ ] `^NS` — Change Networking Settings

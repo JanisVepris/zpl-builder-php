@@ -1288,6 +1288,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\ModeProtection($mode));
     }
 
+    public function networkId(int $networkId): self
+    {
+        return $this->addCommand(new Commands\NetworkId($networkId));
+    }
+
     public function objectDelete(
         string $name,
         StorageDevice $device = StorageDevice::Ram,

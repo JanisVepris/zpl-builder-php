@@ -1187,6 +1187,14 @@ interface ZplBuilderInterface extends Stringable
     public function modeProtection(ProtectedMode $mode): self;
 
     /**
+     * Assign the printer's network ID number for RS-485 communications (`^NI`). Accepts 1 to 999
+     * and renders as a three-digit value. Must be set before the printer can be used on the network.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function networkId(int $networkId): self;
+
+    /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
      * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
      * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension

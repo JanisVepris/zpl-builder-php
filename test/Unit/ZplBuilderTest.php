@@ -1867,6 +1867,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^MPD', $output);
     }
 
+    public function testNetworkIdEmitsNi(): void
+    {
+        $output = (string) ZplBuilder::start()->networkId(42);
+
+        self::assertSame('^XA^NI042', $output);
+    }
+
+    public function testNetworkIdValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->networkId(0);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testNoPrintQuantityEmittedByDefault(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();

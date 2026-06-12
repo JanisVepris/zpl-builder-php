@@ -41,6 +41,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::tearOffAdjust()` and `ZplCommand\TearOffAdjust` add support for `~TA` (Tear-off Adjust Position), shifting the media rest position (-120 to 120 dot rows) where the label is torn or cut ([`f5d1f0c`](https://github.com/JanisVepris/zpl-builder-php/commit/f5d1f0c))
 - `ZplBuilder::calibrateRfidTransponder()` and `ZplCommand\CalibrateRfidTransponder` add support for `^HR` (Calibrate RFID Transponder Position), initiating an RFID transponder-position calibration that returns a results table to the host
 - `ZplBuilder::searchWiredPrintServer()` and `ZplCommand\SearchWiredPrintServer` add support for `^NB` (Search for Wired Print Server during Network Boot), with `Enum\WiredPrintServerCheck` choosing whether to check for a wired print server at boot
+- `ZplBuilder::networkId()` and `ZplCommand\NetworkId` add support for `^NI` (Network ID Number), assigning the printer's RS-485 network ID (1 to 999)
 
 ## [0.62.0] - 2026-06-12
 
