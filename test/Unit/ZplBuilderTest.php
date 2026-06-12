@@ -18,9 +18,13 @@ use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
+use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DownloadExtension;
+use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
+use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -230,6 +234,13 @@ use ReflectionMethod;
 #[UsesClass(ScalableBitmappedFont::class)]
 class ZplBuilderTest extends UnitTestCase
 {
+    public function testAbortDownloadGraphicEmitsDn(): void
+    {
+        $output = (string) ZplBuilder::start()->abortDownloadGraphic();
+
+        self::assertSame('^XA~DN', $output);
+    }
+
     public function testAddFontPresetInheritsDimensionsFromFontWhenOmitted(): void
     {
         $builder = ZplBuilder::start()
@@ -921,6 +932,70 @@ class ZplBuilderTest extends UnitTestCase
         );
     }
 
+    public function testDownloadGraphicsEmitsDg(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadGraphics('SAMPLE', 8000, 80, 'FF00FF00', StorageDevice::Flash);
+
+        self::assertSame('^XA~DGE:SAMPLE.GRF,8000,80,FF00FF00', $output);
+    }
+
+    public function testDownloadGraphicsUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadGraphics('LOGO', 16, 2, 'ABCD');
+
+        self::assertSame('^XA~DGR:LOGO.GRF,16,2,ABCD', $output);
+    }
+
+    public function testDownloadGraphicsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->downloadGraphics('', 16, 2, 'ABCD');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testDownloadObjectEmitsDy(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadObject(
+            'FONTFILE.TTF',
+            DownloadFormat::UncompressedBinary,
+            52010,
+            DownloadExtension::TrueType,
+            0,
+            '',
+            StorageDevice::Flash,
+        );
+
+        self::assertSame('^XA~DYE:FONTFILE.TTF,B,T,52010,0,', $output);
+    }
+
+    public function testDownloadObjectUsesGrfRamAndEmptyDataDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadObject('LOGO', DownloadFormat::UncompressedAscii, 8000);
+
+        self::assertSame('^XA~DYR:LOGO,A,G,8000,0,', $output);
+    }
+
+    public function testDownloadObjectValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->downloadObject('', DownloadFormat::UncompressedAscii, 8000);
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testEndAppendsEndFormatEveryTimeItsCalled(): void
     {
         $output = (string) ZplBuilder::start()->end()->end();
@@ -933,6 +1008,13 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
 
         self::assertSame('^XA^FDHello^FS^XZ', $output);
+    }
+
+    public function testEraseDownloadGraphicsEmitsEg(): void
+    {
+        $output = (string) ZplBuilder::start()->eraseDownloadGraphics();
+
+        self::assertSame('^XA~EG', $output);
     }
 
     public function testFieldBlockEmitsFb(): void
@@ -1356,6 +1438,92 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^GB100,50,2,B,0^FS', $output);
     }
 
+    public function testGraphicCircleEmitsGcAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicCircle(100, 2, LineColor::White);
+
+        self::assertSame('^XA^GC100,2,W^FS', $output);
+    }
+
+    public function testGraphicCircleEmitsGcWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicCircle(100);
+
+        self::assertSame('^XA^GC100,1,B^FS', $output);
+    }
+
+    public function testGraphicDiagonalLineEmitsGdAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->graphicDiagonalLine(300, 200, 3, LineColor::White, DiagonalOrientation::LeftLeaning);
+
+        self::assertSame('^XA^GD300,200,3,W,L^FS', $output);
+    }
+
+    public function testGraphicDiagonalLineEmitsGdWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicDiagonalLine(100, 100);
+
+        self::assertSame('^XA^GD100,100,1,B,R^FS', $output);
+    }
+
+    public function testGraphicEllipseEmitsGeAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicEllipse(300, 200, 4, LineColor::White);
+
+        self::assertSame('^XA^GE300,200,4,W^FS', $output);
+    }
+
+    public function testGraphicEllipseEmitsGeWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicEllipse(300, 200);
+
+        self::assertSame('^XA^GE300,200,1,B^FS', $output);
+    }
+
+    public function testGraphicFieldDefaultsToAsciiCompression(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicField(4, 4, 2, 'FF00');
+
+        self::assertSame('^XA^GFA,4,4,2,FF00^FS', $output);
+    }
+
+    public function testGraphicFieldEmitsGfAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()
+            ->graphicField(8000, 8000, 80, 'FF00FF00', GraphicFieldCompression::Binary);
+
+        self::assertSame('^XA^GFB,8000,8000,80,FF00FF00^FS', $output);
+    }
+
+    public function testGraphicFieldValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->graphicField(0, 4, 2, 'FF00');
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testGraphicSymbolDefaultsToNormalOrientation(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicSymbol('B', 27, 27);
+
+        self::assertSame('^XA^GSN,27,27^FDB^FS', $output);
+    }
+
+    public function testGraphicSymbolEmitsGsThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->graphicSymbol('A', 50, 40, Orientation::Rotate90);
+
+        self::assertSame('^XA^GSR,50,40^FDA^FS', $output);
+    }
+
     public function testHasFontPresetReturnsFalseForUnknown(): void
     {
         $builder = ZplBuilder::start();
@@ -1368,6 +1536,62 @@ class ZplBuilderTest extends UnitTestCase
         $builder = ZplBuilder::start()->addFontPreset('big', Font::Zero, 80, 40);
 
         self::assertTrue($builder->hasFontPreset('big'));
+    }
+
+    public function testHostGraphicEmitsHg(): void
+    {
+        $output = (string) ZplBuilder::start()->hostGraphic('SAMPLE', StorageDevice::Flash);
+
+        self::assertSame('^XA^HGE:SAMPLE.GRF', $output);
+    }
+
+    public function testHostGraphicUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->hostGraphic('LOGO');
+
+        self::assertSame('^XA^HGR:LOGO.GRF', $output);
+    }
+
+    public function testImageLoadEmitsIlAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->imageLoad('SAMPLE', StorageDevice::Flash);
+
+        self::assertSame('^XA^ILE:SAMPLE.GRF^FS', $output);
+    }
+
+    public function testImageLoadUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->imageLoad('LOGO');
+
+        self::assertSame('^XA^ILR:LOGO.GRF^FS', $output);
+    }
+
+    public function testImageMoveEmitsImAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->imageMove('SAMPLE', StorageDevice::Flash);
+
+        self::assertSame('^XA^IME:SAMPLE.GRF^FS', $output);
+    }
+
+    public function testImageMoveUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->imageMove('LOGO');
+
+        self::assertSame('^XA^IMR:LOGO.GRF^FS', $output);
+    }
+
+    public function testImageSaveEmitsIsAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->imageSave('SAMPLE', StorageDevice::Flash, 'PNG', false);
+
+        self::assertSame('^XA^ISE:SAMPLE.PNG,N^FS', $output);
+    }
+
+    public function testImageSaveUsesRamGrfAndPrintDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->imageSave('LOGO');
+
+        self::assertSame('^XA^ISR:LOGO.GRF,Y^FS', $output);
     }
 
     public function testLabelHomeEmitsLh(): void
@@ -1404,6 +1628,20 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertStringNotContainsString('^PQ', $output);
         self::assertSame('^XA^FDHello^FS^XZ', $output);
+    }
+
+    public function testObjectDeleteEmitsIdAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->objectDelete('SAMPLE', StorageDevice::Flash, 'ZPL');
+
+        self::assertSame('^XA^IDE:SAMPLE.ZPL^FS', $output);
+    }
+
+    public function testObjectDeleteUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->objectDelete('*');
+
+        self::assertSame('^XA^IDR:*.GRF^FS', $output);
     }
 
     public function testPrintNewlinesSeparatesCommandsWithEol(): void
@@ -1462,6 +1700,20 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->recallFormat('LABEL', StorageDevice::Flash);
 
         self::assertSame('^XA^XFE:LABEL.ZPL', $output);
+    }
+
+    public function testRecallGraphicEmitsXgAndSeparator(): void
+    {
+        $output = (string) ZplBuilder::start()->recallGraphic('SAMPLE', StorageDevice::Flash, 'GRF', 2, 3);
+
+        self::assertSame('^XA^XGE:SAMPLE.GRF,2,3^FS', $output);
+    }
+
+    public function testRecallGraphicUsesRamGrfAndUnitMagnificationDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->recallGraphic('LOGO');
+
+        self::assertSame('^XA^XGR:LOGO.GRF,1,1^FS', $output);
     }
 
     public function testRemoveFontPresetDropsRegistration(): void
@@ -1857,6 +2109,20 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testUploadGraphicsEmitsHy(): void
+    {
+        $output = (string) ZplBuilder::start()->uploadGraphics('SAMPLE', StorageDevice::Flash, 'PNG');
+
+        self::assertSame('^XA^HYE:SAMPLE.PNG', $output);
+    }
+
+    public function testUploadGraphicsUsesRamAndGrfDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->uploadGraphics('LOGO');
+
+        self::assertSame('^XA^HYR:LOGO.GRF', $output);
     }
 
     public function testWhenAppliesCallbackWhenPredicateIsTrue(): void

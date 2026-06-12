@@ -15,9 +15,13 @@ use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
+use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DownloadExtension;
+use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
+use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -66,6 +70,11 @@ class ZplBuilder implements ZplBuilderInterface
     public function __toString(): string
     {
         return $this->render();
+    }
+
+    public function abortDownloadGraphic(): self
+    {
+        return $this->addCommand(new Commands\AbortDownloadGraphic());
     }
 
     public function addFontPreset(
@@ -725,9 +734,56 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldComment($text));
     }
 
+    public function downloadGraphics(
+        string $name,
+        int $totalBytes,
+        int $bytesPerRow,
+        string $data,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        return $this->addCommand(
+            new Commands\DownloadGraphics(
+                device: $device,
+                name: $name,
+                extension: $extension,
+                totalBytes: $totalBytes,
+                bytesPerRow: $bytesPerRow,
+                data: $data,
+            ),
+        );
+    }
+
+    public function downloadObject(
+        string $name,
+        DownloadFormat $format,
+        int $totalBytes,
+        DownloadExtension $extension = DownloadExtension::Grf,
+        int $bytesPerRow = 0,
+        string $data = '',
+        StorageDevice $device = StorageDevice::Ram,
+    ): self {
+        return $this->addCommand(
+            new Commands\DownloadObject(
+                device: $device,
+                name: $name,
+                format: $format,
+                extension: $extension,
+                totalBytes: $totalBytes,
+                bytesPerRow: $bytesPerRow,
+                data: $data,
+            ),
+        );
+    }
+
     public function end(): self
     {
         return $this->addCommand(new Commands\EndFormat());
+    }
+
+    public function eraseDownloadGraphics(): self
+    {
+        return $this->addCommand(new Commands\EraseDownloadGraphics());
     }
 
     public function fieldBlock(
@@ -913,9 +969,164 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
+    public function graphicCircle(
+        int $diameter,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicCircle(
+                diameter: $diameter,
+                thickness: $thickness,
+                color: $color,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function graphicDiagonalLine(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+        DiagonalOrientation $orientation = DiagonalOrientation::RightLeaning,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicDiagonalLine(
+                width: $width,
+                height: $height,
+                thickness: $thickness,
+                color: $color,
+                orientation: $orientation,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function graphicEllipse(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicEllipse(
+                width: $width,
+                height: $height,
+                thickness: $thickness,
+                color: $color,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function graphicField(
+        int $byteCount,
+        int $fieldCount,
+        int $bytesPerRow,
+        string $data,
+        GraphicFieldCompression $compression = GraphicFieldCompression::AsciiHex,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicField(
+                compression: $compression,
+                byteCount: $byteCount,
+                fieldCount: $fieldCount,
+                bytesPerRow: $bytesPerRow,
+                data: $data,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function graphicSymbol(
+        string $symbol,
+        int $height,
+        int $width,
+        Orientation $orientation = Orientation::Rotate0,
+    ): self {
+        $this->addCommand(
+            new Commands\GraphicSymbol(
+                orientation: $orientation,
+                height: $height,
+                width: $width,
+            ),
+        );
+
+        return $this->fieldData($symbol);
+    }
+
     public function hasFontPreset(string $name): bool
     {
         return isset($this->fontPresets[$name]);
+    }
+
+    public function hostGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        return $this->addCommand(
+            new Commands\HostGraphic(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
+    public function imageLoad(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        $this->addCommand(
+            new Commands\ImageLoad(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function imageMove(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        $this->addCommand(
+            new Commands\ImageMove(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function imageSave(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+        bool $printAfterStore = true,
+    ): self {
+        $this->addCommand(
+            new Commands\ImageSave(
+                device: $device,
+                name: $name,
+                extension: $extension,
+                printAfterStore: $printAfterStore,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
     }
 
     public function labelHome(int $x = 0, int $y = 0): self
@@ -931,6 +1142,22 @@ class ZplBuilder implements ZplBuilderInterface
     public function labelReversePrint(bool $reversePrint = true): self
     {
         return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
+    }
+
+    public function objectDelete(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        $this->addCommand(
+            new Commands\ObjectDelete(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
     }
 
     public function printNewlines(bool $toggle = true): self
@@ -976,6 +1203,26 @@ class ZplBuilder implements ZplBuilderInterface
                 extension: $extension,
             ),
         );
+    }
+
+    public function recallGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+        int $magnificationX = 1,
+        int $magnificationY = 1,
+    ): self {
+        $this->addCommand(
+            new Commands\RecallGraphic(
+                device: $device,
+                name: $name,
+                extension: $extension,
+                magnificationX: $magnificationX,
+                magnificationY: $magnificationY,
+            ),
+        );
+
+        return $this->addCommand(new Commands\FieldSeparator());
     }
 
     public function removeFontPreset(string $name): self
@@ -1136,6 +1383,20 @@ class ZplBuilder implements ZplBuilderInterface
                 destinationDevice: $destinationDevice,
                 destinationName: $destinationName,
                 destinationExtension: $destinationExtension,
+            ),
+        );
+    }
+
+    public function uploadGraphics(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self {
+        return $this->addCommand(
+            new Commands\UploadGraphics(
+                device: $device,
+                name: $name,
+                extension: $extension,
             ),
         );
     }

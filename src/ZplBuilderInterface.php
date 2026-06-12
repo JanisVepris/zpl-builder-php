@@ -15,9 +15,13 @@ use Janisvepris\ZplBuilder\Enum\Code49InterpretationLine;
 use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
+use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DownloadExtension;
+use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
+use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
@@ -54,6 +58,11 @@ use Stringable;
  */
 interface ZplBuilderInterface extends Stringable
 {
+    /**
+     * Abort an in-progress graphic download and return the printer to normal print mode (`~DN`).
+     */
+    public function abortDownloadGraphic(): self;
+
     /**
      * Register a named font preset that can later be applied via `applyFontPreset()`.
      * Unspecified dimensions inherit from the font's current settings.
@@ -629,8 +638,53 @@ interface ZplBuilderInterface extends Stringable
      */
     public function comment(string $text): self;
 
+    /**
+     * Download an ASCII-hex graphic image into a printer storage device (`~DG`). `$totalBytes` and
+     * `$bytesPerRow` are the totals the caller computes for the image. Standalone command — no
+     * `^FD … ^FS`. A caret or tilde in `$data` is rejected — either would abort the download. The
+     * device defaults to `R:` (RAM) and the extension to `GRF`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function downloadGraphics(
+        string $name,
+        int $totalBytes,
+        int $bytesPerRow,
+        string $data,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
+     * Download a graphic or native TrueType/OpenType font object into a printer storage device
+     * (`~DY`). `$format` selects how `$data` is encoded and `$extension` the stored object type;
+     * `$data` may be empty when the file is sent as a separate transmission. Standalone command —
+     * no `^FD … ^FS`. A caret or tilde in `$data` is rejected — either would abort the download.
+     * The device defaults to `R:` (RAM).
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function downloadObject(
+        string $name,
+        DownloadFormat $format,
+        int $totalBytes,
+        DownloadExtension $extension = DownloadExtension::Grf,
+        int $bytesPerRow = 0,
+        string $data = '',
+        StorageDevice $device = StorageDevice::Ram,
+    ): self;
+
     /** Finalise the format by appending `^XZ`. */
     public function end(): self;
+
+    /**
+     * Erase all downloaded graphics from the printer's storage (`~EG`).
+     */
+    public function eraseDownloadGraphics(): self;
 
     /**
      * Format the next field as a multi-line text block with the given width,
@@ -826,8 +880,130 @@ interface ZplBuilderInterface extends Stringable
         int $rounding = 0,
     ): self;
 
+    /**
+     * Draw a circle of the given diameter with the chosen border thickness and color (`^GC ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function graphicCircle(
+        int $diameter,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self;
+
+    /**
+     * Draw a straight diagonal line across a bounding box of the given width × height, with the
+     * chosen thickness, color, and lean direction (`^GD ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function graphicDiagonalLine(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+        DiagonalOrientation $orientation = DiagonalOrientation::RightLeaning,
+    ): self;
+
+    /**
+     * Draw an ellipse of the given width × height with the chosen border thickness and color
+     * (`^GE ... ^FS`).
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function graphicEllipse(
+        int $width,
+        int $height,
+        int $thickness = 1,
+        LineColor $color = LineColor::Black,
+    ): self;
+
+    /**
+     * Download a graphic image directly into the printer's bitmap storage at the current field
+     * origin (`^GF ... ^FS`). `$byteCount`, `$fieldCount`, and `$bytesPerRow` are the totals the
+     * caller computes for the image; `$compression` selects how `$data` is encoded. A caret or
+     * tilde in `$data` is rejected — either would abort the printer's download.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function graphicField(
+        int $byteCount,
+        int $fieldCount,
+        int $bytesPerRow,
+        string $data,
+        GraphicFieldCompression $compression = GraphicFieldCompression::AsciiHex,
+    ): self;
+
+    /**
+     * Emit a graphic symbol — registered trademark, copyright, and similar marks — at the given
+     * height and width and orientation (`^GS` then `^FD<symbol>^FS`). `$symbol` is the field-data
+     * character that selects which symbol the printer draws.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function graphicSymbol(
+        string $symbol,
+        int $height,
+        int $width,
+        Orientation $orientation = Orientation::Rotate0,
+    ): self;
+
     /** Whether a font preset with the given name has been registered. */
     public function hasFontPreset(string $name): bool;
+
+    /**
+     * Upload a stored graphic from the printer to the host (`^HG`). Standalone command — it emits
+     * only `^HG…`, with no `^FD … ^FS`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function hostGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
+     * Load a stored image at the start of a label format and merge it with the field data that
+     * follows (`^IL ... ^FS`). The image is always positioned at the origin (`^FO0,0`). The device
+     * defaults to `R:` (RAM) and the extension to `GRF`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function imageLoad(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
+     * Move a stored image directly into the bitmap at the current field origin (`^IM ... ^FS`).
+     * Like `^XG` but without magnification. The device defaults to `R:` (RAM) and the extension to
+     * `GRF`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function imageMove(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
+
+    /**
+     * Save the current label format as a stored image rather than a ZPL script (`^IS ... ^FS`).
+     * `$printAfterStore` (default `true`) also prints the label after saving. The device defaults
+     * to `R:` (RAM) and the extension to `GRF` (`PNG` is also accepted).
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function imageSave(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+        bool $printAfterStore = true,
+    ): self;
 
     /**
      * Move the label's home origin to the given (x, y) coordinate (`^LH`).
@@ -845,6 +1021,20 @@ interface ZplBuilderInterface extends Stringable
 
     /** Toggle reverse-print — fields render white-on-black instead of black-on-white (`^LR`). */
     public function labelReversePrint(bool $reversePrint = true): self;
+
+    /**
+     * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
+     * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
+     * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension
+     * to `GRF`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function objectDelete(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+    ): self;
 
     /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
     public function printNewlines(bool $toggle = true): self;
@@ -882,6 +1072,22 @@ interface ZplBuilderInterface extends Stringable
         string $name,
         StorageDevice $device = StorageDevice::Ram,
         string $extension = 'ZPL',
+    ): self;
+
+    /**
+     * Recall a stored graphic for printing at the current field origin, optionally magnified on
+     * each axis (`^XG ... ^FS`). `$magnificationX` and `$magnificationY` accept 1 to 10 and default
+     * to 1. The device defaults to `R:` (RAM) and the extension to `GRF`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function recallGraphic(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
+        int $magnificationX = 1,
+        int $magnificationY = 1,
     ): self;
 
     /**
@@ -1023,6 +1229,19 @@ interface ZplBuilderInterface extends Stringable
         string $sourceExtension = '*',
         string $destinationName = '*',
         string $destinationExtension = '*',
+    ): self;
+
+    /**
+     * Upload a stored graphic object from the printer to the host in any supported format (`^HY`).
+     * An extension of `GRF` uploads the raw bitmap; `PNG` uploads the compressed bitmap. Standalone
+     * command — it emits only `^HY…`, with no `^FD … ^FS`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function uploadGraphics(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'GRF',
     ): self;
 
     /**

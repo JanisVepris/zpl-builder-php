@@ -67,22 +67,22 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 ## Graphics and images
 
 - [x] `^GB` — Graphic Box
-- [ ] `^GC` — Graphic Circle
-- [ ] `^GD` — Graphic Diagonal Line
-- [ ] `^GE` — Graphic Ellipse
-- [ ] `^GF` — Graphic Field
-- [ ] `^GS` — Graphic Symbol
-- [ ] `^HG` — Host Graphic
-- [ ] `^HY` — Upload Graphics
-- [ ] `^ID` — Object Delete
-- [ ] `^IL` — Image Load
-- [ ] `^IM` — Image Move
-- [ ] `^IS` — Image Save
-- [ ] `^XG` — Recall Graphic
-- [ ] `~DG` — Download Graphics
-- [ ] `~DN` — Abort Download Graphic
-- [ ] `~DY` — Download Graphics / Native TrueType or OpenType Font
-- [ ] `~EG` — Erase Download Graphics
+- [x] `^GC` — Graphic Circle
+- [x] `^GD` — Graphic Diagonal Line
+- [x] `^GE` — Graphic Ellipse
+- [x] `^GF` — Graphic Field
+- [x] `^GS` — Graphic Symbol
+- [x] `^HG` — Host Graphic
+- [x] `^HY` — Upload Graphics
+- [x] `^ID` — Object Delete
+- [x] `^IL` — Image Load
+- [x] `^IM` — Image Move
+- [x] `^IS` — Image Save
+- [x] `^XG` — Recall Graphic
+- [x] `~DG` — Download Graphics
+- [x] `~DN` — Abort Download Graphic
+- [x] `~DY` — Download Graphics / Native TrueType or OpenType Font
+- [x] `~EG` — Erase Download Graphics
 
 ## Label layout and format control
 
