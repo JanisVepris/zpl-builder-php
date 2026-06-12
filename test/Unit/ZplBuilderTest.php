@@ -1592,6 +1592,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertArrayHasKey('small', $presets);
     }
 
+    public function testGetRfidTagIdEmitsRi(): void
+    {
+        $output = (string) ZplBuilder::start()->getRfidTagId();
+
+        self::assertSame('^XA^RI0,0,0,0', $output);
+    }
+
+    public function testGetRfidTagIdValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->getRfidTagId(retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testGraphicBoxEmitsGbAndSeparator(): void
     {
         $output = (string) ZplBuilder::start()->graphicBox(100, 50, 2);

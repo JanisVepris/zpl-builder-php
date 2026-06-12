@@ -44,6 +44,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
+use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
@@ -1046,6 +1047,22 @@ class ZplBuilder implements ZplBuilderInterface
     public function getFontPresets(): array
     {
         return $this->fontPresets;
+    }
+
+    public function getRfidTagId(
+        int $fieldNumber = 0,
+        RfidDataOrder $dataOrder = RfidDataOrder::Normal,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+    ): self {
+        return $this->addCommand(
+            new Commands\GetRfidTagId(
+                fieldNumber: $fieldNumber,
+                dataOrder: $dataOrder,
+                retries: $retries,
+                motion: $motion,
+            ),
+        );
     }
 
     public function graphicBox(

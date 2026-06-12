@@ -44,6 +44,7 @@ use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
+use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
@@ -966,6 +967,21 @@ interface ZplBuilderInterface extends Stringable
      * @return array<string, FontPreset>
      */
     public function getFontPresets(): array;
+
+    /**
+     * Read a tag's unique serial number into a field as hexadecimal (`^RI`). `$fieldNumber`
+     * (0–9999) is the `^FN` field the ID is read into; `$dataOrder` reverses the byte order (R110Xi
+     * HF / R2844-Z only); `$retries` (0–10) is the read-retry count; `$motion` controls label feed.
+     * Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function getRfidTagId(
+        int $fieldNumber = 0,
+        RfidDataOrder $dataOrder = RfidDataOrder::Normal,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+    ): self;
 
     /**
      * Draw a rectangle or line of the given width × height with the chosen thickness,
