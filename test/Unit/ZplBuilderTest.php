@@ -54,6 +54,7 @@ use Janisvepris\ZplBuilder\ValueObject\AztecErrorControl;
 use Janisvepris\ZplBuilder\ValueObject\FontPreset;
 use Janisvepris\ZplBuilder\ZplBuilder;
 use Janisvepris\ZplBuilder\ZplBuilderInterface;
+use Janisvepris\ZplBuilder\ZplCommand\AbortDownloadGraphic;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeAztec;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodabar;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeCodablock;
@@ -85,7 +86,10 @@ use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcE;
 use Janisvepris\ZplBuilder\ZplCommand\BarcodeUpcEanExtensions;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeFont;
 use Janisvepris\ZplBuilder\ZplCommand\ChangeInternationalEncoding;
+use Janisvepris\ZplBuilder\ZplCommand\DownloadGraphics;
+use Janisvepris\ZplBuilder\ZplCommand\DownloadObject;
 use Janisvepris\ZplBuilder\ZplCommand\EndFormat;
+use Janisvepris\ZplBuilder\ZplCommand\EraseDownloadGraphics;
 use Janisvepris\ZplBuilder\ZplCommand\FieldBlock;
 use Janisvepris\ZplBuilder\ZplCommand\FieldClock;
 use Janisvepris\ZplBuilder\ZplCommand\FieldComment;
@@ -102,15 +106,26 @@ use Janisvepris\ZplBuilder\ZplCommand\FieldVariable;
 use Janisvepris\ZplBuilder\ZplCommand\FontIdentifier;
 use Janisvepris\ZplBuilder\ZplCommand\FontName;
 use Janisvepris\ZplBuilder\ZplCommand\GraphicBox;
+use Janisvepris\ZplBuilder\ZplCommand\GraphicCircle;
+use Janisvepris\ZplBuilder\ZplCommand\GraphicDiagonalLine;
+use Janisvepris\ZplBuilder\ZplCommand\GraphicEllipse;
+use Janisvepris\ZplBuilder\ZplCommand\GraphicField;
+use Janisvepris\ZplBuilder\ZplCommand\GraphicSymbol;
+use Janisvepris\ZplBuilder\ZplCommand\HostGraphic;
+use Janisvepris\ZplBuilder\ZplCommand\ImageLoad;
+use Janisvepris\ZplBuilder\ZplCommand\ImageMove;
+use Janisvepris\ZplBuilder\ZplCommand\ImageSave;
 use Janisvepris\ZplBuilder\ZplCommand\LabelHome;
 use Janisvepris\ZplBuilder\ZplCommand\LabelLength;
 use Janisvepris\ZplBuilder\ZplCommand\LabelReversePrint;
 use Janisvepris\ZplBuilder\ZplCommand\MultipleFieldOrigin;
+use Janisvepris\ZplBuilder\ZplCommand\ObjectDelete;
 use Janisvepris\ZplBuilder\ZplCommand\PrintOrientation;
 use Janisvepris\ZplBuilder\ZplCommand\PrintQuantity;
 use Janisvepris\ZplBuilder\ZplCommand\PrintWidth;
 use Janisvepris\ZplBuilder\ZplCommand\RawCommand;
 use Janisvepris\ZplBuilder\ZplCommand\RecallFormat;
+use Janisvepris\ZplBuilder\ZplCommand\RecallGraphic;
 use Janisvepris\ZplBuilder\ZplCommand\ScalableBitmappedFont;
 use Janisvepris\ZplBuilder\ZplCommand\SelectDateTimeFormat;
 use Janisvepris\ZplBuilder\ZplCommand\SelectEncoding;
@@ -121,6 +136,7 @@ use Janisvepris\ZplBuilder\ZplCommand\SetDateTime;
 use Janisvepris\ZplBuilder\ZplCommand\SetOffset;
 use Janisvepris\ZplBuilder\ZplCommand\StartFormat;
 use Janisvepris\ZplBuilder\ZplCommand\TransferObject;
+use Janisvepris\ZplBuilder\ZplCommand\UploadGraphics;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use ReflectionClass;
@@ -128,6 +144,7 @@ use ReflectionMethod;
 
 #[CoversClass(ZplBuilder::class)]
 #[UsesClass(AztecErrorControl::class)]
+#[UsesClass(AbortDownloadGraphic::class)]
 #[UsesClass(BarcodeAztec::class)]
 #[UsesClass(BarcodeCodabar::class)]
 #[UsesClass(BarcodeCodablock::class)]
@@ -169,9 +186,12 @@ use ReflectionMethod;
 #[UsesClass(Code128Mode::class)]
 #[UsesClass(DataMatrixQuality::class)]
 #[UsesClass(DateTimeFormat::class)]
+#[UsesClass(DownloadGraphics::class)]
+#[UsesClass(DownloadObject::class)]
 #[UsesClass(DuplicateClockIndicatorException::class)]
 #[UsesClass(Encoding::class)]
 #[UsesClass(EndFormat::class)]
+#[UsesClass(EraseDownloadGraphics::class)]
 #[UsesClass(FieldBlock::class)]
 #[UsesClass(FieldClock::class)]
 #[UsesClass(FieldComment::class)]
@@ -196,6 +216,15 @@ use ReflectionMethod;
 #[UsesClass(FontPresetDoesNotExistException::class)]
 #[UsesClass(FontSettings::class)]
 #[UsesClass(GraphicBox::class)]
+#[UsesClass(GraphicCircle::class)]
+#[UsesClass(GraphicDiagonalLine::class)]
+#[UsesClass(GraphicEllipse::class)]
+#[UsesClass(GraphicField::class)]
+#[UsesClass(GraphicSymbol::class)]
+#[UsesClass(HostGraphic::class)]
+#[UsesClass(ImageLoad::class)]
+#[UsesClass(ImageMove::class)]
+#[UsesClass(ImageSave::class)]
 #[UsesClass(IntegerValueOutOfRangeException::class)]
 #[UsesClass(Justify::class)]
 #[UsesClass(LabelFlip::class)]
@@ -206,6 +235,7 @@ use ReflectionMethod;
 #[UsesClass(MaxiCodeMode::class)]
 #[UsesClass(MsiCheckDigit::class)]
 #[UsesClass(MultipleFieldOrigin::class)]
+#[UsesClass(ObjectDelete::class)]
 #[UsesClass(Orientation::class)]
 #[UsesClass(PrintDirection::class)]
 #[UsesClass(PrintOrientation::class)]
@@ -215,6 +245,7 @@ use ReflectionMethod;
 #[UsesClass(QrModel::class)]
 #[UsesClass(RawCommand::class)]
 #[UsesClass(RecallFormat::class)]
+#[UsesClass(RecallGraphic::class)]
 #[UsesClass(RssSymbologyType::class)]
 #[UsesClass(SelectDateTimeFormat::class)]
 #[UsesClass(SelectEncoding::class)]
@@ -230,6 +261,7 @@ use ReflectionMethod;
 #[UsesClass(TertiaryClockIndicatorWithoutSecondaryException::class)]
 #[UsesClass(TransferObject::class)]
 #[UsesClass(UnsupportedFontExtensionException::class)]
+#[UsesClass(UploadGraphics::class)]
 #[UsesClass(ValueAssert::class)]
 #[UsesClass(ScalableBitmappedFont::class)]
 class ZplBuilderTest extends UnitTestCase
