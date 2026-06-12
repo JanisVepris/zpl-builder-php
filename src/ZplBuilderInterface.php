@@ -34,6 +34,7 @@ use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\PrintMethod;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1144,6 +1145,13 @@ interface ZplBuilderInterface extends Stringable
      * printer ignores the command otherwise.
      */
     public function mediaTracking(MediaTrackingType $tracking): self;
+
+    /**
+     * Select the printing method for the media in use (`^MT`): thermal transfer (ribbon) or direct
+     * thermal (heat-sensitive media, no ribbon). A value is required — the printer ignores the
+     * command otherwise.
+     */
+    public function mediaType(PrintMethod $method): self;
 
     /**
      * Disable (lock) a control-panel mode function so its setting can no longer be changed (`^MP`).

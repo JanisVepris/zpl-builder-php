@@ -112,7 +112,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^MM` — Print Mode
 - [x] `^MN` — Media Tracking
 - [x] `^MP` — Mode Protection
-- [ ] `^MT` — Media Type
+- [x] `^MT` — Media Type
 - [ ] `^MU` — Set Units of Measurement
 - [ ] `^MW` — Modify Head Cold Warning
 - [x] `^PO` — Print Orientation

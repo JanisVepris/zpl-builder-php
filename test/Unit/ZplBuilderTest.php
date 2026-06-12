@@ -37,6 +37,7 @@ use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
 use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\PrintMethod;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1818,6 +1819,13 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->mediaTracking(MediaTrackingType::NonContinuousWeb);
 
         self::assertSame('^XA^MNY', $output);
+    }
+
+    public function testMediaTypeEmitsMt(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaType(PrintMethod::ThermalTransfer);
+
+        self::assertSame('^XA^MTT', $output);
     }
 
     public function testModeProtectionEmitsMp(): void

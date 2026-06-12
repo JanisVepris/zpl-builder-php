@@ -27,6 +27,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::printMode()` and `ZplCommand\PrintMode` add support for `^MM` (Print Mode), selecting the post-print action and prepeel option, with `Enum\PostPrintAction` selecting tear-off/peel-off/rewind/applicator/cutter/delayed-cutter
 - `ZplBuilder::mediaTracking()` and `ZplCommand\MediaTracking` add support for `^MN` (Media Tracking), telling the printer whether the media is continuous or non-continuous (web/mark sensing), with `Enum\MediaTrackingType` selecting the mode
 - `ZplBuilder::modeProtection()` and `ZplCommand\ModeProtection` add support for `^MP` (Mode Protection), locking individual control-panel mode functions, with `Enum\ProtectedMode` selecting which to disable (or `EnableAll`)
+- `ZplBuilder::mediaType()` and `ZplCommand\MediaType` add support for `^MT` (Media Type), selecting the print method, with `Enum\PrintMethod` choosing thermal transfer (ribbon) or direct thermal
 
 ## [0.62.0] - 2026-06-12
 
