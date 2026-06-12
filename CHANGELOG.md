@@ -36,6 +36,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setZpl()` and `ZplCommand\SetZpl` add support for `^SZ` (Set ZPL), selecting the ZPL language version, with `Enum\ZplMode` choosing legacy ZPL or ZPL II
 - `ZplBuilder::printerSleep()` and `ZplCommand\PrinterSleep` add support for `^ZZ` (Printer Sleep), placing battery-powered printers into idle/shutdown mode after a configurable idle time
 - `ZplBuilder::applicatorReprint()` and `ZplCommand\ApplicatorReprint` add support for `~PR` (Applicator Reprint), reprinting the last label on PAX/PAX2-series printers
+- `ZplBuilder::printStart()` and `ZplCommand\PrintStart` add support for `~PS` (Print Start), resuming printing on a printer that is in Pause Mode
 
 ## [0.62.0] - 2026-06-12
 

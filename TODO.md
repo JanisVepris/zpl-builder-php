@@ -124,7 +124,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^SZ` — Set ZPL
 - [x] `^ZZ` — Printer Sleep
 - [x] `~PR` — Applicator Reprint
-- [ ] `~PS` — Print Start
+- [x] `~PS` — Print Start
 - [ ] `~SD` — Set Darkness
 - [ ] `~TA` — Tear-off Adjust Position
 

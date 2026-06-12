@@ -1349,6 +1349,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function printStart(): self
+    {
+        return $this->addCommand(new Commands\PrintStart());
+    }
+
     public function printWidth(int $width): self
     {
         return $this->addCommand(new Commands\PrintWidth($width));

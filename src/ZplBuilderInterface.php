@@ -1237,6 +1237,12 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Resume printing on a printer that is in Pause Mode (`~PS`), equivalent to pressing PAUSE on
+     * the control panel while the printer is already paused.
+     */
+    public function printStart(): self;
+
+    /**
      * Set the label's print width in dots (`^PW`).
      *
      * @throws IntegerValueOutOfRangeException

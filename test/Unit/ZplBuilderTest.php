@@ -1976,6 +1976,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^PR2,6,2', $output);
     }
 
+    public function testPrintStartEmitsPs(): void
+    {
+        $output = (string) ZplBuilder::start()->printStart();
+
+        self::assertSame('^XA~PS', $output);
+    }
+
     public function testPrintWidthEmitsPw(): void
     {
         $output = (string) ZplBuilder::start()->printWidth(800);
