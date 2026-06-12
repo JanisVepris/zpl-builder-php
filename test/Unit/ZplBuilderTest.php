@@ -34,6 +34,7 @@ use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1844,6 +1845,20 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->printMirror();
 
         self::assertSame('^XA^PMY', $output);
+    }
+
+    public function testPrintModeEmitsCutterWithoutPrepeel(): void
+    {
+        $output = (string) ZplBuilder::start()->printMode(PostPrintAction::Cutter, false);
+
+        self::assertSame('^XA^MMC,N', $output);
+    }
+
+    public function testPrintModeEmitsMmWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->printMode();
+
+        self::assertSame('^XA^MMT,Y', $output);
     }
 
     public function testPrintNewlinesSeparatesCommandsWithEol(): void

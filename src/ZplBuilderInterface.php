@@ -31,6 +31,7 @@ use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1154,6 +1155,13 @@ interface ZplBuilderInterface extends Stringable
      * active until disabled (`^PMN`) or the printer is turned off.
      */
     public function printMirror(bool $mirror = true): self;
+
+    /**
+     * Set what the printer does after a label or batch finishes printing (`^MM`). `$mode` selects
+     * the post-print action — tear-off, peel-off, rewind, applicator, cutter, or delayed cutter —
+     * and `$prepeel` toggles prepeel in peel-off mode. The available modes depend on the printer.
+     */
+    public function printMode(PostPrintAction $mode = PostPrintAction::TearOff, bool $prepeel = true): self;
 
     /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
     public function printNewlines(bool $toggle = true): self;

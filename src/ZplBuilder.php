@@ -31,6 +31,7 @@ use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
@@ -1264,6 +1265,16 @@ class ZplBuilder implements ZplBuilderInterface
     public function printMirror(bool $mirror = true): self
     {
         return $this->addCommand(new Commands\PrintMirror($mirror));
+    }
+
+    public function printMode(PostPrintAction $mode = PostPrintAction::TearOff, bool $prepeel = true): self
+    {
+        return $this->addCommand(
+            new Commands\PrintMode(
+                mode: $mode,
+                prepeel: $prepeel,
+            ),
+        );
     }
 
     public function printNewlines(bool $toggle = true): self

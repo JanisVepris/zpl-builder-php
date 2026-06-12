@@ -24,6 +24,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::mediaDarkness()` and `ZplCommand\MediaDarkness` add support for `^MD` (Media Darkness), adjusting print darkness by -30 to 30 relative to the printer's current setting
 - `ZplBuilder::mediaFeed()` and `ZplCommand\MediaFeed` add support for `^MF` (Media Feed), setting the media feed action at power-up and after head-close, with `Enum\MediaFeedAction` selecting each action
 - `ZplBuilder::maximumLabelLength()` and `ZplCommand\MaximumLabelLength` add support for `^ML` (Maximum Label Length), setting the maximum label length in dot rows (0 to 32000) for calibration
+- `ZplBuilder::printMode()` and `ZplCommand\PrintMode` add support for `^MM` (Print Mode), selecting the post-print action and prepeel option, with `Enum\PostPrintAction` selecting tear-off/peel-off/rewind/applicator/cutter/delayed-cutter
 
 ## [0.62.0] - 2026-06-12
 
