@@ -1288,6 +1288,16 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\FieldSeparator());
     }
 
+    public function printerSleep(int $idleSeconds = 0, bool $shutdownWithLabelsQueued = false): self
+    {
+        return $this->addCommand(
+            new Commands\PrinterSleep(
+                idleSeconds: $idleSeconds,
+                shutdownWithLabelsQueued: $shutdownWithLabelsQueued,
+            ),
+        );
+    }
+
     public function printMirror(bool $mirror = true): self
     {
         return $this->addCommand(new Commands\PrintMirror($mirror));

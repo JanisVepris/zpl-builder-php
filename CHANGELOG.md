@@ -34,6 +34,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::startPrint()` and `ZplCommand\StartPrint` add support for `^SP` (Start Print), starting the print at a given dot row before the rest of the format is composed
 - `ZplBuilder::setMediaSensors()` and `ZplCommand\SetMediaSensors` add support for `^SS` (Set Media Sensors), overriding the web/media/ribbon/label-length calibration values, with optional LED-intensity and mark-sensing parameters
 - `ZplBuilder::setZpl()` and `ZplCommand\SetZpl` add support for `^SZ` (Set ZPL), selecting the ZPL language version, with `Enum\ZplMode` choosing legacy ZPL or ZPL II
+- `ZplBuilder::printerSleep()` and `ZplCommand\PrinterSleep` add support for `^ZZ` (Printer Sleep), placing battery-powered printers into idle/shutdown mode after a configurable idle time
 
 ## [0.62.0] - 2026-06-12
 

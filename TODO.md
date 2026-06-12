@@ -122,7 +122,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^SP` — Start Print
 - [x] `^SS` — Set Media Sensors
 - [x] `^SZ` — Set ZPL
-- [ ] `^ZZ` — Printer Sleep
+- [x] `^ZZ` — Printer Sleep
 - [ ] `~PR` — Applicator Reprint
 - [ ] `~PS` — Print Start
 - [ ] `~SD` — Set Darkness

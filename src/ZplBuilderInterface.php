@@ -1184,6 +1184,16 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Place the printer in idle/shutdown mode after a period of inactivity (`^ZZ`). `$idleSeconds`
+     * (0–999999) is the idle time before shutdown — 0 disables automatic shutdown.
+     * `$shutdownWithLabelsQueued` shuts down even with labels still queued (`false`, the default,
+     * prints them first). Only valid on PA400 and PT400 battery-powered printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function printerSleep(int $idleSeconds = 0, bool $shutdownWithLabelsQueued = false): self;
+
+    /**
      * Toggle printing the entire label as a mirror image, flipped left to right (`^PM`). Remains
      * active until disabled (`^PMN`) or the printer is turned off.
      */

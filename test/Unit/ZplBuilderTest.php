@@ -1874,6 +1874,34 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^IDR:*.GRF^FS', $output);
     }
 
+    public function testPrinterSleepEmitsExplicitValues(): void
+    {
+        $output = (string) ZplBuilder::start()->printerSleep(300, true);
+
+        self::assertSame('^XA^ZZ300,Y', $output);
+    }
+
+    public function testPrinterSleepEmitsZzWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->printerSleep();
+
+        self::assertSame('^XA^ZZ0,N', $output);
+    }
+
+    public function testPrinterSleepValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->printerSleep(idleSeconds: 1000000);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testPrintMirrorEmitsPm(): void
     {
         $output = (string) ZplBuilder::start()->printMirror(false);
