@@ -28,6 +28,7 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
+use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
@@ -1135,6 +1136,13 @@ interface ZplBuilderInterface extends Stringable
      * or does not feed. Both defaults are platform-dependent, so both arguments are required.
      */
     public function mediaFeed(MediaFeedAction $powerUp, MediaFeedAction $headClose): self;
+
+    /**
+     * Tell the printer how to track label boundaries (`^MN`): continuous media (length set by
+     * `^LL`) or non-continuous media sensed by web or registration mark. A value is required — the
+     * printer ignores the command otherwise.
+     */
+    public function mediaTracking(MediaTrackingType $tracking): self;
 
     /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).

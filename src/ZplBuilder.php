@@ -28,6 +28,7 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
+use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
@@ -1244,6 +1245,11 @@ class ZplBuilder implements ZplBuilderInterface
                 headClose: $headClose,
             ),
         );
+    }
+
+    public function mediaTracking(MediaTrackingType $tracking): self
+    {
+        return $this->addCommand(new Commands\MediaTracking($tracking));
     }
 
     public function objectDelete(

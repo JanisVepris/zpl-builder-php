@@ -110,7 +110,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^MF` — Media Feed
 - [x] `^ML` — Maximum Label Length
 - [x] `^MM` — Print Mode
-- [ ] `^MN` — Media Tracking
+- [x] `^MN` — Media Tracking
 - [ ] `^MP` — Mode Protection
 - [ ] `^MT` — Media Type
 - [ ] `^MU` — Set Units of Measurement

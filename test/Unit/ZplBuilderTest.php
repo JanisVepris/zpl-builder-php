@@ -31,6 +31,7 @@ use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
+use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
 use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
 use Janisvepris\ZplBuilder\Enum\Orientation;
@@ -1809,6 +1810,13 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^MFF,N', $output);
+    }
+
+    public function testMediaTrackingEmitsMn(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaTracking(MediaTrackingType::NonContinuousWeb);
+
+        self::assertSame('^XA^MNY', $output);
     }
 
     public function testNoPrintQuantityEmittedByDefault(): void
