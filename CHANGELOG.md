@@ -14,6 +14,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::hostFormat()` and `ZplCommand\HostFormat` add support for `^HF` (Host Format), sending a stored format from the printer back to the host; the device defaults to `R:` (RAM) and the extension to `ZPL`
 - `ZplBuilder::labelShift()` and `ZplCommand\LabelShift` add support for `^LS` (Label Shift), shifting all field positions left by -9999 to 9999 dots for Z-130/Z-220 compatibility; defaults to 0 (no shift)
 - `ZplBuilder::labelTop()` and `ZplCommand\LabelTop` add support for `^LT` (Label Top), moving the entire label format -120 to 120 dot rows relative to the top edge
+- `ZplBuilder::slew()` and `ZplCommand\Slew` add support for `^PF` (Slew Given Number of Dot Rows), feeding 0 to 32000 dot rows without printing to speed up labels with a blank bottom
 
 ## [0.62.0] - 2026-06-12
 

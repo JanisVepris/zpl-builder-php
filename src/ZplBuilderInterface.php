@@ -1255,6 +1255,14 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Slew (feed without printing) the given number of dot rows from the bottom of the label
+     * (`^PF`), speeding up printing when the bottom of the label is blank. Accepts 0 to 32000.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function slew(int $dotRows): self;
+
+    /**
      * Copy an object (graphic, font, …) from one storage device to another (`^TO`).
      *
      * Mirrors the spec's `^TOs:o.x,d:o.x` wire format: a source `device:name.extension`

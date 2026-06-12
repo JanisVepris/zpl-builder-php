@@ -2129,6 +2129,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $builder);
     }
 
+    public function testSlewEmitsPf(): void
+    {
+        $output = (string) ZplBuilder::start()->slew(50);
+
+        self::assertSame('^XA^PF50', $output);
+    }
+
     public function testStartEmitsStartFormat(): void
     {
         self::assertSame('^XA', (string) ZplBuilder::start());

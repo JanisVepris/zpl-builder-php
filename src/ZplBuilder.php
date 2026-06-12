@@ -1397,6 +1397,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function slew(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\Slew($dotRows));
+    }
+
     /** Open a new ZPL format. Returns a builder with `^XA` already appended. */
     public static function start(): self
     {
