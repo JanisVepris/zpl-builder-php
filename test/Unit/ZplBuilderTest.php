@@ -21,6 +21,7 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DirectoryDevice;
 use Janisvepris\ZplBuilder\Enum\DownloadExtension;
 use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -2006,6 +2007,20 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->primaryDevice(NetworkDevice::PrintServer);
 
         self::assertSame('^XA^NPM', $output);
+    }
+
+    public function testPrintDirectoryLabelEmitsWd(): void
+    {
+        $output = (string) ZplBuilder::start()->printDirectoryLabel();
+
+        self::assertSame('^XA^WDR:*.*', $output);
+    }
+
+    public function testPrintDirectoryLabelListsResidentFonts(): void
+    {
+        $output = (string) ZplBuilder::start()->printDirectoryLabel(DirectoryDevice::Resident, '*', 'FNT');
+
+        self::assertSame('^XA^WDZ:*.FNT', $output);
     }
 
     public function testPrinterSleepEmitsExplicitValues(): void

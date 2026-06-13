@@ -19,6 +19,7 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DirectoryDevice;
 use Janisvepris\ZplBuilder\Enum\DownloadExtension;
 use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -1276,6 +1277,19 @@ interface ZplBuilderInterface extends Stringable
      * (`^NP`). Defaults to the printer's own settings.
      */
     public function primaryDevice(NetworkDevice $device = NetworkDevice::Printer): self;
+
+    /**
+     * Print a label listing the bar codes, fonts, or stored objects on a device (`^WD`). `$device`
+     * selects the storage device (including `Resident` for built-in objects); `$name` (default `*`)
+     * and `$extension` (default `*`, e.g. `FNT`, `BAR`, `GRF`) filter the listing.
+     *
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function printDirectoryLabel(
+        DirectoryDevice $device = DirectoryDevice::Ram,
+        string $name = '*',
+        string $extension = '*',
+    ): self;
 
     /**
      * Place the printer in idle/shutdown mode after a period of inactivity (`^ZZ`). `$idleSeconds`

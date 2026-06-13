@@ -19,6 +19,7 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DirectoryDevice;
 use Janisvepris\ZplBuilder\Enum\DownloadExtension;
 use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
@@ -1369,6 +1370,20 @@ class ZplBuilder implements ZplBuilderInterface
     public function primaryDevice(NetworkDevice $device = NetworkDevice::Printer): self
     {
         return $this->addCommand(new Commands\PrimaryDevice($device));
+    }
+
+    public function printDirectoryLabel(
+        DirectoryDevice $device = DirectoryDevice::Ram,
+        string $name = '*',
+        string $extension = '*',
+    ): self {
+        return $this->addCommand(
+            new Commands\PrintDirectoryLabel(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
     }
 
     public function printerSleep(int $idleSeconds = 0, bool $shutdownWithLabelsQueued = false): self

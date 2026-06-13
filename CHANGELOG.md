@@ -60,6 +60,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setRfidPowerLevels()` and `ZplCommand\SetRfidPowerLevels` add support for `^RW` (Set RFID Read and Write Power Levels), with `Enum\RfidPowerLevel` selecting the read and write power and an optional antenna port
 - `ZplBuilder::setRfidTagPassword()` and `ZplCommand\SetRfidTagPassword` add support for `^RZ` (Set RFID Tag Password and Lock Tag), with `Enum\RfidPasswordMemoryBank` and `Enum\RfidLockStyle` selecting the Gen 2 memory bank and lock style
 - `ZplBuilder::setAntennaParameters()` and `ZplCommand\SetAntennaParameters` add support for `^WA` (Set Antenna Parameters), with `Enum\Antenna` selecting the receive and transmit antenna
+- `ZplBuilder::printDirectoryLabel()` and `ZplCommand\PrintDirectoryLabel` add support for `^WD` (Print Directory Label), listing bar codes/fonts/objects on a device, with `Enum\DirectoryDevice` selecting the device (including resident objects)
 
 ## [0.62.0] - 2026-06-12
 
