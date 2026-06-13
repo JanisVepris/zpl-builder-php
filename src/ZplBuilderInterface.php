@@ -57,6 +57,9 @@ use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
+use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
+use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
@@ -1694,6 +1697,26 @@ interface ZplBuilderInterface extends Stringable
         ?RfidErrorHandling $errorHandling = null,
         ?ApplicatorSignal $applicatorSignal = null,
         ?PrintSpeed $voidPrintSpeed = null,
+    ): self;
+
+    /**
+     * Enable Wired Equivalent Privacy (WEP) mode and set its values (`^WE`). `$mode` selects the
+     * encryption strength; `$index` (1–4) is the active key; `$authentication` and `$keyStorage`
+     * are optional; `$key1`–`$key4` are the encryption keys. All parameters after `$mode` are
+     * optional and omitted from the output when null. Disable WPA before using WEP.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setWepMode(
+        WepEncryptionMode $mode = WepEncryptionMode::Off,
+        ?int $index = null,
+        ?WepAuthenticationType $authentication = null,
+        ?WepKeyStorage $keyStorage = null,
+        ?string $key1 = null,
+        ?string $key2 = null,
+        ?string $key3 = null,
+        ?string $key4 = null,
     ): self;
 
     /**

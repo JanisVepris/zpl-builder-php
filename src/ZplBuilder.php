@@ -57,6 +57,9 @@ use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
+use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
+use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
@@ -1828,6 +1831,30 @@ class ZplBuilder implements ZplBuilderInterface
                 errorHandling: $errorHandling,
                 applicatorSignal: $applicatorSignal,
                 voidPrintSpeed: $voidPrintSpeed,
+            ),
+        );
+    }
+
+    public function setWepMode(
+        WepEncryptionMode $mode = WepEncryptionMode::Off,
+        ?int $index = null,
+        ?WepAuthenticationType $authentication = null,
+        ?WepKeyStorage $keyStorage = null,
+        ?string $key1 = null,
+        ?string $key2 = null,
+        ?string $key3 = null,
+        ?string $key4 = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetWepMode(
+                mode: $mode,
+                index: $index,
+                authentication: $authentication,
+                keyStorage: $keyStorage,
+                key1: $key1,
+                key2: $key2,
+                key3: $key3,
+                key4: $key4,
             ),
         );
     }

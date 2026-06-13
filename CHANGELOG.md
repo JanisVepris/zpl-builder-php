@@ -61,6 +61,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setRfidTagPassword()` and `ZplCommand\SetRfidTagPassword` add support for `^RZ` (Set RFID Tag Password and Lock Tag), with `Enum\RfidPasswordMemoryBank` and `Enum\RfidLockStyle` selecting the Gen 2 memory bank and lock style
 - `ZplBuilder::setAntennaParameters()` and `ZplCommand\SetAntennaParameters` add support for `^WA` (Set Antenna Parameters), with `Enum\Antenna` selecting the receive and transmit antenna
 - `ZplBuilder::printDirectoryLabel()` and `ZplCommand\PrintDirectoryLabel` add support for `^WD` (Print Directory Label), listing bar codes/fonts/objects on a device, with `Enum\DirectoryDevice` selecting the device (including resident objects)
+- `ZplBuilder::setWepMode()` and `ZplCommand\SetWepMode` add support for `^WE` (Set WEP Mode), configuring WEP encryption with `Enum\WepEncryptionMode`, `Enum\WepAuthenticationType`, and `Enum\WepKeyStorage` plus up to four encryption keys
 
 ## [0.62.0] - 2026-06-12
 

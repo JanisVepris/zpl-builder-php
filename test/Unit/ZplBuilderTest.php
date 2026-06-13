@@ -53,6 +53,7 @@ use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
@@ -2780,6 +2781,20 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetWepModeEmitsWe(): void
+    {
+        $output = (string) ZplBuilder::start()->setWepMode();
+
+        self::assertSame('^XA^WEOFF', $output);
+    }
+
+    public function testSetWepModeWithKey(): void
+    {
+        $output = (string) ZplBuilder::start()->setWepMode(WepEncryptionMode::Bit40, key1: '12345');
+
+        self::assertSame('^XA^WE40,,,,12345', $output);
     }
 
     public function testSetZplEmitsSzWithDefault(): void

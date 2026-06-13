@@ -201,7 +201,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^RZ` — Set RFID Tag Password and Lock Tag
 - [x] `^WA` — Set Antenna Parameters
 - [x] `^WD` — Print Directory Label
-- [ ] `^WE` — Set WEP Mode
+- [x] `^WE` — Set WEP Mode
 - [ ] `^WF` — Encode AFI or DSFID Byte
 - [ ] `^WI` — Change Wireless Network Settings
 - [ ] `^WL` — Set LEAP Parameters
