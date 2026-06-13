@@ -46,6 +46,7 @@ use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
@@ -2634,6 +2635,24 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame('^XA', (string) $builder);
+    }
+
+    public function testSetRfidPowerLevelsEmitsRw(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidPowerLevels();
+
+        self::assertSame('^XA^RWH,H', $output);
+    }
+
+    public function testSetRfidPowerLevelsWithAntenna(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidPowerLevels(
+            RfidPowerLevel::Medium,
+            RfidPowerLevel::Low,
+            2,
+        );
+
+        self::assertSame('^XA^RWM,L,2', $output);
     }
 
     public function testSetSmtpEmitsNt(): void

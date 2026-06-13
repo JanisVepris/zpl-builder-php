@@ -49,6 +49,7 @@ use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
 use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -1703,6 +1704,20 @@ class ZplBuilder implements ZplBuilderInterface
                 hoursOffset: $hoursOffset,
                 minutesOffset: $minutesOffset,
                 secondsOffset: $secondsOffset,
+            ),
+        );
+    }
+
+    public function setRfidPowerLevels(
+        RfidPowerLevel $readPower = RfidPowerLevel::High,
+        RfidPowerLevel $writePower = RfidPowerLevel::High,
+        ?int $antenna = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetRfidPowerLevels(
+                readPower: $readPower,
+                writePower: $writePower,
+                antenna: $antenna,
             ),
         );
     }

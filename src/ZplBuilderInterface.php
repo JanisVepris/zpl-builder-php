@@ -49,6 +49,7 @@ use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
 use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -1579,6 +1580,19 @@ interface ZplBuilderInterface extends Stringable
         int $hoursOffset = 0,
         int $minutesOffset = 0,
         int $secondsOffset = 0,
+    ): self;
+
+    /**
+     * Set the RFID read and write power levels (`^RW`). `$readPower` and `$writePower` are factory-
+     * calibrated levels (high/medium/low); `$antenna` (1 or 2, R110Xi HF only) is optional and
+     * omitted from the output when null. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setRfidPowerLevels(
+        RfidPowerLevel $readPower = RfidPowerLevel::High,
+        RfidPowerLevel $writePower = RfidPowerLevel::High,
+        ?int $antenna = null,
     ): self;
 
     /**
