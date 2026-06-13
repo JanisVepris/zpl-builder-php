@@ -7,6 +7,7 @@ namespace Janisvepris\ZplBuilder\Test\Unit;
 use DateTimeImmutable;
 use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
+use Janisvepris\ZplBuilder\Enum\Antenna;
 use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
@@ -2458,6 +2459,20 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetAntennaParametersEmitsWa(): void
+    {
+        $output = (string) ZplBuilder::start()->setAntennaParameters();
+
+        self::assertSame('^XA^WAD,D', $output);
+    }
+
+    public function testSetAntennaParametersSelectsLeftAndRight(): void
+    {
+        $output = (string) ZplBuilder::start()->setAntennaParameters(Antenna::Left, Antenna::Right);
+
+        self::assertSame('^XA^WAL,R', $output);
     }
 
     public function testSetClockModeEmitsSlWithDefaultStartMode(): void

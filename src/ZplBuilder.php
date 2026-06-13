@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\Antenna;
 use Janisvepris\ZplBuilder\Enum\ApplicatorSignal;
 use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
@@ -1618,6 +1619,18 @@ class ZplBuilder implements ZplBuilderInterface
             $startValue,
             static fn (string $escaped): Commands => new Commands\FieldData($escaped),
             [new Commands\SerializationField($mask, $increment)],
+        );
+    }
+
+    public function setAntennaParameters(
+        Antenna $receive = Antenna::Diversity,
+        Antenna $transmit = Antenna::Diversity,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetAntennaParameters(
+                receive: $receive,
+                transmit: $transmit,
+            ),
         );
     }
 

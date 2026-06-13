@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\Antenna;
 use Janisvepris\ZplBuilder\Enum\ApplicatorSignal;
 use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
@@ -1503,6 +1504,15 @@ interface ZplBuilderInterface extends Stringable
      * @throws StringValueContainsBannedValuesException
      */
     public function serializationField(string $startValue, string $mask, string $increment = '1'): self;
+
+    /**
+     * Set the receive and transmit antenna for the wireless print server (`^WA`). Each selects
+     * diversity (the default), left, or right.
+     */
+    public function setAntennaParameters(
+        Antenna $receive = Antenna::Diversity,
+        Antenna $transmit = Antenna::Diversity,
+    ): self;
 
     /**
      * Set the Real-Time Clock's mode of operation and language for printing (`^SL`).
