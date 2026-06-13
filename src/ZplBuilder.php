@@ -1460,6 +1460,28 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function readRfidTag(
+        int $fieldNumber = 0,
+        int $startingBlock = 0,
+        int $numberOfBlocks = 1,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidDataOrder $specialMode = RfidDataOrder::Normal,
+    ): self {
+        return $this->addCommand(
+            new Commands\ReadRfidTag(
+                fieldNumber: $fieldNumber,
+                startingBlock: $startingBlock,
+                numberOfBlocks: $numberOfBlocks,
+                format: $format,
+                retries: $retries,
+                motion: $motion,
+                specialMode: $specialMode,
+            ),
+        );
+    }
+
     public function readWriteRfidFormat(
         RfidOperation $operation = RfidOperation::Write,
         RfidReadWriteFormat $format = RfidReadWriteFormat::Hexadecimal,

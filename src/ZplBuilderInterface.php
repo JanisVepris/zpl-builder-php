@@ -1356,6 +1356,24 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Read the current RFID tag's data into a field (`^RT`, provided for backward compatibility —
+     * prefer `readWriteRfidFormat()`). `$fieldNumber` (0–9999) is the `^FN` field; `$startingBlock`
+     * and `$numberOfBlocks` select the blocks to read; `$format` selects ASCII or hex; `$retries`
+     * (0–10) is the read-retry count; `$motion` controls feed; `$specialMode` selects data order.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function readRfidTag(
+        int $fieldNumber = 0,
+        int $startingBlock = 0,
+        int $numberOfBlocks = 1,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidDataOrder $specialMode = RfidDataOrder::Normal,
+    ): self;
+
+    /**
      * Read from or write to (encode) an RFID tag (`^RF`). `$operation` selects read/write/lock/
      * read-password; `$format` selects ASCII, hexadecimal, or EPC (pair EPC with
      * `defineEpcDataStructure()`). `$startingBlock` and `$numberOfBytes` are optional and omitted
