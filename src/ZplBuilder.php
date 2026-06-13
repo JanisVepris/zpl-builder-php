@@ -47,8 +47,10 @@ use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
 use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
 use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
+use Janisvepris\ZplBuilder\Enum\RfidLockStyle;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
@@ -1718,6 +1720,20 @@ class ZplBuilder implements ZplBuilderInterface
                 readPower: $readPower,
                 writePower: $writePower,
                 antenna: $antenna,
+            ),
+        );
+    }
+
+    public function setRfidTagPassword(
+        string $password = '00',
+        ?RfidPasswordMemoryBank $memoryBank = null,
+        ?RfidLockStyle $lockStyle = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetRfidTagPassword(
+                password: $password,
+                memoryBank: $memoryBank,
+                lockStyle: $lockStyle,
             ),
         );
     }

@@ -45,7 +45,9 @@ use Janisvepris\ZplBuilder\Enum\PrintSpeed;
 use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RfidLockStyle;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -2653,6 +2655,24 @@ class ZplBuilderTest extends UnitTestCase
         );
 
         self::assertSame('^XA^RWM,L,2', $output);
+    }
+
+    public function testSetRfidTagPasswordEmitsRz(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidTagPassword('5A');
+
+        self::assertSame('^XA^RZ5A', $output);
+    }
+
+    public function testSetRfidTagPasswordWithBankAndLock(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidTagPassword(
+            '1234ABCD',
+            RfidPasswordMemoryBank::Epc,
+            RfidLockStyle::Locked,
+        );
+
+        self::assertSame('^XA^RZ1234ABCD,E,L', $output);
     }
 
     public function testSetSmtpEmitsNt(): void

@@ -47,8 +47,10 @@ use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
 use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
 use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
+use Janisvepris\ZplBuilder\Enum\RfidLockStyle;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
@@ -60,6 +62,7 @@ use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\InvalidHexValueException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
@@ -1593,6 +1596,21 @@ interface ZplBuilderInterface extends Stringable
         RfidPowerLevel $readPower = RfidPowerLevel::High,
         RfidPowerLevel $writePower = RfidPowerLevel::High,
         ?int $antenna = null,
+    ): self;
+
+    /**
+     * Set an RFID tag's password and optionally lock a memory bank (`^RZ`). `$password` is a hex
+     * string (1–8 hex digits; Gen 2 uses a 32-bit / 8-digit password). `$memoryBank` and
+     * `$lockStyle` (Gen 2 only) are optional and omitted from the output when null. Not supported
+     * by all printers.
+     *
+     * @throws InvalidHexValueException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function setRfidTagPassword(
+        string $password = '00',
+        ?RfidPasswordMemoryBank $memoryBank = null,
+        ?RfidLockStyle $lockStyle = null,
     ): self;
 
     /**

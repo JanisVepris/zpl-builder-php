@@ -58,6 +58,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setUpRfidParameters()` and `ZplCommand\SetUpRfidParameters` add support for `^RS` (Set Up RFID Parameters), configuring tag type, transponder position, void length, retry count, and error handling, with `Enum\RfidErrorHandling` and `Enum\ApplicatorSignal`
 - `ZplBuilder::readRfidTag()` and `ZplCommand\ReadRfidTag` add support for `^RT` (Read RFID Tag), reading tag block data into a field (legacy command; `readWriteRfidFormat()` is preferred)
 - `ZplBuilder::setRfidPowerLevels()` and `ZplCommand\SetRfidPowerLevels` add support for `^RW` (Set RFID Read and Write Power Levels), with `Enum\RfidPowerLevel` selecting the read and write power and an optional antenna port
+- `ZplBuilder::setRfidTagPassword()` and `ZplCommand\SetRfidTagPassword` add support for `^RZ` (Set RFID Tag Password and Lock Tag), with `Enum\RfidPasswordMemoryBank` and `Enum\RfidLockStyle` selecting the Gen 2 memory bank and lock style
 
 ## [0.62.0] - 2026-06-12
 
