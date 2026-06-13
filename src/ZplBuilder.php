@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\ApplicatorSignal;
 use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
@@ -45,6 +46,7 @@ use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
 use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
+use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
@@ -1723,6 +1725,28 @@ class ZplBuilder implements ZplBuilderInterface
                 unit: $unit,
                 baseDpi: $baseDpi,
                 conversionDpi: $conversionDpi,
+            ),
+        );
+    }
+
+    public function setUpRfidParameters(
+        ?int $tagType = null,
+        ?int $position = null,
+        ?int $voidLength = null,
+        ?int $numberOfLabels = null,
+        ?RfidErrorHandling $errorHandling = null,
+        ?ApplicatorSignal $applicatorSignal = null,
+        ?PrintSpeed $voidPrintSpeed = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetUpRfidParameters(
+                tagType: $tagType,
+                position: $position,
+                voidLength: $voidLength,
+                numberOfLabels: $numberOfLabels,
+                errorHandling: $errorHandling,
+                applicatorSignal: $applicatorSignal,
+                voidPrintSpeed: $voidPrintSpeed,
             ),
         );
     }

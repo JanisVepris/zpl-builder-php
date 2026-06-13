@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\ApplicatorSignal;
 use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
@@ -45,6 +46,7 @@ use Janisvepris\ZplBuilder\Enum\QrModel;
 use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidByteType;
 use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
+use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
 use Janisvepris\ZplBuilder\Enum\RfidMotion;
 use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
@@ -1599,6 +1601,25 @@ interface ZplBuilderInterface extends Stringable
         MeasurementUnit $unit = MeasurementUnit::Dots,
         ?int $baseDpi = null,
         ?int $conversionDpi = null,
+    ): self;
+
+    /**
+     * Set up RFID parameters (`^RS`). All parameters are optional and omitted from the output when
+     * null: `$tagType` (0–9) selects the tag type; `$position` and `$voidLength` are dot-row values;
+     * `$numberOfLabels` (1–10) is the failure retry count; `$errorHandling` chooses the action on
+     * persistent failure; `$applicatorSignal` and `$voidPrintSpeed` apply to applicator/PAX
+     * printers. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setUpRfidParameters(
+        ?int $tagType = null,
+        ?int $position = null,
+        ?int $voidLength = null,
+        ?int $numberOfLabels = null,
+        ?RfidErrorHandling $errorHandling = null,
+        ?ApplicatorSignal $applicatorSignal = null,
+        ?PrintSpeed $voidPrintSpeed = null,
     ): self;
 
     /**
