@@ -55,6 +55,7 @@ use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
@@ -804,6 +805,22 @@ interface ZplBuilderInterface extends Stringable
      * Not supported by all printers.
      */
     public function enableRfidMotion(bool $enabled = true): self;
+
+    /**
+     * Encode the AFI or DSFID byte to a tag (`^WF`). `$retries` (0–10) is the write-retry count;
+     * `$motion` controls label feed; `$writeProtect` write-protects the byte; `$format` selects
+     * ASCII or hex; `$byteType` selects the AFI or DSFID byte. Chain `fieldData()` with the byte
+     * value to encode. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function encodeAfiOrDsfidByte(
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        RfidByteType $byteType = RfidByteType::Afi,
+    ): self;
 
     /** Finalise the format by appending `^XZ`. */
     public function end(): self;

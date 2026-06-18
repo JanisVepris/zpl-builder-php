@@ -55,6 +55,7 @@ use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
 use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
@@ -894,6 +895,24 @@ class ZplBuilder implements ZplBuilderInterface
     public function enableRfidMotion(bool $enabled = true): self
     {
         return $this->addCommand(new Commands\EnableRfidMotion($enabled));
+    }
+
+    public function encodeAfiOrDsfidByte(
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        RfidByteType $byteType = RfidByteType::Afi,
+    ): self {
+        return $this->addCommand(
+            new Commands\EncodeAfiOrDsfidByte(
+                retries: $retries,
+                motion: $motion,
+                writeProtect: $writeProtect,
+                format: $format,
+                byteType: $byteType,
+            ),
+        );
     }
 
     public function end(): self

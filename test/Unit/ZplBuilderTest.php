@@ -1191,6 +1191,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^RMY', $output);
     }
 
+    public function testEncodeAfiOrDsfidByteEmitsWf(): void
+    {
+        $output = (string) ZplBuilder::start()->encodeAfiOrDsfidByte();
+
+        self::assertSame('^XA^WF0,0,0,0,A', $output);
+    }
+
+    public function testEncodeAfiOrDsfidByteValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->encodeAfiOrDsfidByte(retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testEndAppendsEndFormatEveryTimeItsCalled(): void
     {
         $output = (string) ZplBuilder::start()->end()->end();
