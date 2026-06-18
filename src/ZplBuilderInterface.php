@@ -59,6 +59,7 @@ use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\TransmitPower;
 use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
 use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
 use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
@@ -1717,6 +1718,19 @@ interface ZplBuilderInterface extends Stringable
         string $getCommunity = 'public',
         string $setCommunity = 'public',
         string $trapCommunity = 'public',
+    ): self;
+
+    /**
+     * Set the wireless transmit rates and power (`^WR`). `$rate1`, `$rate2`, `$rate5_5`, and
+     * `$rate11` toggle the 1, 2, 5.5, and 11 Mb/s transmit rates; `$power` selects the transmit
+     * power level.
+     */
+    public function setTransmitRate(
+        bool $rate1,
+        bool $rate2,
+        bool $rate5_5,
+        bool $rate11,
+        TransmitPower $power,
     ): self;
 
     /**

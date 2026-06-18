@@ -206,7 +206,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^WI` — Change Wireless Network Settings
 - [x] `^WL` — Set LEAP Parameters
 - [x] `^WP` — Set Wireless Password
-- [ ] `^WR` — Set Transmit Rate
+- [x] `^WR` — Set Transmit Rate
 - [ ] `^WS` — Set Wireless Card Values
 - [ ] `^WT` — Write (Encode) Tag
 - [ ] `^WV` — Verify RFID Encoding Operation

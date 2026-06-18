@@ -53,6 +53,7 @@ use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\TransmitPower;
 use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
@@ -2786,6 +2787,13 @@ class ZplBuilderTest extends UnitTestCase
         }
 
         self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetTransmitRateEmitsWr(): void
+    {
+        $output = (string) ZplBuilder::start()->setTransmitRate(true, true, false, false, TransmitPower::Power30);
+
+        self::assertSame('^XA^WRY,Y,N,N,30', $output);
     }
 
     public function testSetUnitsEmitsConversion(): void

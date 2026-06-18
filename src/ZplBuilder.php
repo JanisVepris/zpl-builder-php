@@ -59,6 +59,7 @@ use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
 use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\TransmitPower;
 use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
 use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
 use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
@@ -1855,6 +1856,24 @@ class ZplBuilder implements ZplBuilderInterface
                 getCommunity: $getCommunity,
                 setCommunity: $setCommunity,
                 trapCommunity: $trapCommunity,
+            ),
+        );
+    }
+
+    public function setTransmitRate(
+        bool $rate1,
+        bool $rate2,
+        bool $rate5_5,
+        bool $rate11,
+        TransmitPower $power,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetTransmitRate(
+                rate1: $rate1,
+                rate2: $rate2,
+                rate5_5: $rate5_5,
+                rate11: $rate11,
+                power: $power,
             ),
         );
     }

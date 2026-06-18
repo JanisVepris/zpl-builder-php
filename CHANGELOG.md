@@ -66,6 +66,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::changeWirelessNetworkSettings()` and `ZplCommand\ChangeWirelessNetworkSettings` add support for `^WI` (Change Wireless Network Settings), mirroring `^NS` with `Enum\IpResolution` and optional trailing WINS/timeout/ARP/port parameters
 - `ZplBuilder::setLeapParameters()` and `ZplCommand\SetLeapParameters` add support for `^WL` (Set LEAP Parameters), enabling Cisco LEAP authentication with a username and password, with `Enum\LeapMode` toggling the mode
 - `ZplBuilder::setWirelessPassword()` and `ZplCommand\SetWirelessPassword` add support for `^WP` (Set Wireless Password), setting the four-digit wireless print-server password (emitted zero-padded)
+- `ZplBuilder::setTransmitRate()` and `ZplCommand\SetTransmitRate` add support for `^WR` (Set Transmit Rate), toggling the 1/2/5.5/11 Mb/s transmit rates with `Enum\TransmitPower` selecting the power level
 
 ## [0.62.0] - 2026-06-12
 
