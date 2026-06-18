@@ -64,6 +64,8 @@ use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
 use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
 use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
+use Janisvepris\ZplBuilder\Enum\WirelessOperatingMode;
+use Janisvepris\ZplBuilder\Enum\WirelessPreamble;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
@@ -1785,6 +1787,20 @@ interface ZplBuilderInterface extends Stringable
         ?string $key2 = null,
         ?string $key3 = null,
         ?string $key4 = null,
+    ): self;
+
+    /**
+     * Set the wireless card's ESSID, operating mode, and preamble (`^WS`). `$essid` is up to 32
+     * characters; leave it empty to keep the current ESSID. `$operatingMode` selects infrastructure
+     * or ad-hoc; `$preamble` selects a long or short card preamble.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setWirelessCardValues(
+        string $essid = '',
+        WirelessOperatingMode $operatingMode = WirelessOperatingMode::Infrastructure,
+        WirelessPreamble $preamble = WirelessPreamble::Long,
     ): self;
 
     /**

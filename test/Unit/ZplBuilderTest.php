@@ -2859,6 +2859,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^WE40,,,,12345', $output);
     }
 
+    public function testSetWirelessCardValuesEmitsWs(): void
+    {
+        $output = (string) ZplBuilder::start()->setWirelessCardValues('mynet');
+
+        self::assertSame('^XA^WSmynet,I,L', $output);
+    }
+
     public function testSetWirelessPasswordEmitsWp(): void
     {
         $output = (string) ZplBuilder::start()->setWirelessPassword(1234);

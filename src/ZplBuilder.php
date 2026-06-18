@@ -64,6 +64,8 @@ use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
 use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
 use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
 use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
+use Janisvepris\ZplBuilder\Enum\WirelessOperatingMode;
+use Janisvepris\ZplBuilder\Enum\WirelessPreamble;
 use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
@@ -1934,6 +1936,20 @@ class ZplBuilder implements ZplBuilderInterface
                 key2: $key2,
                 key3: $key3,
                 key4: $key4,
+            ),
+        );
+    }
+
+    public function setWirelessCardValues(
+        string $essid = '',
+        WirelessOperatingMode $operatingMode = WirelessOperatingMode::Infrastructure,
+        WirelessPreamble $preamble = WirelessPreamble::Long,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetWirelessCardValues(
+                essid: $essid,
+                operatingMode: $operatingMode,
+                preamble: $preamble,
             ),
         );
     }
