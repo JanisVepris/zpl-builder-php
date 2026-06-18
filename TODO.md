@@ -203,7 +203,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^WD` — Print Directory Label
 - [x] `^WE` — Set WEP Mode
 - [x] `^WF` — Encode AFI or DSFID Byte
-- [ ] `^WI` — Change Wireless Network Settings
+- [x] `^WI` — Change Wireless Network Settings
 - [ ] `^WL` — Set LEAP Parameters
 - [ ] `^WP` — Set Wireless Password
 - [ ] `^WR` — Set Transmit Rate

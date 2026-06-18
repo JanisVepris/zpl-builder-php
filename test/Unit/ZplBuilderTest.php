@@ -1017,6 +1017,18 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^CMB,E,R,A', $output);
     }
 
+    public function testChangeWirelessNetworkSettingsEmitsWi(): void
+    {
+        $output = (string) ZplBuilder::start()->changeWirelessNetworkSettings(
+            IpResolution::Permanent,
+            '192.168.0.1',
+            '255.255.255.0',
+            '192.168.0.2',
+        );
+
+        self::assertSame('^XA^WIP,192.168.0.1,255.255.255.0,192.168.0.2', $output);
+    }
+
     public function testCodeValidationDisables(): void
     {
         $output = (string) ZplBuilder::start()->codeValidation(false);

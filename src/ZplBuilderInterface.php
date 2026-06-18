@@ -705,6 +705,28 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Change the printer's wireless print-server network settings (`^WI`). `$ipResolution` selects how
+     * the IP address is obtained; `$ipAddress`, `$subnetMask`, and `$defaultGateway` are dotted-quad
+     * strings. The trailing parameters — WINS server, connection-timeout checking, timeout value
+     * (0–9999 s), ARP broadcast interval, and base RAW port (0–99999) — are optional; omit the
+     * trailing ones to leave them unchanged.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function changeWirelessNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self;
+
+    /**
      * Toggle bar-code data validation (`^CV`). When enabled, the printer checks each bar code's data
      * against its symbology and prints an `INVALID - X` message in place of any bar code that fails.
      * Remains active across formats until disabled or the printer is turned off.

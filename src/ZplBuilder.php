@@ -804,6 +804,32 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function changeWirelessNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\ChangeWirelessNetworkSettings(
+                ipResolution: $ipResolution,
+                ipAddress: $ipAddress,
+                subnetMask: $subnetMask,
+                defaultGateway: $defaultGateway,
+                winsServer: $winsServer,
+                connectionTimeoutChecking: $connectionTimeoutChecking,
+                timeoutValue: $timeoutValue,
+                arpInterval: $arpInterval,
+                basePortNumber: $basePortNumber,
+            ),
+        );
+    }
+
     public function codeValidation(bool $enabled = true): self
     {
         return $this->addCommand(new Commands\CodeValidation($enabled));
