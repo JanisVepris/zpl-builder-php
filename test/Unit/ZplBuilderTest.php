@@ -2645,6 +2645,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testSetLeapParametersEmitsWl(): void
+    {
+        $output = (string) ZplBuilder::start()->setLeapParameters('zebra', 'secret');
+
+        self::assertSame('^XA^WLON,zebra,secret', $output);
+    }
+
+    public function testSetLeapParametersValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setLeapParameters('abc', 'secret');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSetMediaSensorsEmitsOptionalParameters(): void
     {
         $output = (string) ZplBuilder::start()->setMediaSensors(50, 40, 30, 1225, 60, 70);

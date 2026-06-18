@@ -29,6 +29,7 @@ use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
+use Janisvepris\ZplBuilder\Enum\LeapMode;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
@@ -1734,6 +1735,20 @@ class ZplBuilder implements ZplBuilderInterface
                 minute: $minute ?? (int) date('i'),
                 second: $second ?? (int) date('s'),
                 format: $format,
+            ),
+        );
+    }
+
+    public function setLeapParameters(
+        string $username,
+        string $password,
+        LeapMode $mode = LeapMode::On,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetLeapParameters(
+                mode: $mode,
+                username: $username,
+                password: $password,
             ),
         );
     }

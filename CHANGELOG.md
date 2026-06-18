@@ -64,6 +64,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setWepMode()` and `ZplCommand\SetWepMode` add support for `^WE` (Set WEP Mode), configuring WEP encryption with `Enum\WepEncryptionMode`, `Enum\WepAuthenticationType`, and `Enum\WepKeyStorage` plus up to four encryption keys
 - `ZplBuilder::encodeAfiOrDsfidByte()` and `ZplCommand\EncodeAfiOrDsfidByte` add support for `^WF` (Encode AFI or DSFID Byte), with `Enum\RfidWriteProtect` controlling write protection alongside the motion/format/byte-type enums
 - `ZplBuilder::changeWirelessNetworkSettings()` and `ZplCommand\ChangeWirelessNetworkSettings` add support for `^WI` (Change Wireless Network Settings), mirroring `^NS` with `Enum\IpResolution` and optional trailing WINS/timeout/ARP/port parameters
+- `ZplBuilder::setLeapParameters()` and `ZplCommand\SetLeapParameters` add support for `^WL` (Set LEAP Parameters), enabling Cisco LEAP authentication with a username and password, with `Enum\LeapMode` toggling the mode
 
 ## [0.62.0] - 2026-06-12
 

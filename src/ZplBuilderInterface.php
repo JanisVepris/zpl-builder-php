@@ -29,6 +29,7 @@ use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
 use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
+use Janisvepris\ZplBuilder\Enum\LeapMode;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
 use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
@@ -1610,6 +1611,20 @@ interface ZplBuilderInterface extends Stringable
         ?int $minute = null,
         ?int $second = null,
         ClockTimeFormat $format = ClockTimeFormat::Military24Hour,
+    ): self;
+
+    /**
+     * Enable Cisco LEAP authentication and set its credentials (`^WL`). `$username` and `$password`
+     * are each 4–40 characters. `$mode` defaults to `On` since the method sets LEAP up; pass
+     * `LeapMode::Off` to disable it.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setLeapParameters(
+        string $username,
+        string $password,
+        LeapMode $mode = LeapMode::On,
     ): self;
 
     /**
