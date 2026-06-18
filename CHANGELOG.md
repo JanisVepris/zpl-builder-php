@@ -65,6 +65,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::encodeAfiOrDsfidByte()` and `ZplCommand\EncodeAfiOrDsfidByte` add support for `^WF` (Encode AFI or DSFID Byte), with `Enum\RfidWriteProtect` controlling write protection alongside the motion/format/byte-type enums
 - `ZplBuilder::changeWirelessNetworkSettings()` and `ZplCommand\ChangeWirelessNetworkSettings` add support for `^WI` (Change Wireless Network Settings), mirroring `^NS` with `Enum\IpResolution` and optional trailing WINS/timeout/ARP/port parameters
 - `ZplBuilder::setLeapParameters()` and `ZplCommand\SetLeapParameters` add support for `^WL` (Set LEAP Parameters), enabling Cisco LEAP authentication with a username and password, with `Enum\LeapMode` toggling the mode
+- `ZplBuilder::setWirelessPassword()` and `ZplCommand\SetWirelessPassword` add support for `^WP` (Set Wireless Password), setting the four-digit wireless print-server password (emitted zero-padded)
 
 ## [0.62.0] - 2026-06-12
 

@@ -1919,6 +1919,16 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setWirelessPassword(int $newPassword, int $oldPassword = 0): self
+    {
+        return $this->addCommand(
+            new Commands\SetWirelessPassword(
+                oldPassword: $oldPassword,
+                newPassword: $newPassword,
+            ),
+        );
+    }
+
     public function setZpl(ZplMode $mode = ZplMode::ZplII): self
     {
         return $this->addCommand(new Commands\SetZpl($mode));

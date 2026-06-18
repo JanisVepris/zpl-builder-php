@@ -1774,6 +1774,15 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Set the four-digit wireless print-server password (`^WP`). `$newPassword` is the password to
+     * set and `$oldPassword` (default `0`) is the current one. `0000` runs the print server in
+     * unprotected mode. Both accept 0–9999 and are emitted zero-padded to four digits.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setWirelessPassword(int $newPassword, int $oldPassword = 0): self;
+
+    /**
      * Select the ZPL language the printer interprets (`^SZ`): legacy ZPL or ZPL II (the default).
      * Remains active until changed again or the printer is turned off.
      */
