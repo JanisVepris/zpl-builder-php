@@ -2532,6 +2532,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testSetAllNetworkPrintersTransparentEmitsNr(): void
+    {
+        $output = (string) ZplBuilder::start()->setAllNetworkPrintersTransparent();
+
+        self::assertSame('^XA~NR', $output);
+    }
+
     public function testSetAntennaParametersEmitsWa(): void
     {
         $output = (string) ZplBuilder::start()->setAntennaParameters();

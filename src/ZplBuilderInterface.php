@@ -1575,6 +1575,12 @@ interface ZplBuilderInterface extends Stringable
     public function serializationField(string $startValue, string $mask, string $increment = '1'): self;
 
     /**
+     * Set every printer on an RS-485 network to transparent, regardless of ID or current mode
+     * (`~NR`). All printers on the network then receive the transmission.
+     */
+    public function setAllNetworkPrintersTransparent(): self;
+
+    /**
      * Set the receive and transmit antenna for the wireless print server (`^WA`). Each selects
      * diversity (the default), left, or right.
      */

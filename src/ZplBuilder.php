@@ -1694,6 +1694,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setAllNetworkPrintersTransparent(): self
+    {
+        return $this->addCommand(new Commands\SetAllNetworkPrintersTransparent());
+    }
+
     public function setAntennaParameters(
         Antenna $receive = Antenna::Diversity,
         Antenna $transmit = Antenna::Diversity,
