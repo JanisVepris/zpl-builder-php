@@ -2344,6 +2344,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringNotContainsString('^XZ', $output);
     }
 
+    public function testReportRfidEncodingResultsEmitsRv(): void
+    {
+        $output = (string) ZplBuilder::start()->reportRfidEncodingResults();
+
+        self::assertSame('^XA~RVE', $output);
+    }
+
     public function testResetClearsFontPresets(): void
     {
         $builder = ZplBuilder::start()

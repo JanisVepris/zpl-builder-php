@@ -56,6 +56,7 @@ use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidReportMode;
 use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -1628,6 +1629,11 @@ class ZplBuilder implements ZplBuilderInterface
         $separator = $this->printNewlines ? PHP_EOL : '';
 
         return implode($separator, array_map('strval', $this->commands)) . $separator;
+    }
+
+    public function reportRfidEncodingResults(RfidReportMode $mode = RfidReportMode::Enable): self
+    {
+        return $this->addCommand(new Commands\ReportRfidEncodingResults($mode));
     }
 
     public function reset(): self

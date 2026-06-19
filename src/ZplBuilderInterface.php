@@ -56,6 +56,7 @@ use Janisvepris\ZplBuilder\Enum\RfidOperation;
 use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
 use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidReportMode;
 use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
@@ -1502,6 +1503,12 @@ interface ZplBuilderInterface extends Stringable
      * Pure — does not finalise the format. Call `end()` first if you want `^XZ`.
      */
     public function render(): string;
+
+    /**
+     * Enable or disable reporting RFID encoding results to the host after each label (`~RV`).
+     * Defaults to enabling reporting; pass `RfidReportMode::Disable` to turn it off.
+     */
+    public function reportRfidEncodingResults(RfidReportMode $mode = RfidReportMode::Enable): self;
 
     /**
      * Discard all state and re-emit `^XA`. Clears the command list, font settings,
