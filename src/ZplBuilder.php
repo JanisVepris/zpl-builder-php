@@ -2073,6 +2073,29 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function writeRfidTag(
+        string $data,
+        int $block = 0,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        bool $verify = false,
+    ): self {
+        $this->addCommand(
+            new Commands\WriteRfidTag(
+                block: $block,
+                retries: $retries,
+                motion: $motion,
+                writeProtect: $writeProtect,
+                format: $format,
+                verify: $verify,
+            ),
+        );
+
+        return $this->fieldData($data);
+    }
+
     /**
      * Append a command to the internal list. All public mutation methods route through this,
      * and subclasses can call it to register their own `ZplCommand` implementations.

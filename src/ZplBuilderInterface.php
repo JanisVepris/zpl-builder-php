@@ -1926,4 +1926,23 @@ interface ZplBuilderInterface extends Stringable
         ?int $arpInterval = null,
         ?int $basePortNumber = null,
     ): self;
+
+    /**
+     * Encode `$data` to the current RFID tag (`^WT ... ^FS`). `$block` selects the tag block
+     * (default 0); `$retries` (0–10) is the write-retry count; `$motion` controls label feed;
+     * `$writeProtect` write-protects the tag; `$format` selects ASCII or hex data; `$verify`
+     * enables write verification (or, on some printers, reverses the data order). Provided for
+     * backward-compatibility with older Zebra RFID printers — prefer `^RF`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function writeRfidTag(
+        string $data,
+        int $block = 0,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        bool $verify = false,
+    ): self;
 }

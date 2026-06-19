@@ -3088,6 +3088,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^NSP,192.168.0.1,255.255.255.0,192.168.0.2', $output);
     }
 
+    public function testWriteRfidTagEmitsWtThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->writeRfidTag('RFIDRFID', retries: 5);
+
+        self::assertSame('^XA^WT0,5,0,0,0,N^FDRFIDRFID^FS', $output);
+    }
+
+    public function testWriteRfidTagValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->writeRfidTag('RFIDRFID', retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testZplBuilderImplementsZplBuilderInterface(): void
     {
         self::assertInstanceOf(ZplBuilderInterface::class, ZplBuilder::start());
