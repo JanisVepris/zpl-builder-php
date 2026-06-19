@@ -2065,6 +2065,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^NPM', $output);
     }
 
+    public function testPrintConfigurationLabelEmitsWc(): void
+    {
+        $output = (string) ZplBuilder::start()->printConfigurationLabel();
+
+        self::assertSame('^XA~WC', $output);
+    }
+
     public function testPrintDirectoryLabelEmitsWd(): void
     {
         $output = (string) ZplBuilder::start()->printDirectoryLabel();

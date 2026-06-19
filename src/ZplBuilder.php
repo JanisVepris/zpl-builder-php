@@ -1430,6 +1430,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\PrimaryDevice($device));
     }
 
+    public function printConfigurationLabel(): self
+    {
+        return $this->addCommand(new Commands\PrintConfigurationLabel());
+    }
+
     public function printDirectoryLabel(
         DirectoryDevice $device = DirectoryDevice::Ram,
         string $name = '*',

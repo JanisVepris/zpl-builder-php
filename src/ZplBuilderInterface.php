@@ -1335,6 +1335,13 @@ interface ZplBuilderInterface extends Stringable
     public function primaryDevice(NetworkDevice $device = NetworkDevice::Printer): self;
 
     /**
+     * Print a printer configuration label (`~WC`) describing the printer setup — sensor type,
+     * network ID, ZPL mode, firmware version, and device contents. Works only while the printer
+     * is idle.
+     */
+    public function printConfigurationLabel(): self;
+
+    /**
      * Print a label listing the bar codes, fonts, or stored objects on a device (`^WD`). `$device`
      * selects the storage device (including `Resident` for built-in objects); `$name` (default `*`)
      * and `$extension` (default `*`, e.g. `FNT`, `BAR`, `GRF`) filter the listing.
