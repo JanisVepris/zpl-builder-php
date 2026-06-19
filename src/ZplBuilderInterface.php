@@ -1527,6 +1527,12 @@ interface ZplBuilderInterface extends Stringable
     public function reset(): self;
 
     /**
+     * Reinitialise the wireless card and print server, reassociating any wireless card to the
+     * network (`~WR`). Equivalent to the RESET NETWORK control-panel parameter.
+     */
+    public function resetWirelessCard(): self;
+
+    /**
      * Set the number of times the printer retries reading or writing a single tag block (`^RR`,
      * 0–10). Persistent across formats. Distinct from the number-of-labels retry in `^RS`. Not
      * supported by all printers.

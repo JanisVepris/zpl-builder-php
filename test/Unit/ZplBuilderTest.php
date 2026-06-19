@@ -2397,6 +2397,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $commands[0]);
     }
 
+    public function testResetWirelessCardEmitsWr(): void
+    {
+        $output = (string) ZplBuilder::start()->resetWirelessCard();
+
+        self::assertSame('^XA~WR', $output);
+    }
+
     public function testRfidBlockRetriesEmitsRr(): void
     {
         $output = (string) ZplBuilder::start()->rfidBlockRetries(5);

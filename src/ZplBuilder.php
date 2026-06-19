@@ -1659,6 +1659,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this;
     }
 
+    public function resetWirelessCard(): self
+    {
+        return $this->addCommand(new Commands\ResetWirelessCard());
+    }
+
     public function rfidBlockRetries(int $retries): self
     {
         return $this->addCommand(new Commands\RfidBlockRetries($retries));

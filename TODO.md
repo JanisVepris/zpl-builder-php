@@ -216,4 +216,4 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `~RV` — Report RFID Encoding Results
 - [x] `~WC` — Print Configuration Label
 - [x] `~WL` — Print Network Configuration Label
-- [ ] `~WR` — Reset Wireless Card
+- [x] `~WR` — Reset Wireless Card
