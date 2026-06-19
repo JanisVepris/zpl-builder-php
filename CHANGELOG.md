@@ -69,6 +69,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setTransmitRate()` and `ZplCommand\SetTransmitRate` add support for `^WR` (Set Transmit Rate), toggling the 1/2/5.5/11 Mb/s transmit rates with `Enum\TransmitPower` selecting the power level
 - `ZplBuilder::setWirelessCardValues()` and `ZplCommand\SetWirelessCardValues` add support for `^WS` (Set Wireless Card Values), setting the ESSID with `Enum\WirelessOperatingMode` and `Enum\WirelessPreamble`
 - `ZplBuilder::writeRfidTag()` and `ZplCommand\WriteRfidTag` add support for `^WT` (Write/Encode Tag), encoding field data to the current RFID tag with block, retries, motion, write-protect, format, and verify options
+- `ZplBuilder::verifyRfidEncoding()` and `ZplCommand\VerifyRfidEncoding` add support for `^WV` (Verify RFID Encoding Operation), toggling RFID write verification
 
 ## [0.62.0] - 2026-06-12
 

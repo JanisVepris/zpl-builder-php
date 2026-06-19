@@ -2999,6 +2999,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^HYR:LOGO.GRF', $output);
     }
 
+    public function testVerifyRfidEncodingEmitsWv(): void
+    {
+        $output = (string) ZplBuilder::start()->verifyRfidEncoding();
+
+        self::assertSame('^XA^WVY', $output);
+    }
+
     public function testWebAuthTimeoutEmitsNwWithDefault(): void
     {
         $output = (string) ZplBuilder::start()->webAuthTimeout();

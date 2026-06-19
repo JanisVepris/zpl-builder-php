@@ -209,7 +209,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^WR` — Set Transmit Rate
 - [x] `^WS` — Set Wireless Card Values
 - [x] `^WT` — Write (Encode) Tag
-- [ ] `^WV` — Verify RFID Encoding Operation
+- [x] `^WV` — Verify RFID Encoding Operation
 - [ ] `~NC` — Network Connect
 - [ ] `~NR` — Set All Network Printers Transparent
 - [ ] `~NT` — Set Currently Connected Printer Transparent

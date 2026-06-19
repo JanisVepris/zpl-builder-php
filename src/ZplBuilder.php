@@ -2031,6 +2031,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function verifyRfidEncoding(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\VerifyRfidEncoding($enabled));
+    }
+
     public function webAuthTimeout(int $minutes = 5): self
     {
         return $this->addCommand(new Commands\WebAuthenticationTimeout($minutes));

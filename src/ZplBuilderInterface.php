@@ -1885,6 +1885,13 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Enable or disable RFID write verification (`^WV`). When enabled, the printer verifies that the
+     * tag about to be programmed contains the hex data `A5A5` in its first two bytes. Not persistent
+     * across labels.
+     */
+    public function verifyRfidEncoding(bool $enabled = true): self;
+
+    /**
      * Set the timeout (in minutes) before the printer re-prompts for its password on the web pages
      * (`^NW`). Accepts 0 (no secure pages without the password) to 255 minutes; defaults to 5.
      *
