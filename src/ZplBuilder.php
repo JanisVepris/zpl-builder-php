@@ -1398,6 +1398,11 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\ModeProtection($mode));
     }
 
+    public function networkConnect(int $networkId): self
+    {
+        return $this->addCommand(new Commands\NetworkConnect($networkId));
+    }
+
     public function networkId(int $networkId): self
     {
         return $this->addCommand(new Commands\NetworkId($networkId));

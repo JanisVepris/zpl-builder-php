@@ -1297,6 +1297,15 @@ interface ZplBuilderInterface extends Stringable
     public function modeProtection(ProtectedMode $mode): self;
 
     /**
+     * Connect a specific printer on an RS-485 network by its ID number (`~NC`). Accepts 1 to 999 and
+     * renders as a three-digit value. Place at the start of a label format to select and wake the
+     * target printer; the selection persists until another `~NC` is sent.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function networkConnect(int $networkId): self;
+
+    /**
      * Assign the printer's network ID number for RS-485 communications (`^NI`). Accepts 1 to 999
      * and renders as a three-digit value. Must be set before the printer can be used on the network.
      *
