@@ -2606,6 +2606,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $builder);
     }
 
+    public function testSetConnectedPrinterTransparentEmitsNt(): void
+    {
+        $output = (string) ZplBuilder::start()->setConnectedPrinterTransparent();
+
+        self::assertSame('^XA~NT', $output);
+    }
+
     public function testSetDarknessEmitsSd(): void
     {
         $output = (string) ZplBuilder::start()->setDarkness(15);

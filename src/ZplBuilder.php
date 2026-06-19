@@ -1725,6 +1725,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setConnectedPrinterTransparent(): self
+    {
+        return $this->addCommand(new Commands\SetConnectedPrinterTransparent());
+    }
+
     public function setDarkness(int $darkness): self
     {
         return $this->addCommand(new Commands\SetDarkness($darkness));

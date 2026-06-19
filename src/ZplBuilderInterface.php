@@ -1605,6 +1605,12 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Set the currently connected RS-485 network printer to transparent (`~NT`). On Z Series
+     * printers this behaves like `~NR` — all printers on the network receive the transmission.
+     */
+    public function setConnectedPrinterTransparent(): self;
+
+    /**
      * Set the absolute print darkness (`~SD`), the equivalent of the control-panel darkness
      * setting. Accepts 0 to 30 and renders as a two-digit value; a `^MD` adjustment, if set, is
      * added on top.

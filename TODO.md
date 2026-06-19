@@ -212,7 +212,7 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `^WV` — Verify RFID Encoding Operation
 - [x] `~NC` — Network Connect
 - [x] `~NR` — Set All Network Printers Transparent
-- [ ] `~NT` — Set Currently Connected Printer Transparent
+- [x] `~NT` — Set Currently Connected Printer Transparent
 - [ ] `~RV` — Report RFID Encoding Results
 - [ ] `~WC` — Print Configuration Label
 - [ ] `~WL` — Print Network Configuration Label
