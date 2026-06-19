@@ -1377,6 +1377,9 @@ interface ZplBuilderInterface extends Stringable
      */
     public function printMode(PostPrintAction $mode = PostPrintAction::TearOff, bool $prepeel = true): self;
 
+    /** Print a network configuration label describing the print server's network settings (`~WL`). */
+    public function printNetworkConfigurationLabel(): self;
+
     /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
     public function printNewlines(bool $toggle = true): self;
 

@@ -75,6 +75,7 @@ The public API is **unstable until 1.0** — minor versions may include breaking
 - `ZplBuilder::setConnectedPrinterTransparent()` and `ZplCommand\SetConnectedPrinterTransparent` add support for `~NT` (Set Currently Connected Printer Transparent)
 - `ZplBuilder::reportRfidEncodingResults()` and `ZplCommand\ReportRfidEncodingResults` add support for `~RV` (Report RFID Encoding Results), with `Enum\RfidReportMode` enabling or disabling result reporting
 - `ZplBuilder::printConfigurationLabel()` and `ZplCommand\PrintConfigurationLabel` add support for `~WC` (Print Configuration Label)
+- `ZplBuilder::printNetworkConfigurationLabel()` and `ZplCommand\PrintNetworkConfigurationLabel` add support for `~WL` (Print Network Configuration Label)
 
 ## [0.62.0] - 2026-06-12
 

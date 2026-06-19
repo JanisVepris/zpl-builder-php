@@ -1474,6 +1474,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function printNetworkConfigurationLabel(): self
+    {
+        return $this->addCommand(new Commands\PrintNetworkConfigurationLabel());
+    }
+
     public function printNewlines(bool $toggle = true): self
     {
         $this->printNewlines = $toggle;

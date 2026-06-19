@@ -215,5 +215,5 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 - [x] `~NT` — Set Currently Connected Printer Transparent
 - [x] `~RV` — Report RFID Encoding Results
 - [x] `~WC` — Print Configuration Label
-- [ ] `~WL` — Print Network Configuration Label
+- [x] `~WL` — Print Network Configuration Label
 - [ ] `~WR` — Reset Wireless Card

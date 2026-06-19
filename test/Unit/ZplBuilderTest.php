@@ -2142,6 +2142,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^MMT,Y', $output);
     }
 
+    public function testPrintNetworkConfigurationLabelEmitsWl(): void
+    {
+        $output = (string) ZplBuilder::start()->printNetworkConfigurationLabel();
+
+        self::assertSame('^XA~WL', $output);
+    }
+
     public function testPrintNewlinesSeparatesCommandsWithEol(): void
     {
         $output = (string) ZplBuilder::start()->printNewlines()->fieldData('Hi')->end();
