@@ -86,47 +86,47 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 
 ## Label layout and format control
 
-- [ ] `^DF` — Download Format
-- [ ] `^HF` — Host Format
+- [x] `^DF` — Download Format
+- [x] `^HF` — Host Format
 - [x] `^LH` — Label Home
 - [x] `^LL` — Label Length
 - [x] `^LR` — Label Reverse Print
-- [ ] `^LS` — Label Shift
-- [ ] `^LT` — Label Top
-- [ ] `^PF` — Slew Given Number of Dot Rows
-- [ ] `^PM` — Printing Mirror Image of Label
+- [x] `^LS` — Label Shift
+- [x] `^LT` — Label Top
+- [x] `^PF` — Slew Given Number of Dot Rows
+- [x] `^PM` — Printing Mirror Image of Label
 - [x] `^XA` — Start Format
-- [ ] `^XB` — Suppress Backfeed
+- [x] `^XB` — Suppress Backfeed
 - [x] `^XF` — Recall Format
 - [x] `^XZ` — End Format
 
 ## Printing control and media
 
-- [ ] `^CM` — Change Memory Letter Designation
-- [ ] `^CO` — Cache On
-- [ ] `^CV` — Code Validation
-- [ ] `^MC` — Map Clear
-- [ ] `^MD` — Media Darkness
-- [ ] `^MF` — Media Feed
-- [ ] `^ML` — Maximum Label Length
-- [ ] `^MM` — Print Mode
-- [ ] `^MN` — Media Tracking
-- [ ] `^MP` — Mode Protection
-- [ ] `^MT` — Media Type
-- [ ] `^MU` — Set Units of Measurement
-- [ ] `^MW` — Modify Head Cold Warning
+- [x] `^CM` — Change Memory Letter Designation
+- [x] `^CO` — Cache On
+- [x] `^CV` — Code Validation
+- [x] `^MC` — Map Clear
+- [x] `^MD` — Media Darkness
+- [x] `^MF` — Media Feed
+- [x] `^ML` — Maximum Label Length
+- [x] `^MM` — Print Mode
+- [x] `^MN` — Media Tracking
+- [x] `^MP` — Mode Protection
+- [x] `^MT` — Media Type
+- [x] `^MU` — Set Units of Measurement
+- [x] `^MW` — Modify Head Cold Warning
 - [x] `^PO` — Print Orientation
 - [x] `^PQ` — Print Quantity
-- [ ] `^PR` — Print Rate
+- [x] `^PR` — Print Rate
 - [x] `^PW` — Print Width
-- [ ] `^SP` — Start Print
-- [ ] `^SS` — Set Media Sensors
-- [ ] `^SZ` — Set ZPL
-- [ ] `^ZZ` — Printer Sleep
-- [ ] `~PR` — Applicator Reprint
-- [ ] `~PS` — Print Start
-- [ ] `~SD` — Set Darkness
-- [ ] `~TA` — Tear-off Adjust Position
+- [x] `^SP` — Start Print
+- [x] `^SS` — Set Media Sensors
+- [x] `^SZ` — Set ZPL
+- [x] `^ZZ` — Printer Sleep
+- [x] `~PR` — Applicator Reprint
+- [x] `~PS` — Print Start
+- [x] `~SD` — Set Darkness
+- [x] `~TA` — Tear-off Adjust Position
 
 ## Host I/O, diagnostics, printer state (lower priority — typically managed out-of-band)
 
@@ -179,41 +179,41 @@ Checklist of every ZPL II command documented in the [Zebra ZPL II Programming Gu
 
 ## Networking, wireless and RFID (likely out of scope for label generation)
 
-- [ ] `^HR` — Calibrate RFID Transponder Position
-- [ ] `^NB` — Search for Wired Print Server during Network Boot
-- [ ] `^NI` — Network ID Number
-- [ ] `^NN` — Set SNMP
-- [ ] `^NP` — Set Primary/Secondary Device
-- [ ] `^NS` — Change Networking Settings
-- [ ] `^NT` — Set SMTP
-- [ ] `^NW` — Set Web Authentication Timeout Value
-- [ ] `^RA` — Read AFI or DSFID Byte
-- [ ] `^RB` — Define EPC Data Structure
-- [ ] `^RE` — Enable/Disable E.A.S. Bit
-- [ ] `^RF` — Read or Write RFID Format
-- [ ] `^RI` — Get RFID Tag ID
-- [ ] `^RM` — Enable RFID Motion
-- [ ] `^RN` — Detect Multiple RFID Tags in Encoding Field
-- [ ] `^RR` — Specify RFID Retries for a Block
-- [ ] `^RS` — Set Up RFID Parameters
-- [ ] `^RT` — Read RFID Tag
-- [ ] `^RW` — Set RFID Read and Write Power Levels
-- [ ] `^RZ` — Set RFID Tag Password and Lock Tag
-- [ ] `^WA` — Set Antenna Parameters
-- [ ] `^WD` — Print Directory Label
-- [ ] `^WE` — Set WEP Mode
-- [ ] `^WF` — Encode AFI or DSFID Byte
-- [ ] `^WI` — Change Wireless Network Settings
-- [ ] `^WL` — Set LEAP Parameters
-- [ ] `^WP` — Set Wireless Password
-- [ ] `^WR` — Set Transmit Rate
-- [ ] `^WS` — Set Wireless Card Values
-- [ ] `^WT` — Write (Encode) Tag
-- [ ] `^WV` — Verify RFID Encoding Operation
-- [ ] `~NC` — Network Connect
-- [ ] `~NR` — Set All Network Printers Transparent
-- [ ] `~NT` — Set Currently Connected Printer Transparent
-- [ ] `~RV` — Report RFID Encoding Results
-- [ ] `~WC` — Print Configuration Label
-- [ ] `~WL` — Print Network Configuration Label
-- [ ] `~WR` — Reset Wireless Card
+- [x] `^HR` — Calibrate RFID Transponder Position
+- [x] `^NB` — Search for Wired Print Server during Network Boot
+- [x] `^NI` — Network ID Number
+- [x] `^NN` — Set SNMP
+- [x] `^NP` — Set Primary/Secondary Device
+- [x] `^NS` — Change Networking Settings
+- [x] `^NT` — Set SMTP
+- [x] `^NW` — Set Web Authentication Timeout Value
+- [x] `^RA` — Read AFI or DSFID Byte
+- [x] `^RB` — Define EPC Data Structure
+- [x] `^RE` — Enable/Disable E.A.S. Bit
+- [x] `^RF` — Read or Write RFID Format
+- [x] `^RI` — Get RFID Tag ID
+- [x] `^RM` — Enable RFID Motion
+- [x] `^RN` — Detect Multiple RFID Tags in Encoding Field
+- [x] `^RR` — Specify RFID Retries for a Block
+- [x] `^RS` — Set Up RFID Parameters
+- [x] `^RT` — Read RFID Tag
+- [x] `^RW` — Set RFID Read and Write Power Levels
+- [x] `^RZ` — Set RFID Tag Password and Lock Tag
+- [x] `^WA` — Set Antenna Parameters
+- [x] `^WD` — Print Directory Label
+- [x] `^WE` — Set WEP Mode
+- [x] `^WF` — Encode AFI or DSFID Byte
+- [x] `^WI` — Change Wireless Network Settings
+- [x] `^WL` — Set LEAP Parameters
+- [x] `^WP` — Set Wireless Password
+- [x] `^WR` — Set Transmit Rate
+- [x] `^WS` — Set Wireless Card Values
+- [x] `^WT` — Write (Encode) Tag
+- [x] `^WV` — Verify RFID Encoding Operation
+- [x] `~NC` — Network Connect
+- [x] `~NR` — Set All Network Printers Transparent
+- [x] `~NT` — Set Currently Connected Printer Transparent
+- [x] `~RV` — Report RFID Encoding Results
+- [x] `~WC` — Print Configuration Label
+- [x] `~WL` — Print Network Configuration Label
+- [x] `~WR` — Reset Wireless Card

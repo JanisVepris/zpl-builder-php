@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\Antenna;
+use Janisvepris\ZplBuilder\Enum\ApplicatorSignal;
+use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
@@ -16,28 +19,61 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DirectoryDevice;
 use Janisvepris\ZplBuilder\Enum\DownloadExtension;
 use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
+use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
+use Janisvepris\ZplBuilder\Enum\LeapMode;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
+use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
+use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
+use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
+use Janisvepris\ZplBuilder\Enum\NetworkDevice;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\PrintMethod;
+use Janisvepris\ZplBuilder\Enum\PrintSpeed;
+use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidByteType;
+use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
+use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
+use Janisvepris\ZplBuilder\Enum\RfidLockStyle;
+use Janisvepris\ZplBuilder\Enum\RfidMotion;
+use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
+use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
+use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidReportMode;
+use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\TransmitPower;
+use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
+use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
+use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
+use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
+use Janisvepris\ZplBuilder\Enum\WirelessOperatingMode;
+use Janisvepris\ZplBuilder\Enum\WirelessPreamble;
+use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\ConflictingClockModeException;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\IntegerValueOutOfRangeException;
+use Janisvepris\ZplBuilder\Exception\InvalidHexValueException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\StringValueContainsBannedValuesException;
 use Janisvepris\ZplBuilder\Exception\TertiaryClockIndicatorWithoutSecondaryException;
@@ -73,6 +109,12 @@ interface ZplBuilderInterface extends Stringable
         ?int $height = null,
         ?int $width = null,
     ): self;
+
+    /**
+     * Reprint the last label, mirroring the applicator's Reprint signal (`~PR`). Supported only on
+     * PAX/PAX2-series printers, and only when applicator reprint is enabled via `^JJ`.
+     */
+    public function applicatorReprint(): self;
 
     /**
      * Apply a previously registered font preset, emitting `^CF` with its stored dimensions.
@@ -620,6 +662,30 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Resize the printer's scalable-font character cache (`^CO`). `$enabled` toggles the cache,
+     * `$additionalMemory` is the amount of memory (in K) to add beyond the default 40K cache, and
+     * `$type` selects the buffer (`CacheType::Normal`, or `Internal` for large Asian fonts). Not
+     * required on firmware x.12+, where the cache grows automatically.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function cacheOn(
+        bool $enabled = true,
+        int $additionalMemory = 40,
+        CacheType $type = CacheType::Normal,
+    ): self;
+
+    /**
+     * Initiate an RFID transponder-position calibration for the loaded RFID media (`^HR`),
+     * returning a results table to the host. `$startString` and `$endString` (each 1–64 bytes)
+     * bracket the table in the host output. Not supported by all printers.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function calibrateRfidTransponder(string $startString = 'start', string $endString = 'end'): self;
+
+    /**
      * Change the default font (`^CF`) and optionally its height and/or width.
      * Unspecified dimensions keep the last value set for that font.
      *
@@ -631,12 +697,85 @@ interface ZplBuilderInterface extends Stringable
     public function changeInternationalEncoding(Encoding $encoding, CharacterRemap ...$characterRemaps): self;
 
     /**
+     * Reassign the printer's memory-device letter designations (`^CM`). Each parameter selects which
+     * physical device the corresponding default letter (`B:`, `E:`, `R:`, `A:`) points to; pass
+     * `MemoryLetter::None` to leave a letter unassigned. The defaults keep every letter pointing at
+     * its own device. The printer resets all letters to their defaults if two parameters collide.
+     */
+    public function changeMemoryLetters(
+        MemoryLetter $aliasForB = MemoryLetter::MemoryCardB,
+        MemoryLetter $aliasForE = MemoryLetter::Flash,
+        MemoryLetter $aliasForR = MemoryLetter::Ram,
+        MemoryLetter $aliasForA = MemoryLetter::MemoryCardA,
+    ): self;
+
+    /**
+     * Change the printer's wireless print-server network settings (`^WI`). `$ipResolution` selects how
+     * the IP address is obtained; `$ipAddress`, `$subnetMask`, and `$defaultGateway` are dotted-quad
+     * strings. The trailing parameters — WINS server, connection-timeout checking, timeout value
+     * (0–9999 s), ARP broadcast interval, and base RAW port (0–99999) — are optional; omit the
+     * trailing ones to leave them unchanged.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function changeWirelessNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self;
+
+    /**
+     * Toggle bar-code data validation (`^CV`). When enabled, the printer checks each bar code's data
+     * against its symbology and prints an `INVALID - X` message in place of any bar code that fails.
+     * Remains active across formats until disabled or the printer is turned off.
+     */
+    public function codeValidation(bool $enabled = true): self;
+
+    /**
      * Insert a non-printing comment into the ZPL output (`^FX`). Useful for debugging.
      *
      * @throws StringLengthOutOfRangeException
      * @throws StringValueContainsBannedValuesException
      */
     public function comment(string $text): self;
+
+    /**
+     * Define the EPC data structure used when reading or writing RFID tags (`^RB`). `$totalBitSize`
+     * is the total number of bits across the partitions (default 96); each `$partitionSizes` entry
+     * (1–64 bits) defines one partition, and they must add up to the total. Persistent across
+     * formats. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function defineEpcDataStructure(int $totalBitSize = 96, int ...$partitionSizes): self;
+
+    /**
+     * Enable or disable detection of multiple RFID tags in the encoding field (`^RN`). When enabled
+     * (the default), the printer voids the label if more than one tag is present; disabling speeds
+     * up printing. Persistent across labels. Not supported by all printers.
+     */
+    public function detectMultipleRfidTags(bool $enabled = true): self;
+
+    /**
+     * Open a stored-format download so the commands that follow are saved under the given name
+     * rather than printed (`^DF`). Pair with `recallFormat()` (`^XF`) to merge the stored format
+     * with variable data. Standalone command — it emits only `^DF…`, with no `^FD … ^FS`. The
+     * device defaults to `R:` (RAM) and the extension to `ZPL`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function downloadFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self;
 
     /**
      * Download an ASCII-hex graphic image into a printer storage device (`~DG`). `$totalBytes` and
@@ -676,6 +815,38 @@ interface ZplBuilderInterface extends Stringable
         int $bytesPerRow = 0,
         string $data = '',
         StorageDevice $device = StorageDevice::Ram,
+    ): self;
+
+    /**
+     * Enable or disable the Electronic Article Surveillance (E.A.S.) bit on supported ISO15693 tags
+     * (`^RE`). `$retries` (0–10) is the write-retry count. Ignored on tags that don't support
+     * E.A.S. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function enableEasBit(bool $enabled = true, int $retries = 0): self;
+
+    /**
+     * Enable or disable RFID label motion (`^RM`). When disabled, the label does not move when it
+     * reaches the program position — useful for debugging and setup. Not persistent across labels.
+     * Not supported by all printers.
+     */
+    public function enableRfidMotion(bool $enabled = true): self;
+
+    /**
+     * Encode the AFI or DSFID byte to a tag (`^WF`). `$retries` (0–10) is the write-retry count;
+     * `$motion` controls label feed; `$writeProtect` write-protects the byte; `$format` selects
+     * ASCII or hex; `$byteType` selects the AFI or DSFID byte. Chain `fieldData()` with the byte
+     * value to encode. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function encodeAfiOrDsfidByte(
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        RfidByteType $byteType = RfidByteType::Afi,
     ): self;
 
     /** Finalise the format by appending `^XZ`. */
@@ -867,6 +1038,21 @@ interface ZplBuilderInterface extends Stringable
     public function getFontPresets(): array;
 
     /**
+     * Read a tag's unique serial number into a field as hexadecimal (`^RI`). `$fieldNumber`
+     * (0–9999) is the `^FN` field the ID is read into; `$dataOrder` reverses the byte order (R110Xi
+     * HF / R2844-Z only); `$retries` (0–10) is the read-retry count; `$motion` controls label feed.
+     * Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function getRfidTagId(
+        int $fieldNumber = 0,
+        RfidDataOrder $dataOrder = RfidDataOrder::Normal,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+    ): self;
+
+    /**
      * Draw a rectangle or line of the given width × height with the chosen thickness,
      * color, and corner rounding (`^GB ... ^FS`).
      *
@@ -954,6 +1140,25 @@ interface ZplBuilderInterface extends Stringable
     public function hasFontPreset(string $name): bool;
 
     /**
+     * Enable or disable the head cold warning indicator (`^MW`), used with RS-485 printer
+     * communications. A value is required — the printer ignores the command otherwise.
+     */
+    public function headColdWarning(bool $enabled = true): self;
+
+    /**
+     * Send a stored format from the printer back to the host (`^HF`). Standalone command — it emits
+     * only `^HF…`, with no `^FD … ^FS`. The device defaults to `R:` (RAM) and the extension to
+     * `ZPL`.
+     *
+     * @throws StringLengthOutOfRangeException
+     */
+    public function hostFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self;
+
+    /**
      * Upload a stored graphic from the printer to the host (`^HG`). Standalone command — it emits
      * only `^HG…`, with no `^FD … ^FS`.
      *
@@ -1023,6 +1228,93 @@ interface ZplBuilderInterface extends Stringable
     public function labelReversePrint(bool $reversePrint = true): self;
 
     /**
+     * Shift all field positions left by the given number of dots for compatibility with Z-130/Z-220
+     * formats (`^LS`). Accepts -9999 to 9999 and defaults to 0 (no shift). Must precede the first
+     * `^FS` to be honoured by existing Zebra printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function labelShift(int $shift = 0): self;
+
+    /**
+     * Move the entire label format up or down relative to the top edge of the label (`^LT`).
+     * Accepts -120 to 120 dot rows; a negative value moves the format towards the top edge, a
+     * positive value away from it.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function labelTop(int $dotRows): self;
+
+    /**
+     * Retain the current label bitmap after printing instead of clearing it (`^MC`). Pass `false`
+     * to keep the default clear-after-print behaviour. Pair with `fieldVariable()` (`^FV`) to build
+     * a label template whose static portion carries over to the next label.
+     */
+    public function mapClear(bool $clear = true): self;
+
+    /**
+     * Set the maximum label length in dot rows (`^ML`). Accepts 0 to 32000. For calibration to
+     * work, this must be equal to or greater than the actual label length.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function maximumLabelLength(int $dotRows): self;
+
+    /**
+     * Adjust the print darkness relative to the printer's current setting (`^MD`). Accepts -30 to
+     * 30; each call is applied against the configuration-label value, and the result is clamped to
+     * the printer's overall range. A `~SD` value, if set, is added on top of this.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function mediaDarkness(int $level): self;
+
+    /**
+     * Set what the printer does to the media at power-up and after the printhead closes (`^MF`).
+     * Each action feeds to the first web, runs calibration (`~JC`), detects label length (`~JL`),
+     * or does not feed. Both defaults are platform-dependent, so both arguments are required.
+     */
+    public function mediaFeed(MediaFeedAction $powerUp, MediaFeedAction $headClose): self;
+
+    /**
+     * Tell the printer how to track label boundaries (`^MN`): continuous media (length set by
+     * `^LL`) or non-continuous media sensed by web or registration mark. A value is required — the
+     * printer ignores the command otherwise.
+     */
+    public function mediaTracking(MediaTrackingType $tracking): self;
+
+    /**
+     * Select the printing method for the media in use (`^MT`): thermal transfer (ribbon) or direct
+     * thermal (heat-sensitive media, no ribbon). A value is required — the printer ignores the
+     * command otherwise.
+     */
+    public function mediaType(PrintMethod $method): self;
+
+    /**
+     * Disable (lock) a control-panel mode function so its setting can no longer be changed (`^MP`).
+     * Each call protects one function — darkness, position, calibration, pause, feed, cancel, menu,
+     * or all mode-saves — or re-enables every mode (`ProtectedMode::EnableAll`). A value is required.
+     */
+    public function modeProtection(ProtectedMode $mode): self;
+
+    /**
+     * Connect a specific printer on an RS-485 network by its ID number (`~NC`). Accepts 1 to 999 and
+     * renders as a three-digit value. Place at the start of a label format to select and wake the
+     * target printer; the selection persists until another `~NC` is sent.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function networkConnect(int $networkId): self;
+
+    /**
+     * Assign the printer's network ID number for RS-485 communications (`^NI`). Accepts 1 to 999
+     * and renders as a three-digit value. Must be set before the printer can be used on the network.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function networkId(int $networkId): self;
+
+    /**
      * Delete objects (graphics, fonts, stored formats) from a printer storage device (`^ID ... ^FS`).
      * The `*` wildcard is accepted in `$name` and `$extension` to delete groups of objects (e.g.
      * `*`/`GRF` deletes every `.GRF` object). The device defaults to `R:` (RAM) and the extension
@@ -1035,6 +1327,58 @@ interface ZplBuilderInterface extends Stringable
         StorageDevice $device = StorageDevice::Ram,
         string $extension = 'GRF',
     ): self;
+
+    /**
+     * Choose whether the printer uses its own or the print server's LAN/WLAN settings at boot
+     * (`^NP`). Defaults to the printer's own settings.
+     */
+    public function primaryDevice(NetworkDevice $device = NetworkDevice::Printer): self;
+
+    /**
+     * Print a printer configuration label (`~WC`) describing the printer setup — sensor type,
+     * network ID, ZPL mode, firmware version, and device contents. Works only while the printer
+     * is idle.
+     */
+    public function printConfigurationLabel(): self;
+
+    /**
+     * Print a label listing the bar codes, fonts, or stored objects on a device (`^WD`). `$device`
+     * selects the storage device (including `Resident` for built-in objects); `$name` (default `*`)
+     * and `$extension` (default `*`, e.g. `FNT`, `BAR`, `GRF`) filter the listing.
+     *
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function printDirectoryLabel(
+        DirectoryDevice $device = DirectoryDevice::Ram,
+        string $name = '*',
+        string $extension = '*',
+    ): self;
+
+    /**
+     * Place the printer in idle/shutdown mode after a period of inactivity (`^ZZ`). `$idleSeconds`
+     * (0–999999) is the idle time before shutdown — 0 disables automatic shutdown.
+     * `$shutdownWithLabelsQueued` shuts down even with labels still queued (`false`, the default,
+     * prints them first). Only valid on PA400 and PT400 battery-powered printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function printerSleep(int $idleSeconds = 0, bool $shutdownWithLabelsQueued = false): self;
+
+    /**
+     * Toggle printing the entire label as a mirror image, flipped left to right (`^PM`). Remains
+     * active until disabled (`^PMN`) or the printer is turned off.
+     */
+    public function printMirror(bool $mirror = true): self;
+
+    /**
+     * Set what the printer does after a label or batch finishes printing (`^MM`). `$mode` selects
+     * the post-print action — tear-off, peel-off, rewind, applicator, cutter, or delayed cutter —
+     * and `$prepeel` toggles prepeel in peel-off mode. The available modes depend on the printer.
+     */
+    public function printMode(PostPrintAction $mode = PostPrintAction::TearOff, bool $prepeel = true): self;
+
+    /** Print a network configuration label describing the print server's network settings (`~WL`). */
+    public function printNetworkConfigurationLabel(): self;
 
     /** Toggle whether `render()` separates each ZPL command with a newline. Off by default. */
     public function printNewlines(bool $toggle = true): self;
@@ -1050,6 +1394,23 @@ interface ZplBuilderInterface extends Stringable
     public function printQuantity(int $quantity): self;
 
     /**
+     * Set the print, slew, and backfeed speeds in inches per second (`^PR`). Each speed is a value
+     * the printer supports (`PrintSpeed`); the printer caps any value above its maximum rate. The
+     * defaults match the spec: print and backfeed at 2 ips, slew at 6 ips.
+     */
+    public function printRate(
+        PrintSpeed $print = PrintSpeed::Ips2,
+        PrintSpeed $slew = PrintSpeed::Ips6,
+        PrintSpeed $backfeed = PrintSpeed::Ips2,
+    ): self;
+
+    /**
+     * Resume printing on a printer that is in Pause Mode (`~PS`), equivalent to pressing PAUSE on
+     * the control panel while the printer is already paused.
+     */
+    public function printStart(): self;
+
+    /**
      * Set the label's print width in dots (`^PW`).
      *
      * @throws IntegerValueOutOfRangeException
@@ -1062,6 +1423,56 @@ interface ZplBuilderInterface extends Stringable
      * nothing is appended to the command list.
      */
     public function raw(string $zpl): self;
+
+    /**
+     * Read a tag's AFI or DSFID byte into a field for printing or return to the host (`^RA`).
+     * `$fieldNumber` (0–9999) is the `^FN` field the data is read into; `$format` selects ASCII or
+     * hexadecimal output; `$retries` (0–10) is the read-retry count; `$motion` controls label feed;
+     * and `$byteType` selects the AFI or DSFID byte. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function readAfiOrDsfidByte(
+        int $fieldNumber = 0,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidByteType $byteType = RfidByteType::Afi,
+    ): self;
+
+    /**
+     * Read the current RFID tag's data into a field (`^RT`, provided for backward compatibility —
+     * prefer `readWriteRfidFormat()`). `$fieldNumber` (0–9999) is the `^FN` field; `$startingBlock`
+     * and `$numberOfBlocks` select the blocks to read; `$format` selects ASCII or hex; `$retries`
+     * (0–10) is the read-retry count; `$motion` controls feed; `$specialMode` selects data order.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function readRfidTag(
+        int $fieldNumber = 0,
+        int $startingBlock = 0,
+        int $numberOfBlocks = 1,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidDataOrder $specialMode = RfidDataOrder::Normal,
+    ): self;
+
+    /**
+     * Read from or write to (encode) an RFID tag (`^RF`). `$operation` selects read/write/lock/
+     * read-password; `$format` selects ASCII, hexadecimal, or EPC (pair EPC with
+     * `defineEpcDataStructure()`). `$startingBlock` and `$numberOfBytes` are optional and omitted
+     * when null. For a write, chain `fieldData()` with the tag data; for a read, precede with
+     * `fieldNumber()`. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function readWriteRfidFormat(
+        RfidOperation $operation = RfidOperation::Write,
+        RfidReadWriteFormat $format = RfidReadWriteFormat::Hexadecimal,
+        ?int $startingBlock = null,
+        ?int $numberOfBytes = null,
+    ): self;
 
     /**
      * Invoke a stored format from the printer's memory (`^XF`).
@@ -1104,10 +1515,38 @@ interface ZplBuilderInterface extends Stringable
     public function render(): string;
 
     /**
+     * Enable or disable reporting RFID encoding results to the host after each label (`~RV`).
+     * Defaults to enabling reporting; pass `RfidReportMode::Disable` to turn it off.
+     */
+    public function reportRfidEncodingResults(RfidReportMode $mode = RfidReportMode::Enable): self;
+
+    /**
      * Discard all state and re-emit `^XA`. Clears the command list, font settings,
      * presets, barcode defaults, and the newline preference.
      */
     public function reset(): self;
+
+    /**
+     * Reinitialise the wireless card and print server, reassociating any wireless card to the
+     * network (`~WR`). Equivalent to the RESET NETWORK control-panel parameter.
+     */
+    public function resetWirelessCard(): self;
+
+    /**
+     * Set the number of times the printer retries reading or writing a single tag block (`^RR`,
+     * 0–10). Persistent across formats. Distinct from the number-of-labels retry in `^RS`. Not
+     * supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function rfidBlockRetries(int $retries): self;
+
+    /**
+     * Tell the printer whether to check for a wired print server at network boot (`^NB`). When set
+     * to skip (the default), the wireless print server is used as the primary; when set to check, a
+     * detected wired print server takes priority.
+     */
+    public function searchWiredPrintServer(WiredPrintServerCheck $check = WiredPrintServerCheck::Skip): self;
 
     /** Select the date and time format shown on the configuration label and control panel (`^KD`). */
     public function selectDateTimeFormat(DateTimeFormat $format): self;
@@ -1159,6 +1598,21 @@ interface ZplBuilderInterface extends Stringable
     public function serializationField(string $startValue, string $mask, string $increment = '1'): self;
 
     /**
+     * Set every printer on an RS-485 network to transparent, regardless of ID or current mode
+     * (`~NR`). All printers on the network then receive the transmission.
+     */
+    public function setAllNetworkPrintersTransparent(): self;
+
+    /**
+     * Set the receive and transmit antenna for the wireless print server (`^WA`). Each selects
+     * diversity (the default), left, or right.
+     */
+    public function setAntennaParameters(
+        Antenna $receive = Antenna::Diversity,
+        Antenna $transmit = Antenna::Diversity,
+    ): self;
+
+    /**
      * Set the Real-Time Clock's mode of operation and language for printing (`^SL`).
      * Slot `a` takes either a `ClockMode` (default `StartTime`) or a numeric tolerance
      * in seconds (0–999); supplying both throws. A null language omits slot `b`, leaving
@@ -1172,6 +1626,21 @@ interface ZplBuilderInterface extends Stringable
         ?int $toleranceSeconds = null,
         ?ClockLanguage $language = null,
     ): self;
+
+    /**
+     * Set the currently connected RS-485 network printer to transparent (`~NT`). On Z Series
+     * printers this behaves like `~NR` — all printers on the network receive the transmission.
+     */
+    public function setConnectedPrinterTransparent(): self;
+
+    /**
+     * Set the absolute print darkness (`~SD`), the equivalent of the control-panel darkness
+     * setting. Accepts 0 to 30 and renders as a two-digit value; a `^MD` adjustment, if set, is
+     * added on top.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setDarkness(int $darkness): self;
 
     /**
      * Set the Real-Time Clock date and time (`^ST`). Each component defaults to the
@@ -1192,6 +1661,41 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Enable Cisco LEAP authentication and set its credentials (`^WL`). `$username` and `$password`
+     * are each 4–40 characters. `$mode` defaults to `On` since the method sets LEAP up; pass
+     * `LeapMode::Off` to disable it.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setLeapParameters(
+        string $username,
+        string $password,
+        LeapMode $mode = LeapMode::On,
+    ): self;
+
+    /**
+     * Override the media, web, ribbon, and label-length values set during media calibration
+     * (`^SS`). `$web`, `$media`, and `$ribbon` are sensor readings (0–100); `$labelLength` is in
+     * dots (1–32000). The remaining LED-intensity and mark-sensing parameters (each 0–100) are
+     * optional — omit the trailing ones to leave them at their calibrated values. Maximum values
+     * are platform-dependent.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setMediaSensors(
+        int $web,
+        int $media,
+        int $ribbon,
+        int $labelLength,
+        ?int $mediaLedIntensity = null,
+        ?int $ribbonLedIntensity = null,
+        ?int $markSensing = null,
+        ?int $markMediaSensing = null,
+        ?int $markLedSensing = null,
+    ): self;
+
+    /**
      * Set the secondary or tertiary Real-Time Clock offset from the primary clock (`^SO`).
      * Each offset (months, days, years, hours, minutes, seconds) defaults to 0 and accepts
      * `-32000` to `32000`. Only one secondary (`SO2`) offset may be used per label; use a
@@ -1208,6 +1712,186 @@ interface ZplBuilderInterface extends Stringable
         int $minutesOffset = 0,
         int $secondsOffset = 0,
     ): self;
+
+    /**
+     * Set the RFID read and write power levels (`^RW`). `$readPower` and `$writePower` are factory-
+     * calibrated levels (high/medium/low); `$antenna` (1 or 2, R110Xi HF only) is optional and
+     * omitted from the output when null. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setRfidPowerLevels(
+        RfidPowerLevel $readPower = RfidPowerLevel::High,
+        RfidPowerLevel $writePower = RfidPowerLevel::High,
+        ?int $antenna = null,
+    ): self;
+
+    /**
+     * Set an RFID tag's password and optionally lock a memory bank (`^RZ`). `$password` is a hex
+     * string (1–8 hex digits; Gen 2 uses a 32-bit / 8-digit password). `$memoryBank` and
+     * `$lockStyle` (Gen 2 only) are optional and omitted from the output when null. Not supported
+     * by all printers.
+     *
+     * @throws InvalidHexValueException
+     * @throws StringLengthOutOfRangeException
+     */
+    public function setRfidTagPassword(
+        string $password = '00',
+        ?RfidPasswordMemoryBank $memoryBank = null,
+        ?RfidLockStyle $lockStyle = null,
+    ): self;
+
+    /**
+     * Set the printer's SMTP server address and print-server domain for e-mail alerts (`^NT`). The
+     * server address is a dotted-quad string; the domain is a host domain name (e.g. `zebra.com`).
+     *
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setSmtp(string $serverAddress = '', string $domain = ''): self;
+
+    /**
+     * Set the printer's SNMP parameters (`^NN`): system name (≤17 bytes), contact and location
+     * (≤50 bytes each), and the get/set (≤19 bytes) and trap (≤20 bytes) community names. The
+     * community names default to `public`.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setSnmp(
+        string $systemName = '',
+        string $systemContact = '',
+        string $systemLocation = '',
+        string $getCommunity = 'public',
+        string $setCommunity = 'public',
+        string $trapCommunity = 'public',
+    ): self;
+
+    /**
+     * Set the wireless transmit rates and power (`^WR`). `$rate1`, `$rate2`, `$rate5_5`, and
+     * `$rate11` toggle the 1, 2, 5.5, and 11 Mb/s transmit rates; `$power` selects the transmit
+     * power level.
+     */
+    public function setTransmitRate(
+        bool $rate1,
+        bool $rate2,
+        bool $rate5_5,
+        bool $rate11,
+        TransmitPower $power,
+    ): self;
+
+    /**
+     * Set the units the printer interprets coordinates in (`^MU`), and optionally convert a format
+     * between resolutions. `$unit` selects dots, inches, or millimetres (carried field-to-field
+     * until changed). Pass both `$baseDpi` (150/200/300) and `$conversionDpi` (300/600) to scale a
+     * format authored at one resolution to another; `$conversionDpi` is ignored unless `$baseDpi`
+     * is also given. Best placed at the start of the label.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setUnits(
+        MeasurementUnit $unit = MeasurementUnit::Dots,
+        ?int $baseDpi = null,
+        ?int $conversionDpi = null,
+    ): self;
+
+    /**
+     * Set up RFID parameters (`^RS`). All parameters are optional and omitted from the output when
+     * null: `$tagType` (0–9) selects the tag type; `$position` and `$voidLength` are dot-row values;
+     * `$numberOfLabels` (1–10) is the failure retry count; `$errorHandling` chooses the action on
+     * persistent failure; `$applicatorSignal` and `$voidPrintSpeed` apply to applicator/PAX
+     * printers. Not supported by all printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setUpRfidParameters(
+        ?int $tagType = null,
+        ?int $position = null,
+        ?int $voidLength = null,
+        ?int $numberOfLabels = null,
+        ?RfidErrorHandling $errorHandling = null,
+        ?ApplicatorSignal $applicatorSignal = null,
+        ?PrintSpeed $voidPrintSpeed = null,
+    ): self;
+
+    /**
+     * Enable Wired Equivalent Privacy (WEP) mode and set its values (`^WE`). `$mode` selects the
+     * encryption strength; `$index` (1–4) is the active key; `$authentication` and `$keyStorage`
+     * are optional; `$key1`–`$key4` are the encryption keys. All parameters after `$mode` are
+     * optional and omitted from the output when null. Disable WPA before using WEP.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setWepMode(
+        WepEncryptionMode $mode = WepEncryptionMode::Off,
+        ?int $index = null,
+        ?WepAuthenticationType $authentication = null,
+        ?WepKeyStorage $keyStorage = null,
+        ?string $key1 = null,
+        ?string $key2 = null,
+        ?string $key3 = null,
+        ?string $key4 = null,
+    ): self;
+
+    /**
+     * Set the wireless card's ESSID, operating mode, and preamble (`^WS`). `$essid` is up to 32
+     * characters; leave it empty to keep the current ESSID. `$operatingMode` selects infrastructure
+     * or ad-hoc; `$preamble` selects a long or short card preamble.
+     *
+     * @throws StringLengthOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function setWirelessCardValues(
+        string $essid = '',
+        WirelessOperatingMode $operatingMode = WirelessOperatingMode::Infrastructure,
+        WirelessPreamble $preamble = WirelessPreamble::Long,
+    ): self;
+
+    /**
+     * Set the four-digit wireless print-server password (`^WP`). `$newPassword` is the password to
+     * set and `$oldPassword` (default `0`) is the current one. `0000` runs the print server in
+     * unprotected mode. Both accept 0–9999 and are emitted zero-padded to four digits.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function setWirelessPassword(int $newPassword, int $oldPassword = 0): self;
+
+    /**
+     * Select the ZPL language the printer interprets (`^SZ`): legacy ZPL or ZPL II (the default).
+     * Remains active until changed again or the printer is turned off.
+     */
+    public function setZpl(ZplMode $mode = ZplMode::ZplII): self;
+
+    /**
+     * Slew (feed without printing) the given number of dot rows from the bottom of the label
+     * (`^PF`), speeding up printing when the bottom of the label is blank. Accepts 0 to 32000.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function slew(int $dotRows): self;
+
+    /**
+     * Start printing the label at the given dot row before the rest of the format is composed
+     * (`^SP`), improving throughput on complex labels. Accepts 0 to 32000.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function startPrint(int $dotRow): self;
+
+    /**
+     * Suppress the forward feed to the tear-off position for this label (`^XB`), improving
+     * throughput when batch printing. The last label in a batch should omit this command.
+     */
+    public function suppressBackfeed(): self;
+
+    /**
+     * Adjust the media rest position after printing (`~TA`), shifting where the label is torn or
+     * cut. Accepts -120 to 120 dot rows and renders as a 3-digit value; the step size doubles on
+     * 600 dpi printers.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function tearOffAdjust(int $dotRows): self;
 
     /**
      * Copy an object (graphic, font, …) from one storage device to another (`^TO`).
@@ -1245,6 +1929,21 @@ interface ZplBuilderInterface extends Stringable
     ): self;
 
     /**
+     * Enable or disable RFID write verification (`^WV`). When enabled, the printer verifies that the
+     * tag about to be programmed contains the hex data `A5A5` in its first two bytes. Not persistent
+     * across labels.
+     */
+    public function verifyRfidEncoding(bool $enabled = true): self;
+
+    /**
+     * Set the timeout (in minutes) before the printer re-prompts for its password on the web pages
+     * (`^NW`). Accepts 0 (no secure pages without the password) to 255 minutes; defaults to 5.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function webAuthTimeout(int $minutes = 5): self;
+
+    /**
      * Conditionally apply a callback to the builder. If `$predicate` is a boolean, `$callback`
      * is applied when it is `true`; if it is a callable, `$callback` is applied when it returns
      * `true` when invoked. When the predicate is falsy and `$elseCallback` is provided, that
@@ -1256,4 +1955,45 @@ interface ZplBuilderInterface extends Stringable
      * @param null|(callable(ZplBuilder): mixed) $elseCallback
      */
     public function when(bool|callable $predicate, callable $callback, ?callable $elseCallback = null): self;
+
+    /**
+     * Change the printer's wired print-server network settings (`^NS`). `$ipResolution` selects how
+     * the IP address is obtained; `$ipAddress`, `$subnetMask`, and `$defaultGateway` are dotted-quad
+     * strings. The trailing parameters — WINS server, connection-timeout checking, timeout value
+     * (0–9999 s), ARP broadcast interval, and base RAW port (0–99999) — are optional; omit the
+     * trailing ones to leave them unchanged.
+     *
+     * @throws IntegerValueOutOfRangeException
+     * @throws StringValueContainsBannedValuesException
+     */
+    public function wiredNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self;
+
+    /**
+     * Encode `$data` to the current RFID tag (`^WT ... ^FS`). `$block` selects the tag block
+     * (default 0); `$retries` (0–10) is the write-retry count; `$motion` controls label feed;
+     * `$writeProtect` write-protects the tag; `$format` selects ASCII or hex data; `$verify`
+     * enables write verification (or, on some printers, reverses the data order). Provided for
+     * backward-compatibility with older Zebra RFID printers — prefer `^RF`.
+     *
+     * @throws IntegerValueOutOfRangeException
+     */
+    public function writeRfidTag(
+        string $data,
+        int $block = 0,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        bool $verify = false,
+    ): self;
 }

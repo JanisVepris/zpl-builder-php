@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Janisvepris\ZplBuilder;
 
+use Janisvepris\ZplBuilder\Enum\Antenna;
+use Janisvepris\ZplBuilder\Enum\ApplicatorSignal;
+use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
@@ -16,23 +19,55 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DirectoryDevice;
 use Janisvepris\ZplBuilder\Enum\DownloadExtension;
 use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
+use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
+use Janisvepris\ZplBuilder\Enum\LeapMode;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
+use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
+use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
+use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
+use Janisvepris\ZplBuilder\Enum\NetworkDevice;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\PrintMethod;
+use Janisvepris\ZplBuilder\Enum\PrintSpeed;
+use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RfidByteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidByteType;
+use Janisvepris\ZplBuilder\Enum\RfidDataOrder;
+use Janisvepris\ZplBuilder\Enum\RfidErrorHandling;
+use Janisvepris\ZplBuilder\Enum\RfidLockStyle;
+use Janisvepris\ZplBuilder\Enum\RfidMotion;
+use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
+use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
+use Janisvepris\ZplBuilder\Enum\RfidReadWriteFormat;
+use Janisvepris\ZplBuilder\Enum\RfidReportMode;
+use Janisvepris\ZplBuilder\Enum\RfidWriteProtect;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\TransmitPower;
+use Janisvepris\ZplBuilder\Enum\WepAuthenticationType;
+use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
+use Janisvepris\ZplBuilder\Enum\WepKeyStorage;
+use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
+use Janisvepris\ZplBuilder\Enum\WirelessOperatingMode;
+use Janisvepris\ZplBuilder\Enum\WirelessPreamble;
+use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
 use Janisvepris\ZplBuilder\Exception\StringLengthOutOfRangeException;
 use Janisvepris\ZplBuilder\Util\FieldDataEncoder;
@@ -92,6 +127,11 @@ class ZplBuilder implements ZplBuilderInterface
         );
 
         return $this;
+    }
+
+    public function applicatorReprint(): self
+    {
+        return $this->addCommand(new Commands\ApplicatorReprint());
     }
 
     public function applyFontPreset(string $name): self
@@ -708,6 +748,30 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->fieldData($data);
     }
 
+    public function cacheOn(
+        bool $enabled = true,
+        int $additionalMemory = 40,
+        CacheType $type = CacheType::Normal,
+    ): self {
+        return $this->addCommand(
+            new Commands\CacheOn(
+                enabled: $enabled,
+                additionalMemory: $additionalMemory,
+                type: $type,
+            ),
+        );
+    }
+
+    public function calibrateRfidTransponder(string $startString = 'start', string $endString = 'end'): self
+    {
+        return $this->addCommand(
+            new Commands\CalibrateRfidTransponder(
+                startString: $startString,
+                endString: $endString,
+            ),
+        );
+    }
+
     public function changeFont(Font $font, ?int $height = null, ?int $width = null): self
     {
         $current = $this->fontSettingsFor($font);
@@ -729,9 +793,82 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function changeMemoryLetters(
+        MemoryLetter $aliasForB = MemoryLetter::MemoryCardB,
+        MemoryLetter $aliasForE = MemoryLetter::Flash,
+        MemoryLetter $aliasForR = MemoryLetter::Ram,
+        MemoryLetter $aliasForA = MemoryLetter::MemoryCardA,
+    ): self {
+        return $this->addCommand(
+            new Commands\ChangeMemoryLetters(
+                aliasForB: $aliasForB,
+                aliasForE: $aliasForE,
+                aliasForR: $aliasForR,
+                aliasForA: $aliasForA,
+            ),
+        );
+    }
+
+    public function changeWirelessNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\ChangeWirelessNetworkSettings(
+                ipResolution: $ipResolution,
+                ipAddress: $ipAddress,
+                subnetMask: $subnetMask,
+                defaultGateway: $defaultGateway,
+                winsServer: $winsServer,
+                connectionTimeoutChecking: $connectionTimeoutChecking,
+                timeoutValue: $timeoutValue,
+                arpInterval: $arpInterval,
+                basePortNumber: $basePortNumber,
+            ),
+        );
+    }
+
+    public function codeValidation(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\CodeValidation($enabled));
+    }
+
     public function comment(string $text): self
     {
         return $this->addCommand(new Commands\FieldComment($text));
+    }
+
+    public function defineEpcDataStructure(int $totalBitSize = 96, int ...$partitionSizes): self
+    {
+        return $this->addCommand(
+            new Commands\DefineEpcDataStructure($totalBitSize, ...$partitionSizes),
+        );
+    }
+
+    public function detectMultipleRfidTags(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\DetectMultipleRfidTags($enabled));
+    }
+
+    public function downloadFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self {
+        return $this->addCommand(
+            new Commands\DownloadFormat(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
     }
 
     public function downloadGraphics(
@@ -772,6 +909,39 @@ class ZplBuilder implements ZplBuilderInterface
                 totalBytes: $totalBytes,
                 bytesPerRow: $bytesPerRow,
                 data: $data,
+            ),
+        );
+    }
+
+    public function enableEasBit(bool $enabled = true, int $retries = 0): self
+    {
+        return $this->addCommand(
+            new Commands\EnableEasBit(
+                enabled: $enabled,
+                retries: $retries,
+            ),
+        );
+    }
+
+    public function enableRfidMotion(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\EnableRfidMotion($enabled));
+    }
+
+    public function encodeAfiOrDsfidByte(
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        RfidByteType $byteType = RfidByteType::Afi,
+    ): self {
+        return $this->addCommand(
+            new Commands\EncodeAfiOrDsfidByte(
+                retries: $retries,
+                motion: $motion,
+                writeProtect: $writeProtect,
+                format: $format,
+                byteType: $byteType,
             ),
         );
     }
@@ -949,6 +1119,22 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->fontPresets;
     }
 
+    public function getRfidTagId(
+        int $fieldNumber = 0,
+        RfidDataOrder $dataOrder = RfidDataOrder::Normal,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+    ): self {
+        return $this->addCommand(
+            new Commands\GetRfidTagId(
+                fieldNumber: $fieldNumber,
+                dataOrder: $dataOrder,
+                retries: $retries,
+                motion: $motion,
+            ),
+        );
+    }
+
     public function graphicBox(
         int $width,
         int $height,
@@ -1065,6 +1251,25 @@ class ZplBuilder implements ZplBuilderInterface
         return isset($this->fontPresets[$name]);
     }
 
+    public function headColdWarning(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\HeadColdWarning($enabled));
+    }
+
+    public function hostFormat(
+        string $name,
+        StorageDevice $device = StorageDevice::Ram,
+        string $extension = 'ZPL',
+    ): self {
+        return $this->addCommand(
+            new Commands\HostFormat(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
     public function hostGraphic(
         string $name,
         StorageDevice $device = StorageDevice::Ram,
@@ -1144,6 +1349,66 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\LabelReversePrint($reversePrint));
     }
 
+    public function labelShift(int $shift = 0): self
+    {
+        return $this->addCommand(new Commands\LabelShift($shift));
+    }
+
+    public function labelTop(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\LabelTop($dotRows));
+    }
+
+    public function mapClear(bool $clear = true): self
+    {
+        return $this->addCommand(new Commands\MapClear($clear));
+    }
+
+    public function maximumLabelLength(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\MaximumLabelLength($dotRows));
+    }
+
+    public function mediaDarkness(int $level): self
+    {
+        return $this->addCommand(new Commands\MediaDarkness($level));
+    }
+
+    public function mediaFeed(MediaFeedAction $powerUp, MediaFeedAction $headClose): self
+    {
+        return $this->addCommand(
+            new Commands\MediaFeed(
+                powerUp: $powerUp,
+                headClose: $headClose,
+            ),
+        );
+    }
+
+    public function mediaTracking(MediaTrackingType $tracking): self
+    {
+        return $this->addCommand(new Commands\MediaTracking($tracking));
+    }
+
+    public function mediaType(PrintMethod $method): self
+    {
+        return $this->addCommand(new Commands\MediaType($method));
+    }
+
+    public function modeProtection(ProtectedMode $mode): self
+    {
+        return $this->addCommand(new Commands\ModeProtection($mode));
+    }
+
+    public function networkConnect(int $networkId): self
+    {
+        return $this->addCommand(new Commands\NetworkConnect($networkId));
+    }
+
+    public function networkId(int $networkId): self
+    {
+        return $this->addCommand(new Commands\NetworkId($networkId));
+    }
+
     public function objectDelete(
         string $name,
         StorageDevice $device = StorageDevice::Ram,
@@ -1158,6 +1423,60 @@ class ZplBuilder implements ZplBuilderInterface
         );
 
         return $this->addCommand(new Commands\FieldSeparator());
+    }
+
+    public function primaryDevice(NetworkDevice $device = NetworkDevice::Printer): self
+    {
+        return $this->addCommand(new Commands\PrimaryDevice($device));
+    }
+
+    public function printConfigurationLabel(): self
+    {
+        return $this->addCommand(new Commands\PrintConfigurationLabel());
+    }
+
+    public function printDirectoryLabel(
+        DirectoryDevice $device = DirectoryDevice::Ram,
+        string $name = '*',
+        string $extension = '*',
+    ): self {
+        return $this->addCommand(
+            new Commands\PrintDirectoryLabel(
+                device: $device,
+                name: $name,
+                extension: $extension,
+            ),
+        );
+    }
+
+    public function printerSleep(int $idleSeconds = 0, bool $shutdownWithLabelsQueued = false): self
+    {
+        return $this->addCommand(
+            new Commands\PrinterSleep(
+                idleSeconds: $idleSeconds,
+                shutdownWithLabelsQueued: $shutdownWithLabelsQueued,
+            ),
+        );
+    }
+
+    public function printMirror(bool $mirror = true): self
+    {
+        return $this->addCommand(new Commands\PrintMirror($mirror));
+    }
+
+    public function printMode(PostPrintAction $mode = PostPrintAction::TearOff, bool $prepeel = true): self
+    {
+        return $this->addCommand(
+            new Commands\PrintMode(
+                mode: $mode,
+                prepeel: $prepeel,
+            ),
+        );
+    }
+
+    public function printNetworkConfigurationLabel(): self
+    {
+        return $this->addCommand(new Commands\PrintNetworkConfigurationLabel());
     }
 
     public function printNewlines(bool $toggle = true): self
@@ -1177,6 +1496,25 @@ class ZplBuilder implements ZplBuilderInterface
         return $this->addCommand(new Commands\PrintQuantity($quantity));
     }
 
+    public function printRate(
+        PrintSpeed $print = PrintSpeed::Ips2,
+        PrintSpeed $slew = PrintSpeed::Ips6,
+        PrintSpeed $backfeed = PrintSpeed::Ips2,
+    ): self {
+        return $this->addCommand(
+            new Commands\PrintRate(
+                print: $print,
+                slew: $slew,
+                backfeed: $backfeed,
+            ),
+        );
+    }
+
+    public function printStart(): self
+    {
+        return $this->addCommand(new Commands\PrintStart());
+    }
+
     public function printWidth(int $width): self
     {
         return $this->addCommand(new Commands\PrintWidth($width));
@@ -1189,6 +1527,62 @@ class ZplBuilder implements ZplBuilderInterface
         }
 
         return $this->addCommand(new Commands\RawCommand($zpl));
+    }
+
+    public function readAfiOrDsfidByte(
+        int $fieldNumber = 0,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidByteType $byteType = RfidByteType::Afi,
+    ): self {
+        return $this->addCommand(
+            new Commands\ReadAfiOrDsfidByte(
+                fieldNumber: $fieldNumber,
+                format: $format,
+                retries: $retries,
+                motion: $motion,
+                byteType: $byteType,
+            ),
+        );
+    }
+
+    public function readRfidTag(
+        int $fieldNumber = 0,
+        int $startingBlock = 0,
+        int $numberOfBlocks = 1,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidDataOrder $specialMode = RfidDataOrder::Normal,
+    ): self {
+        return $this->addCommand(
+            new Commands\ReadRfidTag(
+                fieldNumber: $fieldNumber,
+                startingBlock: $startingBlock,
+                numberOfBlocks: $numberOfBlocks,
+                format: $format,
+                retries: $retries,
+                motion: $motion,
+                specialMode: $specialMode,
+            ),
+        );
+    }
+
+    public function readWriteRfidFormat(
+        RfidOperation $operation = RfidOperation::Write,
+        RfidReadWriteFormat $format = RfidReadWriteFormat::Hexadecimal,
+        ?int $startingBlock = null,
+        ?int $numberOfBytes = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\ReadWriteRfidFormat(
+                operation: $operation,
+                format: $format,
+                startingBlock: $startingBlock,
+                numberOfBytes: $numberOfBytes,
+            ),
+        );
     }
 
     public function recallFormat(
@@ -1247,6 +1641,11 @@ class ZplBuilder implements ZplBuilderInterface
         return implode($separator, array_map('strval', $this->commands)) . $separator;
     }
 
+    public function reportRfidEncodingResults(RfidReportMode $mode = RfidReportMode::Enable): self
+    {
+        return $this->addCommand(new Commands\ReportRfidEncodingResults($mode));
+    }
+
     public function reset(): self
     {
         $this->commands = [];
@@ -1258,6 +1657,21 @@ class ZplBuilder implements ZplBuilderInterface
         $this->addCommand(new Commands\StartFormat());
 
         return $this;
+    }
+
+    public function resetWirelessCard(): self
+    {
+        return $this->addCommand(new Commands\ResetWirelessCard());
+    }
+
+    public function rfidBlockRetries(int $retries): self
+    {
+        return $this->addCommand(new Commands\RfidBlockRetries($retries));
+    }
+
+    public function searchWiredPrintServer(WiredPrintServerCheck $check = WiredPrintServerCheck::Skip): self
+    {
+        return $this->addCommand(new Commands\SearchWiredPrintServer($check));
     }
 
     public function selectDateTimeFormat(DateTimeFormat $format): self
@@ -1301,6 +1715,23 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setAllNetworkPrintersTransparent(): self
+    {
+        return $this->addCommand(new Commands\SetAllNetworkPrintersTransparent());
+    }
+
+    public function setAntennaParameters(
+        Antenna $receive = Antenna::Diversity,
+        Antenna $transmit = Antenna::Diversity,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetAntennaParameters(
+                receive: $receive,
+                transmit: $transmit,
+            ),
+        );
+    }
+
     public function setClockMode(
         ClockMode $mode = ClockMode::StartTime,
         ?int $toleranceSeconds = null,
@@ -1313,6 +1744,16 @@ class ZplBuilder implements ZplBuilderInterface
                 language: $language,
             ),
         );
+    }
+
+    public function setConnectedPrinterTransparent(): self
+    {
+        return $this->addCommand(new Commands\SetConnectedPrinterTransparent());
+    }
+
+    public function setDarkness(int $darkness): self
+    {
+        return $this->addCommand(new Commands\SetDarkness($darkness));
     }
 
     public function setDateTime(
@@ -1333,6 +1774,46 @@ class ZplBuilder implements ZplBuilderInterface
                 minute: $minute ?? (int) date('i'),
                 second: $second ?? (int) date('s'),
                 format: $format,
+            ),
+        );
+    }
+
+    public function setLeapParameters(
+        string $username,
+        string $password,
+        LeapMode $mode = LeapMode::On,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetLeapParameters(
+                mode: $mode,
+                username: $username,
+                password: $password,
+            ),
+        );
+    }
+
+    public function setMediaSensors(
+        int $web,
+        int $media,
+        int $ribbon,
+        int $labelLength,
+        ?int $mediaLedIntensity = null,
+        ?int $ribbonLedIntensity = null,
+        ?int $markSensing = null,
+        ?int $markMediaSensing = null,
+        ?int $markLedSensing = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetMediaSensors(
+                web: $web,
+                media: $media,
+                ribbon: $ribbon,
+                labelLength: $labelLength,
+                mediaLedIntensity: $mediaLedIntensity,
+                ribbonLedIntensity: $ribbonLedIntensity,
+                markSensing: $markSensing,
+                markMediaSensing: $markMediaSensing,
+                markLedSensing: $markLedSensing,
             ),
         );
     }
@@ -1359,12 +1840,197 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function setRfidPowerLevels(
+        RfidPowerLevel $readPower = RfidPowerLevel::High,
+        RfidPowerLevel $writePower = RfidPowerLevel::High,
+        ?int $antenna = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetRfidPowerLevels(
+                readPower: $readPower,
+                writePower: $writePower,
+                antenna: $antenna,
+            ),
+        );
+    }
+
+    public function setRfidTagPassword(
+        string $password = '00',
+        ?RfidPasswordMemoryBank $memoryBank = null,
+        ?RfidLockStyle $lockStyle = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetRfidTagPassword(
+                password: $password,
+                memoryBank: $memoryBank,
+                lockStyle: $lockStyle,
+            ),
+        );
+    }
+
+    public function setSmtp(string $serverAddress = '', string $domain = ''): self
+    {
+        return $this->addCommand(
+            new Commands\SetSmtp(
+                serverAddress: $serverAddress,
+                domain: $domain,
+            ),
+        );
+    }
+
+    public function setSnmp(
+        string $systemName = '',
+        string $systemContact = '',
+        string $systemLocation = '',
+        string $getCommunity = 'public',
+        string $setCommunity = 'public',
+        string $trapCommunity = 'public',
+    ): self {
+        return $this->addCommand(
+            new Commands\SetSnmp(
+                systemName: $systemName,
+                systemContact: $systemContact,
+                systemLocation: $systemLocation,
+                getCommunity: $getCommunity,
+                setCommunity: $setCommunity,
+                trapCommunity: $trapCommunity,
+            ),
+        );
+    }
+
+    public function setTransmitRate(
+        bool $rate1,
+        bool $rate2,
+        bool $rate5_5,
+        bool $rate11,
+        TransmitPower $power,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetTransmitRate(
+                rate1: $rate1,
+                rate2: $rate2,
+                rate5_5: $rate5_5,
+                rate11: $rate11,
+                power: $power,
+            ),
+        );
+    }
+
+    public function setUnits(
+        MeasurementUnit $unit = MeasurementUnit::Dots,
+        ?int $baseDpi = null,
+        ?int $conversionDpi = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetUnits(
+                unit: $unit,
+                baseDpi: $baseDpi,
+                conversionDpi: $conversionDpi,
+            ),
+        );
+    }
+
+    public function setUpRfidParameters(
+        ?int $tagType = null,
+        ?int $position = null,
+        ?int $voidLength = null,
+        ?int $numberOfLabels = null,
+        ?RfidErrorHandling $errorHandling = null,
+        ?ApplicatorSignal $applicatorSignal = null,
+        ?PrintSpeed $voidPrintSpeed = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetUpRfidParameters(
+                tagType: $tagType,
+                position: $position,
+                voidLength: $voidLength,
+                numberOfLabels: $numberOfLabels,
+                errorHandling: $errorHandling,
+                applicatorSignal: $applicatorSignal,
+                voidPrintSpeed: $voidPrintSpeed,
+            ),
+        );
+    }
+
+    public function setWepMode(
+        WepEncryptionMode $mode = WepEncryptionMode::Off,
+        ?int $index = null,
+        ?WepAuthenticationType $authentication = null,
+        ?WepKeyStorage $keyStorage = null,
+        ?string $key1 = null,
+        ?string $key2 = null,
+        ?string $key3 = null,
+        ?string $key4 = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetWepMode(
+                mode: $mode,
+                index: $index,
+                authentication: $authentication,
+                keyStorage: $keyStorage,
+                key1: $key1,
+                key2: $key2,
+                key3: $key3,
+                key4: $key4,
+            ),
+        );
+    }
+
+    public function setWirelessCardValues(
+        string $essid = '',
+        WirelessOperatingMode $operatingMode = WirelessOperatingMode::Infrastructure,
+        WirelessPreamble $preamble = WirelessPreamble::Long,
+    ): self {
+        return $this->addCommand(
+            new Commands\SetWirelessCardValues(
+                essid: $essid,
+                operatingMode: $operatingMode,
+                preamble: $preamble,
+            ),
+        );
+    }
+
+    public function setWirelessPassword(int $newPassword, int $oldPassword = 0): self
+    {
+        return $this->addCommand(
+            new Commands\SetWirelessPassword(
+                oldPassword: $oldPassword,
+                newPassword: $newPassword,
+            ),
+        );
+    }
+
+    public function setZpl(ZplMode $mode = ZplMode::ZplII): self
+    {
+        return $this->addCommand(new Commands\SetZpl($mode));
+    }
+
+    public function slew(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\Slew($dotRows));
+    }
+
     /** Open a new ZPL format. Returns a builder with `^XA` already appended. */
     public static function start(): self
     {
         $builder = new self();
 
         return $builder->addCommand(new Commands\StartFormat());
+    }
+
+    public function startPrint(int $dotRow): self
+    {
+        return $this->addCommand(new Commands\StartPrint($dotRow));
+    }
+
+    public function suppressBackfeed(): self
+    {
+        return $this->addCommand(new Commands\SuppressBackfeed());
+    }
+
+    public function tearOffAdjust(int $dotRows): self
+    {
+        return $this->addCommand(new Commands\TearOffAdjust($dotRows));
     }
 
     public function transferObject(
@@ -1401,6 +2067,16 @@ class ZplBuilder implements ZplBuilderInterface
         );
     }
 
+    public function verifyRfidEncoding(bool $enabled = true): self
+    {
+        return $this->addCommand(new Commands\VerifyRfidEncoding($enabled));
+    }
+
+    public function webAuthTimeout(int $minutes = 5): self
+    {
+        return $this->addCommand(new Commands\WebAuthenticationTimeout($minutes));
+    }
+
     public function when(bool|callable $predicate, callable $callback, ?callable $elseCallback = null): self
     {
         if (is_callable($predicate) ? $predicate() : $predicate) {
@@ -1410,6 +2086,55 @@ class ZplBuilder implements ZplBuilderInterface
         }
 
         return $this;
+    }
+
+    public function wiredNetworkSettings(
+        IpResolution $ipResolution,
+        string $ipAddress = '',
+        string $subnetMask = '',
+        string $defaultGateway = '',
+        ?string $winsServer = null,
+        ?bool $connectionTimeoutChecking = null,
+        ?int $timeoutValue = null,
+        ?int $arpInterval = null,
+        ?int $basePortNumber = null,
+    ): self {
+        return $this->addCommand(
+            new Commands\WiredNetworkSettings(
+                ipResolution: $ipResolution,
+                ipAddress: $ipAddress,
+                subnetMask: $subnetMask,
+                defaultGateway: $defaultGateway,
+                winsServer: $winsServer,
+                connectionTimeoutChecking: $connectionTimeoutChecking,
+                timeoutValue: $timeoutValue,
+                arpInterval: $arpInterval,
+                basePortNumber: $basePortNumber,
+            ),
+        );
+    }
+
+    public function writeRfidTag(
+        string $data,
+        int $block = 0,
+        int $retries = 0,
+        RfidMotion $motion = RfidMotion::Feed,
+        RfidWriteProtect $writeProtect = RfidWriteProtect::NotProtected,
+        RfidByteFormat $format = RfidByteFormat::Ascii,
+        bool $verify = false,
+    ): self {
+        $this->addCommand(
+            new Commands\WriteRfidTag(
+                block: $block,
+                retries: $retries,
+                motion: $motion,
+                writeProtect: $writeProtect,
+                format: $format,
+                verify: $verify,
+            ),
+        );
+
+        return $this->fieldData($data);
     }
 
     /**

@@ -7,6 +7,8 @@ namespace Janisvepris\ZplBuilder\Test\Unit;
 use DateTimeImmutable;
 use Janisvepris\ZplBuilder\BarcodeDefaultSettings;
 use Janisvepris\ZplBuilder\CharacterRemap;
+use Janisvepris\ZplBuilder\Enum\Antenna;
+use Janisvepris\ZplBuilder\Enum\CacheType;
 use Janisvepris\ZplBuilder\Enum\ClockLanguage;
 use Janisvepris\ZplBuilder\Enum\ClockMode;
 use Janisvepris\ZplBuilder\Enum\ClockSet;
@@ -19,23 +21,42 @@ use Janisvepris\ZplBuilder\Enum\Code49Mode;
 use Janisvepris\ZplBuilder\Enum\DataMatrixQuality;
 use Janisvepris\ZplBuilder\Enum\DateTimeFormat;
 use Janisvepris\ZplBuilder\Enum\DiagonalOrientation;
+use Janisvepris\ZplBuilder\Enum\DirectoryDevice;
 use Janisvepris\ZplBuilder\Enum\DownloadExtension;
 use Janisvepris\ZplBuilder\Enum\DownloadFormat;
 use Janisvepris\ZplBuilder\Enum\Encoding;
 use Janisvepris\ZplBuilder\Enum\Font;
 use Janisvepris\ZplBuilder\Enum\FontExtension;
 use Janisvepris\ZplBuilder\Enum\GraphicFieldCompression;
+use Janisvepris\ZplBuilder\Enum\IpResolution;
 use Janisvepris\ZplBuilder\Enum\Justify;
 use Janisvepris\ZplBuilder\Enum\LabelFlip;
 use Janisvepris\ZplBuilder\Enum\LineColor;
 use Janisvepris\ZplBuilder\Enum\MaxiCodeMode;
+use Janisvepris\ZplBuilder\Enum\MeasurementUnit;
+use Janisvepris\ZplBuilder\Enum\MediaFeedAction;
+use Janisvepris\ZplBuilder\Enum\MediaTrackingType;
+use Janisvepris\ZplBuilder\Enum\MemoryLetter;
 use Janisvepris\ZplBuilder\Enum\MsiCheckDigit;
+use Janisvepris\ZplBuilder\Enum\NetworkDevice;
 use Janisvepris\ZplBuilder\Enum\Orientation;
+use Janisvepris\ZplBuilder\Enum\PostPrintAction;
 use Janisvepris\ZplBuilder\Enum\PrintDirection;
+use Janisvepris\ZplBuilder\Enum\PrintMethod;
+use Janisvepris\ZplBuilder\Enum\PrintSpeed;
+use Janisvepris\ZplBuilder\Enum\ProtectedMode;
 use Janisvepris\ZplBuilder\Enum\QrErrorCorrection;
 use Janisvepris\ZplBuilder\Enum\QrModel;
+use Janisvepris\ZplBuilder\Enum\RfidLockStyle;
+use Janisvepris\ZplBuilder\Enum\RfidOperation;
+use Janisvepris\ZplBuilder\Enum\RfidPasswordMemoryBank;
+use Janisvepris\ZplBuilder\Enum\RfidPowerLevel;
 use Janisvepris\ZplBuilder\Enum\RssSymbologyType;
 use Janisvepris\ZplBuilder\Enum\StorageDevice;
+use Janisvepris\ZplBuilder\Enum\TransmitPower;
+use Janisvepris\ZplBuilder\Enum\WepEncryptionMode;
+use Janisvepris\ZplBuilder\Enum\WiredPrintServerCheck;
+use Janisvepris\ZplBuilder\Enum\ZplMode;
 use Janisvepris\ZplBuilder\Exception\DuplicateClockIndicatorException;
 use Janisvepris\ZplBuilder\Exception\FloatValueOutOfRangeException;
 use Janisvepris\ZplBuilder\Exception\FontPresetDoesNotExistException;
@@ -283,6 +304,13 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertSame(30, $preset->height);
         self::assertSame(15, $preset->width);
+    }
+
+    public function testApplicatorReprintEmitsPr(): void
+    {
+        $output = (string) ZplBuilder::start()->applicatorReprint();
+
+        self::assertSame('^XA~PR', $output);
     }
 
     public function testApplyFontPresetEmitsChangeFontWithStoredDimensions(): void
@@ -871,6 +899,41 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringContainsString('^B9N,50,', $output);
     }
 
+    public function testCacheOnEmitsCoWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->cacheOn();
+
+        self::assertSame('^XA^COY,40,0', $output);
+    }
+
+    public function testCacheOnEmitsExplicitMemoryAndType(): void
+    {
+        $output = (string) ZplBuilder::start()->cacheOn(false, 128, CacheType::Internal);
+
+        self::assertSame('^XA^CON,128,1', $output);
+    }
+
+    public function testCacheOnValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->cacheOn(additionalMemory: -1);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testCalibrateRfidTransponderEmitsHr(): void
+    {
+        $output = (string) ZplBuilder::start()->calibrateRfidTransponder();
+
+        self::assertSame('^XA^HRstart,end', $output);
+    }
+
     public function testChangeFontEmitsCfWithLetterFont(): void
     {
         $output = (string) ZplBuilder::start()->changeFont(Font::A, 30, 15);
@@ -938,6 +1001,49 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^CI28,65,66', $output);
     }
 
+    public function testChangeMemoryLettersEmitsCm(): void
+    {
+        $output = (string) ZplBuilder::start()->changeMemoryLetters(
+            aliasForB: MemoryLetter::Flash,
+            aliasForE: MemoryLetter::MemoryCardB,
+        );
+
+        self::assertSame('^XA^CME,B,R,A', $output);
+    }
+
+    public function testChangeMemoryLettersUsesIdentityDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->changeMemoryLetters();
+
+        self::assertSame('^XA^CMB,E,R,A', $output);
+    }
+
+    public function testChangeWirelessNetworkSettingsEmitsWi(): void
+    {
+        $output = (string) ZplBuilder::start()->changeWirelessNetworkSettings(
+            IpResolution::Permanent,
+            '192.168.0.1',
+            '255.255.255.0',
+            '192.168.0.2',
+        );
+
+        self::assertSame('^XA^WIP,192.168.0.1,255.255.255.0,192.168.0.2', $output);
+    }
+
+    public function testCodeValidationDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->codeValidation(false);
+
+        self::assertSame('^XA^CVN', $output);
+    }
+
+    public function testCodeValidationEmitsCv(): void
+    {
+        $output = (string) ZplBuilder::start()->codeValidation();
+
+        self::assertSame('^XA^CVY', $output);
+    }
+
     public function testCommentEmitsFx(): void
     {
         $output = (string) ZplBuilder::start()->comment(' section header');
@@ -962,6 +1068,48 @@ class ZplBuilderTest extends UnitTestCase
             '^XA^LH30,30^CF0,40,20^FO50,50^FDHello, ZPL!^FS^FO50,120^BY3,3.0,100^BCN,100,Y,N,N,N^FDABC123^FS^PQ1^XZ',
             $output,
         );
+    }
+
+    public function testDefineEpcDataStructureEmitsRbWithPartitions(): void
+    {
+        $output = (string) ZplBuilder::start()->defineEpcDataStructure(96, 10, 26, 60);
+
+        self::assertSame('^XA^RB96,10,26,60', $output);
+    }
+
+    public function testDefineEpcDataStructureEmitsTotalBitSizeOnly(): void
+    {
+        $output = (string) ZplBuilder::start()->defineEpcDataStructure();
+
+        self::assertSame('^XA^RB96', $output);
+    }
+
+    public function testDetectMultipleRfidTagsDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->detectMultipleRfidTags(false);
+
+        self::assertSame('^XA^RNN', $output);
+    }
+
+    public function testDetectMultipleRfidTagsEmitsRn(): void
+    {
+        $output = (string) ZplBuilder::start()->detectMultipleRfidTags();
+
+        self::assertSame('^XA^RNY', $output);
+    }
+
+    public function testDownloadFormatEmitsDf(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadFormat('STOREFMT', StorageDevice::Flash);
+
+        self::assertSame('^XA^DFE:STOREFMT.ZPL', $output);
+    }
+
+    public function testDownloadFormatUsesRamAndZplDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->downloadFormat('STOREFMT');
+
+        self::assertSame('^XA^DFR:STOREFMT.ZPL', $output);
     }
 
     public function testDownloadGraphicsEmitsDg(): void
@@ -1023,6 +1171,55 @@ class ZplBuilderTest extends UnitTestCase
             $builder->downloadObject('', DownloadFormat::UncompressedAscii, 8000);
             self::fail('Expected StringLengthOutOfRangeException');
         } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testEnableEasBitDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->enableEasBit(false);
+
+        self::assertSame('^XA^REN,0', $output);
+    }
+
+    public function testEnableEasBitEmitsRe(): void
+    {
+        $output = (string) ZplBuilder::start()->enableEasBit();
+
+        self::assertSame('^XA^REY,0', $output);
+    }
+
+    public function testEnableRfidMotionDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->enableRfidMotion(false);
+
+        self::assertSame('^XA^RMN', $output);
+    }
+
+    public function testEnableRfidMotionEmitsRm(): void
+    {
+        $output = (string) ZplBuilder::start()->enableRfidMotion();
+
+        self::assertSame('^XA^RMY', $output);
+    }
+
+    public function testEncodeAfiOrDsfidByteEmitsWf(): void
+    {
+        $output = (string) ZplBuilder::start()->encodeAfiOrDsfidByte();
+
+        self::assertSame('^XA^WF0,0,0,0,A', $output);
+    }
+
+    public function testEncodeAfiOrDsfidByteValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->encodeAfiOrDsfidByte(retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
         }
 
         self::assertSame($before, (string) $builder);
@@ -1463,6 +1660,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertArrayHasKey('small', $presets);
     }
 
+    public function testGetRfidTagIdEmitsRi(): void
+    {
+        $output = (string) ZplBuilder::start()->getRfidTagId();
+
+        self::assertSame('^XA^RI0,0,0,0', $output);
+    }
+
+    public function testGetRfidTagIdValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->getRfidTagId(retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testGraphicBoxEmitsGbAndSeparator(): void
     {
         $output = (string) ZplBuilder::start()->graphicBox(100, 50, 2);
@@ -1570,6 +1788,34 @@ class ZplBuilderTest extends UnitTestCase
         self::assertTrue($builder->hasFontPreset('big'));
     }
 
+    public function testHeadColdWarningDisables(): void
+    {
+        $output = (string) ZplBuilder::start()->headColdWarning(false);
+
+        self::assertSame('^XA^MWN', $output);
+    }
+
+    public function testHeadColdWarningEmitsMw(): void
+    {
+        $output = (string) ZplBuilder::start()->headColdWarning();
+
+        self::assertSame('^XA^MWY', $output);
+    }
+
+    public function testHostFormatEmitsHf(): void
+    {
+        $output = (string) ZplBuilder::start()->hostFormat('FILE1', StorageDevice::MemoryCardB);
+
+        self::assertSame('^XA^HFB:FILE1.ZPL', $output);
+    }
+
+    public function testHostFormatUsesRamAndZplDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->hostFormat('FILE1');
+
+        self::assertSame('^XA^HFR:FILE1.ZPL', $output);
+    }
+
     public function testHostGraphicEmitsHg(): void
     {
         $output = (string) ZplBuilder::start()->hostGraphic('SAMPLE', StorageDevice::Flash);
@@ -1654,6 +1900,135 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^LRY', $output);
     }
 
+    public function testLabelShiftEmitsLs(): void
+    {
+        $output = (string) ZplBuilder::start()->labelShift(-50);
+
+        self::assertSame('^XA^LS-50', $output);
+    }
+
+    public function testLabelShiftUsesZeroDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->labelShift();
+
+        self::assertSame('^XA^LS0', $output);
+    }
+
+    public function testLabelTopEmitsLt(): void
+    {
+        $output = (string) ZplBuilder::start()->labelTop(-30);
+
+        self::assertSame('^XA^LT-30', $output);
+    }
+
+    public function testMapClearEmitsMc(): void
+    {
+        $output = (string) ZplBuilder::start()->mapClear();
+
+        self::assertSame('^XA^MCY', $output);
+    }
+
+    public function testMapClearRetainsBitmap(): void
+    {
+        $output = (string) ZplBuilder::start()->mapClear(false);
+
+        self::assertSame('^XA^MCN', $output);
+    }
+
+    public function testMaximumLabelLengthEmitsMl(): void
+    {
+        $output = (string) ZplBuilder::start()->maximumLabelLength(1225);
+
+        self::assertSame('^XA^ML1225', $output);
+    }
+
+    public function testMediaDarknessEmitsMd(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaDarkness(15);
+
+        self::assertSame('^XA^MD15', $output);
+    }
+
+    public function testMediaDarknessRendersNegativeAdjustment(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaDarkness(-6);
+
+        self::assertSame('^XA^MD-6', $output);
+    }
+
+    public function testMediaFeedEmitsMf(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaFeed(
+            MediaFeedAction::Feed,
+            MediaFeedAction::None,
+        );
+
+        self::assertSame('^XA^MFF,N', $output);
+    }
+
+    public function testMediaTrackingEmitsMn(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaTracking(MediaTrackingType::NonContinuousWeb);
+
+        self::assertSame('^XA^MNY', $output);
+    }
+
+    public function testMediaTypeEmitsMt(): void
+    {
+        $output = (string) ZplBuilder::start()->mediaType(PrintMethod::ThermalTransfer);
+
+        self::assertSame('^XA^MTT', $output);
+    }
+
+    public function testModeProtectionEmitsMp(): void
+    {
+        $output = (string) ZplBuilder::start()->modeProtection(ProtectedMode::DisableDarkness);
+
+        self::assertSame('^XA^MPD', $output);
+    }
+
+    public function testNetworkConnectEmitsNc(): void
+    {
+        $output = (string) ZplBuilder::start()->networkConnect(5);
+
+        self::assertSame('^XA~NC005', $output);
+    }
+
+    public function testNetworkConnectValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->networkConnect(0);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testNetworkIdEmitsNi(): void
+    {
+        $output = (string) ZplBuilder::start()->networkId(42);
+
+        self::assertSame('^XA^NI042', $output);
+    }
+
+    public function testNetworkIdValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->networkId(0);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testNoPrintQuantityEmittedByDefault(): void
     {
         $output = (string) ZplBuilder::start()->fieldData('Hello')->end();
@@ -1676,6 +2051,104 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^IDR:*.GRF^FS', $output);
     }
 
+    public function testPrimaryDeviceEmitsNpWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->primaryDevice();
+
+        self::assertSame('^XA^NPP', $output);
+    }
+
+    public function testPrimaryDeviceSelectsPrintServer(): void
+    {
+        $output = (string) ZplBuilder::start()->primaryDevice(NetworkDevice::PrintServer);
+
+        self::assertSame('^XA^NPM', $output);
+    }
+
+    public function testPrintConfigurationLabelEmitsWc(): void
+    {
+        $output = (string) ZplBuilder::start()->printConfigurationLabel();
+
+        self::assertSame('^XA~WC', $output);
+    }
+
+    public function testPrintDirectoryLabelEmitsWd(): void
+    {
+        $output = (string) ZplBuilder::start()->printDirectoryLabel();
+
+        self::assertSame('^XA^WDR:*.*', $output);
+    }
+
+    public function testPrintDirectoryLabelListsResidentFonts(): void
+    {
+        $output = (string) ZplBuilder::start()->printDirectoryLabel(DirectoryDevice::Resident, '*', 'FNT');
+
+        self::assertSame('^XA^WDZ:*.FNT', $output);
+    }
+
+    public function testPrinterSleepEmitsExplicitValues(): void
+    {
+        $output = (string) ZplBuilder::start()->printerSleep(300, true);
+
+        self::assertSame('^XA^ZZ300,Y', $output);
+    }
+
+    public function testPrinterSleepEmitsZzWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->printerSleep();
+
+        self::assertSame('^XA^ZZ0,N', $output);
+    }
+
+    public function testPrinterSleepValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->printerSleep(idleSeconds: 1000000);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testPrintMirrorEmitsPm(): void
+    {
+        $output = (string) ZplBuilder::start()->printMirror(false);
+
+        self::assertSame('^XA^PMN', $output);
+    }
+
+    public function testPrintMirrorUsesYesDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->printMirror();
+
+        self::assertSame('^XA^PMY', $output);
+    }
+
+    public function testPrintModeEmitsCutterWithoutPrepeel(): void
+    {
+        $output = (string) ZplBuilder::start()->printMode(PostPrintAction::Cutter, false);
+
+        self::assertSame('^XA^MMC,N', $output);
+    }
+
+    public function testPrintModeEmitsMmWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->printMode();
+
+        self::assertSame('^XA^MMT,Y', $output);
+    }
+
+    public function testPrintNetworkConfigurationLabelEmitsWl(): void
+    {
+        $output = (string) ZplBuilder::start()->printNetworkConfigurationLabel();
+
+        self::assertSame('^XA~WL', $output);
+    }
+
     public function testPrintNewlinesSeparatesCommandsWithEol(): void
     {
         $output = (string) ZplBuilder::start()->printNewlines()->fieldData('Hi')->end();
@@ -1695,6 +2168,31 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->fieldData('Hello')->printQuantity(5)->end();
 
         self::assertSame('^XA^FDHello^FS^PQ5^XZ', $output);
+    }
+
+    public function testPrintRateEmitsExplicitSpeeds(): void
+    {
+        $output = (string) ZplBuilder::start()->printRate(
+            PrintSpeed::Ips6,
+            PrintSpeed::Ips8,
+            PrintSpeed::Ips4,
+        );
+
+        self::assertSame('^XA^PR6,8,4', $output);
+    }
+
+    public function testPrintRateEmitsPrWithDefaults(): void
+    {
+        $output = (string) ZplBuilder::start()->printRate();
+
+        self::assertSame('^XA^PR2,6,2', $output);
+    }
+
+    public function testPrintStartEmitsPs(): void
+    {
+        $output = (string) ZplBuilder::start()->printStart();
+
+        self::assertSame('^XA~PS', $output);
     }
 
     public function testPrintWidthEmitsPw(): void
@@ -1725,6 +2223,62 @@ class ZplBuilderTest extends UnitTestCase
         $output = (string) ZplBuilder::start()->raw('^FO5,5^GB100,100,2^FS');
 
         self::assertStringContainsString('^FO5,5^GB100,100,2^FS', $output);
+    }
+
+    public function testReadAfiOrDsfidByteEmitsRa(): void
+    {
+        $output = (string) ZplBuilder::start()->readAfiOrDsfidByte();
+
+        self::assertSame('^XA^RA0,0,0,0,A', $output);
+    }
+
+    public function testReadAfiOrDsfidByteValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->readAfiOrDsfidByte(retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testReadRfidTagEmitsRt(): void
+    {
+        $output = (string) ZplBuilder::start()->readRfidTag();
+
+        self::assertSame('^XA^RT0,0,1,0,0,0,0', $output);
+    }
+
+    public function testReadRfidTagValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->readRfidTag(retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testReadWriteRfidFormatEmitsRf(): void
+    {
+        $output = (string) ZplBuilder::start()->readWriteRfidFormat();
+
+        self::assertSame('^XA^RFW,H', $output);
+    }
+
+    public function testReadWriteRfidFormatReads(): void
+    {
+        $output = (string) ZplBuilder::start()->readWriteRfidFormat(RfidOperation::Read);
+
+        self::assertSame('^XA^RFR,H', $output);
     }
 
     public function testRecallFormatEmitsXf(): void
@@ -1804,6 +2358,13 @@ class ZplBuilderTest extends UnitTestCase
         self::assertStringNotContainsString('^XZ', $output);
     }
 
+    public function testReportRfidEncodingResultsEmitsRv(): void
+    {
+        $output = (string) ZplBuilder::start()->reportRfidEncodingResults();
+
+        self::assertSame('^XA~RVE', $output);
+    }
+
     public function testResetClearsFontPresets(): void
     {
         $builder = ZplBuilder::start()
@@ -1834,6 +2395,48 @@ class ZplBuilderTest extends UnitTestCase
 
         self::assertCount(1, $commands);
         self::assertSame('^XA', (string) $commands[0]);
+    }
+
+    public function testResetWirelessCardEmitsWr(): void
+    {
+        $output = (string) ZplBuilder::start()->resetWirelessCard();
+
+        self::assertSame('^XA~WR', $output);
+    }
+
+    public function testRfidBlockRetriesEmitsRr(): void
+    {
+        $output = (string) ZplBuilder::start()->rfidBlockRetries(5);
+
+        self::assertSame('^XA^RR5', $output);
+    }
+
+    public function testRfidBlockRetriesValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->rfidBlockRetries(11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testSearchWiredPrintServerChecks(): void
+    {
+        $output = (string) ZplBuilder::start()->searchWiredPrintServer(WiredPrintServerCheck::Check);
+
+        self::assertSame('^XA^NBC', $output);
+    }
+
+    public function testSearchWiredPrintServerEmitsNbWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->searchWiredPrintServer();
+
+        self::assertSame('^XA^NBS', $output);
     }
 
     public function testSelectDateTimeFormatEmitsKd(): void
@@ -1957,6 +2560,27 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testSetAllNetworkPrintersTransparentEmitsNr(): void
+    {
+        $output = (string) ZplBuilder::start()->setAllNetworkPrintersTransparent();
+
+        self::assertSame('^XA~NR', $output);
+    }
+
+    public function testSetAntennaParametersEmitsWa(): void
+    {
+        $output = (string) ZplBuilder::start()->setAntennaParameters();
+
+        self::assertSame('^XA^WAD,D', $output);
+    }
+
+    public function testSetAntennaParametersSelectsLeftAndRight(): void
+    {
+        $output = (string) ZplBuilder::start()->setAntennaParameters(Antenna::Left, Antenna::Right);
+
+        self::assertSame('^XA^WAL,R', $output);
+    }
+
     public function testSetClockModeEmitsSlWithDefaultStartMode(): void
     {
         $output = (string) ZplBuilder::start()->setClockMode();
@@ -2010,6 +2634,41 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $builder);
     }
 
+    public function testSetConnectedPrinterTransparentEmitsNt(): void
+    {
+        $output = (string) ZplBuilder::start()->setConnectedPrinterTransparent();
+
+        self::assertSame('^XA~NT', $output);
+    }
+
+    public function testSetDarknessEmitsSd(): void
+    {
+        $output = (string) ZplBuilder::start()->setDarkness(15);
+
+        self::assertSame('^XA~SD15', $output);
+    }
+
+    public function testSetDarknessPadsSingleDigit(): void
+    {
+        $output = (string) ZplBuilder::start()->setDarkness(8);
+
+        self::assertSame('^XA~SD08', $output);
+    }
+
+    public function testSetDarknessValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setDarkness(31);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSetDateTimeDefaultsToCurrentTimeAndMilitaryFormat(): void
     {
         $now = new DateTimeImmutable();
@@ -2050,6 +2709,55 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame($before, (string) $builder);
     }
 
+    public function testSetLeapParametersEmitsWl(): void
+    {
+        $output = (string) ZplBuilder::start()->setLeapParameters('zebra', 'secret');
+
+        self::assertSame('^XA^WLON,zebra,secret', $output);
+    }
+
+    public function testSetLeapParametersValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setLeapParameters('abc', 'secret');
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetMediaSensorsEmitsOptionalParameters(): void
+    {
+        $output = (string) ZplBuilder::start()->setMediaSensors(50, 40, 30, 1225, 60, 70);
+
+        self::assertSame('^XA^SS050,040,030,1225,060,070', $output);
+    }
+
+    public function testSetMediaSensorsEmitsSs(): void
+    {
+        $output = (string) ZplBuilder::start()->setMediaSensors(50, 40, 30, 1225);
+
+        self::assertSame('^XA^SS050,040,030,1225', $output);
+    }
+
+    public function testSetMediaSensorsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setMediaSensors(101, 0, 0, 1);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testSetOffsetEmitsSo(): void
     {
         $output = (string) ZplBuilder::start()
@@ -2080,9 +2788,206 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA', (string) $builder);
     }
 
+    public function testSetRfidPowerLevelsEmitsRw(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidPowerLevels();
+
+        self::assertSame('^XA^RWH,H', $output);
+    }
+
+    public function testSetRfidPowerLevelsWithAntenna(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidPowerLevels(
+            RfidPowerLevel::Medium,
+            RfidPowerLevel::Low,
+            2,
+        );
+
+        self::assertSame('^XA^RWM,L,2', $output);
+    }
+
+    public function testSetRfidTagPasswordEmitsRz(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidTagPassword('5A');
+
+        self::assertSame('^XA^RZ5A', $output);
+    }
+
+    public function testSetRfidTagPasswordWithBankAndLock(): void
+    {
+        $output = (string) ZplBuilder::start()->setRfidTagPassword(
+            '1234ABCD',
+            RfidPasswordMemoryBank::Epc,
+            RfidLockStyle::Locked,
+        );
+
+        self::assertSame('^XA^RZ1234ABCD,E,L', $output);
+    }
+
+    public function testSetSmtpEmitsNt(): void
+    {
+        $output = (string) ZplBuilder::start()->setSmtp('10.0.0.1', 'example.com');
+
+        self::assertSame('^XA^NT10.0.0.1,example.com', $output);
+    }
+
+    public function testSetSnmpEmitsNn(): void
+    {
+        $output = (string) ZplBuilder::start()->setSnmp(systemName: 'printer1');
+
+        self::assertSame('^XA^NNprinter1,,,public,public,public', $output);
+    }
+
+    public function testSetSnmpValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setSnmp(systemName: str_repeat('a', 18));
+            self::fail('Expected StringLengthOutOfRangeException');
+        } catch (StringLengthOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetTransmitRateEmitsWr(): void
+    {
+        $output = (string) ZplBuilder::start()->setTransmitRate(true, true, false, false, TransmitPower::Power30);
+
+        self::assertSame('^XA^WRY,Y,N,N,30', $output);
+    }
+
+    public function testSetUnitsEmitsConversion(): void
+    {
+        $output = (string) ZplBuilder::start()->setUnits(MeasurementUnit::Dots, 150, 300);
+
+        self::assertSame('^XA^MUD,150,300', $output);
+    }
+
+    public function testSetUnitsEmitsMuWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->setUnits();
+
+        self::assertSame('^XA^MUD', $output);
+    }
+
+    public function testSetUnitsValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setUnits(baseDpi: 149);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetUpRfidParametersEmitsRs(): void
+    {
+        $output = (string) ZplBuilder::start()->setUpRfidParameters(tagType: 8, numberOfLabels: 3);
+
+        self::assertSame('^XA^RS8,,,3', $output);
+    }
+
+    public function testSetUpRfidParametersValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->setUpRfidParameters(numberOfLabels: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
+    public function testSetWepModeEmitsWe(): void
+    {
+        $output = (string) ZplBuilder::start()->setWepMode();
+
+        self::assertSame('^XA^WEOFF', $output);
+    }
+
+    public function testSetWepModeWithKey(): void
+    {
+        $output = (string) ZplBuilder::start()->setWepMode(WepEncryptionMode::Bit40, key1: '12345');
+
+        self::assertSame('^XA^WE40,,,,12345', $output);
+    }
+
+    public function testSetWirelessCardValuesEmitsWs(): void
+    {
+        $output = (string) ZplBuilder::start()->setWirelessCardValues('mynet');
+
+        self::assertSame('^XA^WSmynet,I,L', $output);
+    }
+
+    public function testSetWirelessPasswordEmitsWp(): void
+    {
+        $output = (string) ZplBuilder::start()->setWirelessPassword(1234);
+
+        self::assertSame('^XA^WP0000,1234', $output);
+    }
+
+    public function testSetZplEmitsSzWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->setZpl();
+
+        self::assertSame('^XA^SZ2', $output);
+    }
+
+    public function testSetZplSelectsLegacyZpl(): void
+    {
+        $output = (string) ZplBuilder::start()->setZpl(ZplMode::Zpl);
+
+        self::assertSame('^XA^SZ1', $output);
+    }
+
+    public function testSlewEmitsPf(): void
+    {
+        $output = (string) ZplBuilder::start()->slew(50);
+
+        self::assertSame('^XA^PF50', $output);
+    }
+
     public function testStartEmitsStartFormat(): void
     {
         self::assertSame('^XA', (string) ZplBuilder::start());
+    }
+
+    public function testStartPrintEmitsSp(): void
+    {
+        $output = (string) ZplBuilder::start()->startPrint(500);
+
+        self::assertSame('^XA^SP500', $output);
+    }
+
+    public function testSuppressBackfeedEmitsXb(): void
+    {
+        $output = (string) ZplBuilder::start()->suppressBackfeed();
+
+        self::assertSame('^XA^XB', $output);
+    }
+
+    public function testTearOffAdjustEmitsTa(): void
+    {
+        $output = (string) ZplBuilder::start()->tearOffAdjust(45);
+
+        self::assertSame('^XA~TA045', $output);
+    }
+
+    public function testTearOffAdjustRendersNegativeAdjustment(): void
+    {
+        $output = (string) ZplBuilder::start()->tearOffAdjust(-30);
+
+        self::assertSame('^XA~TA-30', $output);
     }
 
     public function testTransferObjectEmitsToWithDefaults(): void
@@ -2157,6 +3062,34 @@ class ZplBuilderTest extends UnitTestCase
         self::assertSame('^XA^HYR:LOGO.GRF', $output);
     }
 
+    public function testVerifyRfidEncodingEmitsWv(): void
+    {
+        $output = (string) ZplBuilder::start()->verifyRfidEncoding();
+
+        self::assertSame('^XA^WVY', $output);
+    }
+
+    public function testWebAuthTimeoutEmitsNwWithDefault(): void
+    {
+        $output = (string) ZplBuilder::start()->webAuthTimeout();
+
+        self::assertSame('^XA^NW5', $output);
+    }
+
+    public function testWebAuthTimeoutValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->webAuthTimeout(256);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
+    }
+
     public function testWhenAppliesCallbackWhenPredicateIsTrue(): void
     {
         $output = (string) ZplBuilder::start()
@@ -2211,6 +3144,39 @@ class ZplBuilderTest extends UnitTestCase
             );
 
         self::assertSame('^XAYES', $output);
+    }
+
+    public function testWiredNetworkSettingsEmitsNs(): void
+    {
+        $output = (string) ZplBuilder::start()->wiredNetworkSettings(
+            IpResolution::Permanent,
+            '192.168.0.1',
+            '255.255.255.0',
+            '192.168.0.2',
+        );
+
+        self::assertSame('^XA^NSP,192.168.0.1,255.255.255.0,192.168.0.2', $output);
+    }
+
+    public function testWriteRfidTagEmitsWtThenFieldData(): void
+    {
+        $output = (string) ZplBuilder::start()->writeRfidTag('RFIDRFID', retries: 5);
+
+        self::assertSame('^XA^WT0,5,0,0,0,N^FDRFIDRFID^FS', $output);
+    }
+
+    public function testWriteRfidTagValidationFailureLeavesNoCommandAppended(): void
+    {
+        $builder = ZplBuilder::start();
+        $before = (string) $builder;
+
+        try {
+            $builder->writeRfidTag('RFIDRFID', retries: 11);
+            self::fail('Expected IntegerValueOutOfRangeException');
+        } catch (IntegerValueOutOfRangeException) {
+        }
+
+        self::assertSame($before, (string) $builder);
     }
 
     public function testZplBuilderImplementsZplBuilderInterface(): void
