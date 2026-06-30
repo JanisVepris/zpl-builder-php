@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 The public API is **unstable until 1.0** — minor versions may include breaking changes.
 
-## [Unreleased]
+## [0.63.1] - 2026-06-30
 
 ### Added
 
